@@ -1,5 +1,4 @@
-import { createPathIndexLanguageParser } from '@intlify/utils'
-import { withTrailingSlash, withoutTrailingSlash } from 'ufo'
+import { parsePath, withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import type { Strategies } from '#internal-i18n-types'
 import type { RouteName, RouteObject } from './types'
 
@@ -45,8 +44,27 @@ export function prefixable(currentLocale: string, defaultLocale: string, options
   return options.routing && (currentLocale !== defaultLocale || options.strategy === 'prefix')
 }
 
-const pathLanguageParser = createPathIndexLanguageParser(0)
-export const getLocaleFromRoutePath = (path: string) => pathLanguageParser(path)
+/**
+ * Extract the locale from a route path. A locale code may span more than one path segment
+ * (`en/formal`), so recognizing one takes matching against the actual configured codes rather than
+ * just taking the first `/`-delimited segment. Trims one segment off the end at a time, so a
+ * configured `en/formal` is not shadowed by a shorter, coincidentally matching `en`. Costs
+ * one pass over the path's own segments rather than over `localeCodes`, so it stays cheap regardless
+ * of how many locales are configured.
+ */
+export function getLocaleFromRoutePath(path: string, localeCodes: readonly string[]): string {
+  const { pathname } = parsePath(path)
+  let candidate = pathname[0] === '/' ? pathname.slice(1) : pathname
+
+  while (candidate) {
+    if (localeCodes.includes(candidate)) { return candidate }
+    const lastSlash = candidate.lastIndexOf('/')
+    if (lastSlash === -1) { break }
+    candidate = candidate.slice(0, lastSlash)
+  }
+  return ''
+}
+
 export const getLocaleFromRouteName = (name: string) => name.split(separator).at(1) ?? ''
 
 function normalizeInput(input: RouteName | RouteObject) {
@@ -58,10 +76,10 @@ function normalizeInput(input: RouteName | RouteObject) {
 /**
  * Extract locale code from route name or path
  */
-export function getLocaleFromRoute(route: RouteName | RouteObject) {
+export function getLocaleFromRoute(route: RouteName | RouteObject, localeCodes: readonly string[]) {
   const input = normalizeInput(route)
   if (input[0] === '/') {
-    return getLocaleFromRoutePath(input)
+    return getLocaleFromRoutePath(input, localeCodes)
   }
 
   const fromName = getLocaleFromRouteName(input)
@@ -70,7 +88,7 @@ export function getLocaleFromRoute(route: RouteName | RouteObject) {
   // Fallback: for compact routes the name has no locale suffix,
   // try path-based detection if the route object has a path.
   if (typeof route === 'object' && route?.path) {
-    return getLocaleFromRoutePath(String(route.path))
+    return getLocaleFromRoutePath(String(route.path), localeCodes)
   }
 
   return ''

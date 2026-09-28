@@ -34,8 +34,15 @@ export function filterLocales(ctx: I18nNuxtContext) {
   return ctx.options.locales.filter(x => include.includes(isString(x) ? x : x.code)) as string[] | LocaleObject[]
 }
 
-// locale codes are used as single URL path segments (route prefixes, messages endpoint), in route names and in cookies (#4036)
-const INVALID_LOCALE_CODE_CHAR_RE = /[/\\?#%:\s]/
+// locale codes are used as URL path segments (route prefixes, messages endpoint), in route names
+// and cookies. `/` is not banned since a locale can span more than one path segment.
+const INVALID_LOCALE_CODE_CHAR_RE = /[\\?#%:[\]\s]/
+
+// a `/`-containing code is still only safe as a sequence of real path segments. A leading,
+// trailing, or doubled slash would build an empty segment nothing can ever match, and a `.`/`..`
+// segment gets resolved away during URL normalization before a request ever reaches the route.
+const hasInvalidSlashPlacement = (code: string) =>
+  code.split('/').some(segment => segment === '' || segment === '.' || segment === '..')
 
 /**
  * A `defaultLocale` naming no configured locale cannot be the unprefixed locale, so a host relying
@@ -52,11 +59,12 @@ export function validateDefaultLocale(defaultLocale: string | undefined, codes: 
 }
 
 export function validateLocaleCodes(codes: string[]) {
-  const invalid = codes.filter(code => !code || INVALID_LOCALE_CODE_CHAR_RE.test(code))
+  const invalid = codes.filter(code => !code || INVALID_LOCALE_CODE_CHAR_RE.test(code) || hasInvalidSlashPlacement(code))
   if (invalid.length) {
     throw new Error(
       `[nuxt-i18n] Invalid locale code${invalid.length > 1 ? 's' : ''}: ${invalid.map(x => JSON.stringify(x)).join(', ')}. `
-      + 'Locale codes are used as URL path segments and must not be empty or contain `/ \\ ? # % :` or whitespace.',
+      + 'Locale codes are used as URL path segments and must not be empty, start or end with `/`, contain `//`, '
+      + 'contain `.` or `..` as a segment, or contain `\\ ? # % : [ ]` or whitespace.',
     )
   }
 }

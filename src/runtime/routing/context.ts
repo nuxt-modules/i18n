@@ -182,7 +182,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       if (!base) {
         return path
       }
-      if (stripsDefaultPrefix && unprefixesLocale(canonicalDomain(target), locale, locales) && getLocaleFromRoutePath(path) === locale) {
+      if (stripsDefaultPrefix && unprefixesLocale(canonicalDomain(target), locale, locales) && getLocaleFromRoutePath(path, locales.map(l => l.code)) === locale) {
         path = path.slice(locale.length + 1) || '/'
       }
       return joinURL(base, path)

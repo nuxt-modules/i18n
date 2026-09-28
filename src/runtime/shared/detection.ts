@@ -17,11 +17,15 @@ import { type NuxtApp, useCookie } from '#app'
 
 // TODO: add unit tests for these detectors
 
+// locale codes may span more than one path segment, path-based detection needs the full
+// configured list to tell those apart from a plain path segment that happens to match a prefix
+const localeCodes = normalizedLocales.map(l => l.code)
+
 const getCookieLocale = (event: H3Event | undefined, cookieName: string): string | undefined =>
   (import.meta.client ? useCookie(cookieName).value : getCookie(event!, cookieName)) || undefined
 
 const getRouteLocale = (event: H3Event | undefined, route: string | CompatRoute): string | undefined =>
-  getLocaleFromRoute(route)
+  getLocaleFromRoute(route, localeCodes)
 
 const getHeaderLocale = (event: H3Event | undefined) =>
   findBrowserLocale(normalizedLocales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
@@ -63,7 +67,7 @@ export const useDetectors = (
     cookie: () => getCookieLocale(event, config.cookieKey),
     header: () => (import.meta.server ? getHeaderLocale(event) : undefined),
     navigator: () => (import.meta.client ? getNavigatorLocale(event) : undefined),
-    host: (path: string) => matchDomainLocale(getLocales(), getHost(), getLocaleFromRoutePath(path)),
+    host: (path: string) => matchDomainLocale(getLocales(), getHost(), getLocaleFromRoutePath(path, localeCodes)),
     route: (path: string | CompatRoute) => getRouteLocale(event, path),
     /** Passes the locale through when the current host serves it, `undefined` otherwise */
     onHost: (locale: string | null | undefined) =>

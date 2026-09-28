@@ -17,7 +17,7 @@ const detectors = () => ({
   header: (): string | undefined => undefined,
   navigator: (): string | undefined => undefined,
   host: (): string | undefined => undefined,
-  route: (path: string | object) => getLocaleFromRoutePath(String(path)),
+  route: (path: string | object) => getLocaleFromRoutePath(String(path), LOCALES),
   onHost: (locale: string | null | undefined) => locale,
   fromOwnDomain: () => false,
   cookieSpans: () => false,

@@ -2,14 +2,20 @@ import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtim
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
+import { buildCacheKey } from '../../shared/delivery'
 
 import type { H3Event } from 'h3'
+
+// the route matches `:locale` as a single, percent-encoded segment. h3 only decodes a
+// router param when asked to, so every read of it needs the same option, or the locale comes back
+// still encoded.
+const getLocaleParam = (event: H3Event) => getRouterParam(event, 'locale', { decode: true })
 
 /**
  * Load messages for the specified locale event parameter
  */
 const _messagesHandler = defineEventHandler(async (event: H3Event) => {
-  const locale = getRouterParam(event, 'locale')
+  const locale = getLocaleParam(event)
 
   if (!locale) {
     throw createError({ status: 400, message: 'Locale not specified.' })
@@ -31,10 +37,10 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
 })
 
 const getCacheKey = (event: H3Event) =>
-  [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
+  buildCacheKey(getLocaleParam(event) ?? 'null', getRouterParam(event, 'hash') ?? 'null')
 
 async function shouldBypassCache(event: H3Event) {
-  const locale = getRouterParam(event, 'locale')
+  const locale = getLocaleParam(event)
   if (locale == null) { return false }
   // prerendering may require initializing context
   const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
