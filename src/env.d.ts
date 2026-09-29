@@ -25,6 +25,8 @@ declare let __I18N_HTTP_CACHE_DURATION__: number
 declare let __I18N_DYNAMIC_LOCALES__: string[]
 /** Locales the messages endpoint has no response for - see `DeliveryConfig.undeliverable` */
 declare let __I18N_UNDELIVERABLE_LOCALES__: string[]
+/** Whether a vue-i18n config needs the Nuxt app, so nitro cannot resolve the options for it */
+declare let __I18N_APP_CONTEXT_CONFIG__: boolean
 declare let __I18N_STRIP_UNUSED__: boolean
 declare let __I18N_PRELOAD__: boolean
 /** Project has pages and strategy is not `no_prefix` */

@@ -27,13 +27,21 @@ export default defineNuxtPlugin({
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
-    const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
+    // options resolved without the app are missing what an app-context config contributes (#4150)
+    const preloadedOptions = __I18N_APP_CONTEXT_CONFIG__ ? undefined : nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
     const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
     if (import.meta.server) {
-      localeConfigs.value = useRequestEvent()!.context.nuxtI18n?.localeConfigs || {}
+      const serverI18n = useRequestEvent()!.context.nuxtI18n
+      // nitro resolved its options without the stubbed config, so the fallbacks and `flatJson` it
+      // declares only exist on the options the app just resolved (#4150)
+      if (__I18N_APP_CONTEXT_CONFIG__ && serverI18n) {
+        serverI18n.vueI18nOptions = optionsI18n
+        serverI18n.localeConfigs = createLocaleConfigs(optionsI18n.fallbackLocale)
+      }
+      localeConfigs.value = serverI18n?.localeConfigs || {}
     } else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
