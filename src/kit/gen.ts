@@ -145,7 +145,11 @@ export function localizeSingleRoute(
   }
 
   const resultRoutes: LocalizableRoute[] = []
-  for (const locale of routeOptions.locales) {
+  // a child is localized only for the locale of the parent tree it is mounted in;
+  // `routeOptions.locales` may carry the full list when the resolver reads it
+  // from route meta (`getRouteFromResource`), which would bypass the narrowing
+  // applied by `localizeChildren`
+  for (const locale of routeOptions.locales.filter(l => options.locales.includes(l))) {
     // use custom path if found
     const unprefixed = routeOptions.paths?.[locale] ?? route.path
 

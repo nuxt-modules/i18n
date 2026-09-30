@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
-import { getNormalizedLocales, getNuxtOptions } from './utils'
+import { createMockOptionsResolver, createTestConfig, getNormalizedLocales, getNuxtOptions } from './utils'
 import { localizeRoutes, shouldLocalizeRoutes } from '../../src/routing'
 import { setupMultiDomainLocales } from '../../src/runtime/routing/domain'
 import type { NuxtPage } from '@nuxt/schema'
@@ -595,5 +595,98 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
     })
+  })
+
+  describe('nested route locale narrowing', function () {
+    /** Flattens a localized route tree into `{ name, path }` records, tracking the full nested path. */
+    function flattenRoutes(routes: LocalizableRoute[], parentPath = ''): { name?: string, path: string }[] {
+      const flat: { name?: string, path: string }[] = []
+      for (const route of routes) {
+        const path = parentPath + (route.path.startsWith('/') ? route.path : '/' + route.path)
+        flat.push({ name: route.name, path })
+        if (route.children?.length) {
+          flat.push(...flattenRoutes(route.children, path))
+        }
+      }
+      return flat
+    }
+
+    const blogRoutes: NuxtPage[] = [
+      {
+        path: '/blog',
+        name: 'blog',
+        children: [{ path: 'archive', name: 'blog-archive' }]
+      }
+    ]
+
+    it('only mounts a locale-restricted child under its own locale tree', function () {
+      const localizedRoutes = localizeRoutes(structuredClone(blogRoutes) as LocalizableRoute[], createTestConfig({
+        locales: ['en', 'nl', 'de'],
+        strategy: 'prefix_except_default',
+        defaultLocale: 'en',
+        optionsResolver: createMockOptionsResolver({
+          'blog-archive': { locales: ['en'], paths: {} }
+        })
+      }))
+
+      const flat = flattenRoutes(localizedRoutes)
+      const paths = flat.map(x => x.path)
+
+      expect(flat.filter(x => x.name === 'blog-archive___en')).toHaveLength(1)
+      expect(paths).not.toContain('/nl/blog/archive')
+      expect(paths).not.toContain('/de/blog/archive')
+      // the parents themselves are unaffected by the child's restriction
+      expect(paths).toContain('/nl/blog')
+      expect(paths).toContain('/de/blog')
+    })
+
+    it('produces identical output whether the child locale list is explicit or falls back to the passed localeCodes', function () {
+      const paths = { en: 'archive', nl: 'archief' }
+      const sharedConfig = {
+        locales: ['en', 'nl'],
+        strategy: 'prefix_except_default' as const,
+        defaultLocale: 'en'
+      }
+
+      // explicit locale list restating exactly the locales in scope for this config
+      const explicit = localizeRoutes(structuredClone(blogRoutes) as LocalizableRoute[], createTestConfig({
+        ...sharedConfig,
+        optionsResolver: createMockOptionsResolver({
+          'blog-archive': { locales: ['en', 'nl'], paths }
+        })
+      }))
+
+      // no explicit locale list at all - the resolver falls back to whatever localeCodes it's called with,
+      // as it would for a route that only sets custom paths without restricting locales
+      const fallback = localizeRoutes(structuredClone(blogRoutes) as LocalizableRoute[], createTestConfig({
+        ...sharedConfig,
+        optionsResolver: (route, localeCodes) => ({
+          locales: localeCodes,
+          paths: route.name === 'blog-archive' ? paths : {}
+        })
+      }))
+
+      expect(explicit).toEqual(fallback)
+    })
+
+    describe.each(['prefix', 'prefix_except_default', 'prefix_and_default'] as const)(
+      'strategy: "%s"',
+      (strategy) => {
+        it('keeps route names globally unique across the flattened tree', function () {
+          const localizedRoutes = localizeRoutes(structuredClone(blogRoutes) as LocalizableRoute[], createTestConfig({
+            locales: ['en', 'nl', 'de'],
+            strategy,
+            defaultLocale: 'en',
+            optionsResolver: createMockOptionsResolver({
+              'blog-archive': { locales: ['en'], paths: {} }
+            })
+          }))
+
+          const names = flattenRoutes(localizedRoutes).map(x => x.name).filter(Boolean)
+          const duplicates = names.filter((name, index) => names.indexOf(name) !== index)
+          expect(duplicates).toEqual([])
+        })
+      }
+    )
   })
 })
