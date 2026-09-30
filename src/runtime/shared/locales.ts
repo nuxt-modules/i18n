@@ -5,7 +5,19 @@ import type { FallbackLocale } from 'vue-i18n'
 import type { NormalizedLocaleObject } from '#internal-i18n-types'
 
 type LocaleConfig = { cacheable: boolean, fallbacks: string[] }
+
+// `fallbackLocale` is normally the same value on every request, computing every locale's fallback
+// chain from scratch each time is wasted work. It comes from `defineI18nConfig`, which can be
+// async, so it could in theory differ per request, keying the cache by the value itself (rather
+// than memoizing once and reusing forever) keeps that case correct while still skipping the work
+// whenever it's what it almost always is: unchanged
+const localeConfigsCache = new Map<string, Record<string, LocaleConfig>>()
+
 export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<string, LocaleConfig> {
+  const cacheKey = JSON.stringify(fallbackLocale)
+  const cached = localeConfigsCache.get(cacheKey)
+  if (cached) { return cached }
+
   const localeConfigs: Record<string, LocaleConfig> = {}
 
   for (const locale of localeCodes) {
@@ -14,6 +26,7 @@ export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<stri
     localeConfigs[locale] = { fallbacks, cacheable }
   }
 
+  localeConfigsCache.set(cacheKey, localeConfigs)
   return localeConfigs
 }
 
