@@ -457,17 +457,47 @@ describe('_useSetI18nParams', () => {
     expect(patched.link.find(x => x.hreflang === 'nl')!.href).toBe('https://example.com/nl/products/grote-stoel')
   })
 
-  test('restores dynamic params after navigation', async () => {
+  test('restores dynamic params when navigating within the same route', async () => {
     const { router, ctx } = createTestContext()
     await router.push('/products/big-chair')
 
     const setI18nParams = _useSetI18nParams(ctx)
     setI18nParams(chairParams)
 
-    // navigation resets route meta, the composable re-applies the params
-    await router.push('/')
+    // every navigation builds a fresh merged route meta, so the composable
+    // re-applies the params it owns
+    await router.push('/products/big-chair?page=2')
     await nextTick()
     expect(router.currentRoute.value.meta.nuxtI18nInternal).toEqual(chairParams)
+  })
+
+  test('ignores a setter that resolves after the user has navigated away', async () => {
+    const { router, ctx } = createTestContext()
+    await router.push('/products/big-chair')
+
+    // created in the page's setup, while its own route is current
+    const setI18nParams = _useSetI18nParams(ctx)
+
+    // the page's data resolves only after the user has moved on
+    await router.push('/')
+    await nextTick()
+    setI18nParams(chairParams)
+
+    expect(router.currentRoute.value.meta.nuxtI18nInternal).toBeUndefined()
+  })
+
+  test('does not carry dynamic params onto a different route', async () => {
+    const { router, ctx } = createTestContext()
+    await router.push('/products/big-chair')
+
+    const setI18nParams = _useSetI18nParams(ctx)
+    setI18nParams(chairParams)
+
+    // the page that set these params stays mounted while the next route
+    // resolves; a page that declares none must not inherit them
+    await router.push('/')
+    await nextTick()
+    expect(router.currentRoute.value.meta.nuxtI18nInternal).toBeUndefined()
   })
 
   test('seo attributes override global canonicalQueries in strict seo mode', async () => {

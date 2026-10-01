@@ -121,6 +121,11 @@ export function _useSetI18nParams(
   const evt = ctx.strictSeo && import.meta.server && useRequestEvent()
 
   const _i18nParams = ref({})
+  // The route these params belong to, captured where the composable is created —
+  // that is, in the owning page's `setup()`. Checked by both the setter and the
+  // navigation watcher below, so a page can neither write to a route it no
+  // longer occupies nor re-apply its params to whichever route comes next.
+  const _i18nParamsRoute = router.currentRoute.value.name
   const i18nParams = computed({
     get() {
       return router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__]
@@ -137,6 +142,11 @@ export function _useSetI18nParams(
   const unsub = watch(
     () => router.currentRoute.value.fullPath,
     () => {
+      // A page is kept mounted while the next one resolves, so without this
+      // check the page being left stamps its params onto the page being entered.
+      if (!ownsCurrentRoute()) {
+        return
+      }
       router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = _i18nParams.value
       ctx.strictSeo && updateState()
     },
@@ -144,6 +154,10 @@ export function _useSetI18nParams(
 
   if (getCurrentScope()) {
     onScopeDispose(unsub)
+  }
+
+  function ownsCurrentRoute() {
+    return router.currentRoute.value.name === _i18nParamsRoute
   }
 
   function updateState() {
@@ -158,6 +172,12 @@ export function _useSetI18nParams(
   })
 
   return function (params: I18nRouteMeta) {
+    // A page whose data resolves only after the user has navigated away must not
+    // write its params onto the route they landed on.
+    if (!ownsCurrentRoute()) {
+      return
+    }
+
     i18nParams.value = { ...params }
     ctx.strictSeo && updateState()
     if (!ctx.strictSeo) {
