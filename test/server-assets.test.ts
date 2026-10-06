@@ -1,7 +1,7 @@
 import { beforeEach, expect, test, vi } from 'vitest'
 
 const { getItemRaw } = vi.hoisted(() => ({ getItemRaw: vi.fn() }))
-vi.mock('#internal/i18n-nitro.mjs', () => ({ useStorage: () => ({ getItemRaw }) }))
+vi.mock('nitropack/runtime', () => ({ useStorage: () => ({ getItemRaw }) }))
 
 // fresh module per test - the memo is module-scope
 async function importReadI18nAsset() {

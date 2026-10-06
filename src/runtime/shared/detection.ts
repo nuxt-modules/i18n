@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { getCookie, getRequestHeader, getRequestURL } from '#build/i18n-h3.mjs'
+import { getCookie, getRequestHeader, getRequestURL } from 'h3'
 import { parsePath } from 'ufo'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'

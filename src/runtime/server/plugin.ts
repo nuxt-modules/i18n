@@ -1,19 +1,6 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import {
-  defineNitroPlugin,
-  getRequestURL,
-  getResponseHeaders,
-  getResponseStatus,
-  hookNitroRender,
-  sanitizeStatusCode,
-  setCookie,
-  setNitroRedirectResponse,
-  setResponseHeader,
-  setResponseStatus,
-  useRuntimeConfig,
-  useStorage,
-} from '#internal/i18n-nitro.mjs'
+import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runtime'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
@@ -26,7 +13,7 @@ import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
 
-import type { H3Event } from 'h3'
+import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie, setResponseHeader, setResponseStatus } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
@@ -35,35 +22,30 @@ import { createRedirectResolver } from './utils/redirect'
 
 // Adapted from H3 v1
 // https://github.com/h3js/h3/blob/24231b9c448aa852b15b889c53253a783f67a126/src/utils/response.ts#L166-L179
-type NitroRenderContext = Parameters<Parameters<typeof hookNitroRender>[1]>[0]
+function createRedirectResponse(event: H3Event, dest: string, code: number) {
+  event.node.res.setHeader('location', dest)
+  event.node.res.statusCode = sanitizeStatusCode(code, event.node.res.statusCode)
 
-function setRedirectResponse(context: NitroRenderContext, event: H3Event, dest: string, code: number) {
-  const statusCode = sanitizeStatusCode(code, getResponseStatus(event))
-  setResponseHeader(event, 'location', dest)
-  setResponseStatus(event, statusCode)
-
-  setNitroRedirectResponse(
-    context,
-    `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${dest.replace(/"/g, '%22')}"></head></html>`,
-    getResponseHeaders(event) as Record<string, string>,
-    statusCode,
-  )
+  return {
+    headers: event.node.res.getHeaders() as Record<string, string>,
+    statusCode: event.node.res.statusCode,
+    body: `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${dest.replace(/"/g, '%22')}"></head></html>`,
+  }
 }
 
-async function clearCachedI18nHandlers() {
+export default defineNitroPlugin(async (nitro) => {
+  const runtimeI18n = useRuntimeI18n()
+  const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
+  const _defaultLocale: string = runtimeI18n.defaultLocale || ''
+
+  // attempt to clear cache for i18n handlers on startup
   try {
     const cacheStorage = useStorage('cache')
     const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
     await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
   } catch {
-    // Cache cleanup is best-effort and must not affect runtime startup.
+    // no-op
   }
-}
-
-export default defineNitroPlugin((nitro) => {
-  const runtimeI18n = useRuntimeI18n()
-  const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
-  const _defaultLocale: string = runtimeI18n.defaultLocale || ''
 
   const detection = useI18nDetection(undefined)
   const cookieOptions = {
@@ -116,17 +98,11 @@ export default defineNitroPlugin((nitro) => {
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
-  const cacheCleanup = clearCachedI18nHandlers()
-
   nitro.hooks.hook('request', async (event: H3Event) => {
-    await cacheCleanup
     await initializeI18nContext(event)
   })
 
-  hookNitroRender(nitro, async (context) => {
-    if (!__I18N_SERVER_REDIRECT__) { return }
-    const { event } = context
-
+  const resolveLocaleRedirect = async (event: H3Event) => {
     const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initializeI18nContext(event) : useI18nContext(event)
     const url = getRequestURL(event)
     const detector = useDetectors(event, detection)
@@ -156,18 +132,36 @@ export default defineNitroPlugin((nitro) => {
       // a host-scoped cookie cannot reach a cross-domain redirect target, a spanning `cookieDomain` can
       detection.useCookie && (!resolved.origin || detection.cookieDomain)
         && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
-      setRedirectResponse(
-        context,
-        event,
+      return {
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
-        joinURL(
+        location: joinURL(
           resolved.origin || baseUrlGetter(event),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),
-        resolved.code,
-      )
-      return
+        code: resolved.code,
+      }
+    }
+  }
+
+  // Nitro 2 calls `render:before` before rendering, and skips the render (and `render:route`) when it
+  // sets a response. Nitro 3 has no `render:before`, so the redirect is set on the event in `render:route`
+  let hasRenderBefore = false
+  nitro.hooks.hook('render:before', async (context) => {
+    hasRenderBefore = true
+    if (!__I18N_SERVER_REDIRECT__) { return }
+    const redirect = await resolveLocaleRedirect(context.event)
+    if (redirect) {
+      context.response = createRedirectResponse(context.event, redirect.location, redirect.code)
+    }
+  })
+
+  nitro.hooks.hook('render:route', async (_context, { event }) => {
+    if (hasRenderBefore || !__I18N_SERVER_REDIRECT__) { return }
+    const redirect = await resolveLocaleRedirect(event)
+    if (redirect) {
+      setResponseHeader(event, 'location', redirect.location)
+      setResponseStatus(event, sanitizeStatusCode(redirect.code, 302))
     }
   })
 
@@ -211,15 +205,14 @@ export default defineNitroPlugin((nitro) => {
 
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
-    const middleware = setupVueI18nOptions(_defaultLocale).then(options =>
-      defineI18nMiddleware({
-        ...(options as CoreOptions),
-        locale: createUserLocaleDetector(options.locale, options.fallbackLocale),
-      }),
-    )
+    const options = await setupVueI18nOptions(_defaultLocale)
+    const i18nMiddleware = defineI18nMiddleware({
+      ...(options as CoreOptions),
+      locale: createUserLocaleDetector(options.locale, options.fallbackLocale),
+    })
 
-    nitro.hooks.hook('request', async event => (await middleware).onRequest(event))
-    nitro.hooks.hook('afterResponse', async event => (await middleware).onAfterResponse(event))
+    nitro.hooks.hook('request', i18nMiddleware.onRequest)
+    nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
 
