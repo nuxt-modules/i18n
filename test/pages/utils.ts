@@ -46,6 +46,22 @@ export function stripFilePropertyFromPages(pages: NuxtPage[]) {
   })
 }
 
+/** Nuxt <=4.5 marks unextracted `definePageMeta` keys in `page.meta`, newer versions track them internally */
+export function stripDynamicMetaFromPages(pages: NuxtPage[]) {
+  return pages.map(page => {
+    if (page.meta) {
+      delete page.meta.__nuxt_dynamic_meta_key
+      if (Object.keys(page.meta).length === 0) {
+        delete page.meta
+      }
+    }
+    if (page.children) {
+      page.children = stripDynamicMetaFromPages(page.children)
+    }
+    return page
+  })
+}
+
 /**
  * Creates a mock `RouteOptionsResolver` from a simple map, bypassing `NuxtPageAnalyzeContext`.
  *

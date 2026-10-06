@@ -1,0 +1,111 @@
+name: possible-bot-flag
+
+on:
+  workflow_call:
+    inputs:
+      close:
+        description: Close the pull request, retitle it and strip issue-closing keywords from its body
+        type: boolean
+        default: false
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  flag:
+    name: Label and comment
+    runs-on: ubuntu-latest
+    # serialise every caller so the duplicate-comment check sees the other run's comment
+    concurrency:
+      group: possible-bot-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Post possible bot comment
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          CLOSE: ${{ inputs.close }}
+        with:
+          script: |
+            const item = context.payload.pull_request || context.payload.issue
+            const isPR = !!context.payload.pull_request
+            // reopening is the appeal route, so a bot PR is only ever closed on its first pass
+            const shouldClose = process.env.CLOSE === 'true' && isPR && item.state === 'open'
+              && context.payload.action !== 'reopened'
+
+            if (!item.labels?.some(l => l.name === 'possible bot')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: item.number,
+                labels: ['possible bot'],
+              })
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: item.number,
+              per_page: 100,
+            })
+            const alreadyCommented = comments.some(
+              c => c.user.type === 'Bot' && c.body.includes('AI-assisted contribution guidelines')
+            )
+
+            if (!alreadyCommented) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: item.number,
+                body: [
+                  "We've flagged this as a potential contribution without a human behind it. We welcome the thoughtful use of AI tools when contributing to Nuxt i18n, but ask all contributors to follow [two core principles](https://roe.dev/blog/using-ai-in-open-source):",
+                  '',
+                  '1. **Never let an LLM speak for you** - all comments, issues, and PR descriptions should be written in your own words, reflecting your own understanding.',
+                  '2. **Never let an LLM think for you** - only submit contributions you fully understand and can explain.',
+                  '',
+                  'Please review our [AI-assisted contribution guidelines](https://github.com/nuxt-modules/i18n/blob/main/CONTRIBUTING.md#ai-assisted-contributions) and update this contribution if needed.',
+                  '',
+                  shouldClose
+                    ? "We're closing this for now as the account looks automated. If we got that wrong, please just reopen the PR and we'll take another look."
+                    : 'If this was flagged in error, we apologise! 😳 Just let us know. 🙏',
+                ].join('\n'),
+              })
+            }
+
+            // strip closing keywords so a closed bot PR does not close the issues it referenced
+            const unlinkIssues = body => body?.replace(
+              /\b(close[sd]?|fix(?:e[sd])?|resolve[sd]?)(\s*:?\s*)(?=(?:[\w.-]+\/[\w.-]+)?#\d+|GH-\d+|https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/issues\/\d+)/gi,
+              (_, keyword, separator) => {
+                const refs = keyword === keyword.toUpperCase() ? 'REFS' : keyword[0] === keyword[0].toUpperCase() ? 'Refs' : 'refs'
+                return `${refs}${separator}`
+              },
+            )
+
+            if (shouldClose) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: item.number,
+                state: 'closed',
+                title: '🚨 unwelcome pr from bot 🚨',
+                body: unlinkIssues(item.body),
+              })
+            }
+
+            const actionTaken = [
+              'Added `possible bot` label',
+              alreadyCommented ? null : 'posted policy comment',
+              shouldClose ? 'closed PR' : null,
+            ].filter(Boolean).join(', ')
+
+            core.summary
+              .addHeading('Possible bot', 2)
+              .addTable([
+                [{ data: 'Property', header: true }, { data: 'Value', header: true }],
+                ['Issue/PR', `#${item.number}`],
+                ['Type', isPR ? 'Pull Request' : 'Issue'],
+                ['Action', actionTaken],
+              ])
+
+            await core.summary.write()

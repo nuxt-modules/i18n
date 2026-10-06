@@ -1,0 +1,24 @@
+name: detect-bot-opt-in
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+  # zizmor: ignore[dangerous-triggers] needs write access to label/comment on PRs from forks
+  # DO NOT add actions/checkout to this workflow
+  pull_request_target:
+    types:
+      - opened
+      - edited
+
+permissions: {}
+
+jobs:
+  detect:
+    name: Detect bot opt-in
+    if: contains(github.event.issue.title || github.event.pull_request.title, '🤖🤖🤖')
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/possible-bot-flag.yml
