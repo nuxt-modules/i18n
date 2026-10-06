@@ -13,7 +13,7 @@ import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
 
-import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
+import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie, setResponseHeader, setResponseStatus } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
@@ -102,10 +102,7 @@ export default defineNitroPlugin(async (nitro) => {
     await initializeI18nContext(event)
   })
 
-  nitro.hooks.hook('render:before', async (context) => {
-    if (!__I18N_SERVER_REDIRECT__) { return }
-    const { event } = context
-
+  const resolveLocaleRedirect = async (event: H3Event) => {
     const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initializeI18nContext(event) : useI18nContext(event)
     const url = getRequestURL(event)
     const detector = useDetectors(event, detection)
@@ -135,17 +132,36 @@ export default defineNitroPlugin(async (nitro) => {
       // a host-scoped cookie cannot reach a cross-domain redirect target, a spanning `cookieDomain` can
       detection.useCookie && (!resolved.origin || detection.cookieDomain)
         && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
-      context.response = createRedirectResponse(
-        event,
+      return {
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
-        joinURL(
+        location: joinURL(
           resolved.origin || baseUrlGetter(event),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),
-        resolved.code,
-      )
-      return
+        code: resolved.code,
+      }
+    }
+  }
+
+  // Nitro 2 calls `render:before` before rendering, and skips the render (and `render:route`) when it
+  // sets a response. Nitro 3 has no `render:before`, so the redirect is set on the event in `render:route`
+  let hasRenderBefore = false
+  nitro.hooks.hook('render:before', async (context) => {
+    hasRenderBefore = true
+    if (!__I18N_SERVER_REDIRECT__) { return }
+    const redirect = await resolveLocaleRedirect(context.event)
+    if (redirect) {
+      context.response = createRedirectResponse(context.event, redirect.location, redirect.code)
+    }
+  })
+
+  nitro.hooks.hook('render:route', async (_context, { event }) => {
+    if (hasRenderBefore || !__I18N_SERVER_REDIRECT__) { return }
+    const redirect = await resolveLocaleRedirect(event)
+    if (redirect) {
+      setResponseHeader(event, 'location', redirect.location)
+      setResponseStatus(event, sanitizeStatusCode(redirect.code, 302))
     }
   })
 

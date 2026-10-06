@@ -13,6 +13,7 @@ export default defineConfig({
     setupFiles: [...(vitestConfig.test?.setupFiles ?? []), resolve('./test/setup.ts')].filter(Boolean),
     alias: {
       ...vitestConfig.test?.alias,
+      '#build/fetch': 'ofetch',
       '#build/i18n-options.mjs': resolve('./test/mocks/i18n.options.ts'),
       '#build/i18n-route-resources.mjs': resolve('./test/mocks/i18n.route-resources.ts'),
       '#app': 'nuxt',
