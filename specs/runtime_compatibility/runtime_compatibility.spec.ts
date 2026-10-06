@@ -14,8 +14,8 @@ const fixtures = [
   [
     'Nuxt 5 and Nitro 3',
     fileURLToPath(new URL('../fixtures/runtime-nuxt5', import.meta.url)),
-    '5.0.0-29745766.482f3357',
-    '3.0.260610-beta'
+    '5.0.0-2610052343-36eafab',
+    '3.0.260903-beta'
   ]
 ] as const
 

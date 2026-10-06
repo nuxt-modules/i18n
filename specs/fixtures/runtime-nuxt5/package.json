@@ -7,6 +7,6 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "latest",
-    "nuxt": "npm:nuxt-nightly@5.0.0-29745766.482f3357"
+    "nuxt": "npm:nuxt-nightly@5.0.0-2610052343-36eafab"
   }
 }
