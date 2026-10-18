@@ -90,8 +90,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // the aliased node build has no declaration file, drop the generated paths entries
     // so TS resolves types from the package `types` export (`dist/core.d.ts`) instead
-    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig }) => {
-      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig]) {
+    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig }) => {
+      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig]) {
         delete cfg?.compilerOptions?.paths?.['@intlify/core']
       }
     })
