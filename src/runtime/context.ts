@@ -161,7 +161,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const i18n = getI18nTarget(vueI18n)
   const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
-  const detectConfig = useI18nDetection(nuxt)
+  const detectConfig = useI18nDetection(runtimeI18n)
   const serverLocaleConfigs = useLocaleConfigs()
   const localeCookie = useI18nCookie(detectConfig)
   const loadMap = new Set<string>()

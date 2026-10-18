@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import type { NuxtRequestEvent } from 'nuxt/schema'
 import type { FallbackLocale, Locale } from 'vue-i18n'
 
 /**
@@ -24,12 +24,12 @@ export type LocaleConfig = {
 /**
  * The `defineI18nLocaleDetector` defines a composable function to detect the locale on the server-side
  *
- * @param event - The {@link H3Event | H3} event
+ * @param event - The server request event
  * @param config - The {@link LocaleConfig | locale config}
  *
  * @returns Return locale string
  */
-export type LocaleDetector = (event: H3Event, config: LocaleConfig) => string
+export type LocaleDetector = (event: NuxtRequestEvent, config: LocaleConfig) => string
 
 /**
  * Define locale detector for server-side locale detection
