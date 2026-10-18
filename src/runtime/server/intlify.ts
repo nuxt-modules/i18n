@@ -9,6 +9,7 @@ import {
 import { setCookie } from 'nuxt/server'
 
 import type { CookieSerializeOptions } from 'cookie-es'
+import type { useTranslation as useH3Translation } from '@intlify/h3'
 import type { CoreOptions, Locale } from '@intlify/core'
 
 const parseTranslateArgs = parseArgs as (...args: unknown[]) => [string, Record<string, unknown>]
@@ -87,7 +88,14 @@ export function defineI18nMiddleware(options: CoreOptions) {
   }
 }
 
-export async function useTranslation(event: RequestEvent) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TranslationFunction<Schema extends Record<string, any>> = Awaited<ReturnType<typeof useH3Translation<Schema>>>
+
+export async function useTranslation<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
+  Schema extends Record<string, any> = {},
+  Event extends RequestEvent = RequestEvent,
+>(event: Event): Promise<TranslationFunction<Schema>> {
   const context = event.context as I18nEventContext
   if (context.i18n == null || context._i18nLocale == null) {
     throw new Error('[nuxt-i18n] `useTranslation` requires a locale detector to be configured (`experimental.localeDetector`).')
@@ -101,5 +109,5 @@ export async function useTranslation(event: RequestEvent) {
     const [, options] = parseTranslateArgs(key, ...args)
     const result = Reflect.apply(translate, null, [i18n, key, args[0], { locale, ...options }])
     return NOT_REOSLVED === result ? key : result as string
-  }
+  } as TranslationFunction<Schema>
 }
