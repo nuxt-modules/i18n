@@ -1,4 +1,4 @@
-import { type Locale, useSwitchLocalePath } from '#i18n'
+import { type Locale, useSwitchLocalePath } from '../composables/index'
 import { defineNuxtLink, useNuxtApp } from '#imports'
 import { Comment, computed, defineComponent, h, mergeProps } from 'vue'
 import { hasProtocol } from 'ufo'

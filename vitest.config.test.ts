@@ -14,9 +14,11 @@ export default defineConfig({
     alias: {
       ...vitestConfig.test?.alias,
       '#build/i18n-options.mjs': resolve('./test/mocks/i18n.options.ts'),
+      '#build/fetch': 'ofetch',
       '#build/i18n-route-resources.mjs': resolve('./test/mocks/i18n.route-resources.ts'),
       '#app': 'nuxt',
       '#imports': resolve('./test/mocks/imports.ts'),
+      '#i18n-server-runtime': resolve('./src/runtime/server/runtime/nitro2.ts'),
       // resolve from source - the package `imports` map points at `dist`, which may be stale
       '#i18n-kit': resolve('./src/runtime/kit'),
     },

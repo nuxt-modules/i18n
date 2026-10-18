@@ -1,7 +1,15 @@
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolveModule, resolvePath } from '@nuxt/kit'
+import {
+  addNitroPlugin,
+  addServerHandler,
+  addServerImports,
+  addServerTemplate,
+  resolveModule,
+  resolvePath,
+  resolveServerVariant,
+} from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
@@ -18,6 +26,12 @@ import { generateTemplateNuxtI18nOptions } from './template'
 const moduleURL = new URL(import.meta.url)
 
 export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
+  const serverApi = resolveServerVariant({ nitro2: 'nitro2', nitro3: 'nitro3' } as const)
+  if (!serverApi) { return }
+
+  const serverRuntime = ctx.resolver.resolve(`./runtime/server/runtime/${serverApi}`)
+  nuxt.options.alias['#i18n-server-runtime'] = serverRuntime
+
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
     getContents: () => generateTemplateNuxtI18nOptions(ctx, true),
@@ -64,23 +78,45 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   ])
 
   const h3UtilsExports = await resolveModuleExportNames(resolveModule('@intlify/utils/h3', { url: moduleURL }))
+  const intlify = ctx.resolver.resolve('./runtime/server/intlify')
   addServerImports([
-    { name: 'useTranslation', from: '@intlify/h3' },
-    ...h3UtilsExports.map(name => ({ name, from: '@intlify/utils/h3' })),
+    { name: 'useTranslation', from: { nitro2: '@intlify/h3', nitro3: intlify } },
+    ...h3UtilsExports.map(name => ({ name, from: { nitro2: '@intlify/utils/h3', nitro3: intlify } })),
   ])
 
-  // add nitro plugin
-  addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
+  const plugin = ctx.resolver.resolve('./runtime/server/plugin')
+  addNitroPlugin({ nitro2: plugin, nitro3: plugin })
 
+  const messagesHandler = ctx.resolver.resolve('./runtime/server/routes/messages')
   addServerHandler({
     route: `${ctx.options.serverRoutePrefix}/:hash/:locale/messages.json`,
-    handler: ctx.resolver.resolve('./runtime/server/routes/messages'),
+    handler: { nitro2: messagesHandler, nitro3: messagesHandler },
   })
+
+  const serverComposables = ctx.resolver.resolve('./runtime/composables/index-server')
+  if (serverApi === 'nitro3' && nuxt.options.experimental.nitroViteEnvironment) {
+    // aliases are shared by every vite environment, so `#i18n` is redirected for the nitro one only
+    const appComposables = nuxt.options.alias['#i18n']!
+    nuxt.options.vite.plugins ||= []
+    nuxt.options.vite.plugins.push({
+      name: 'nuxt-i18n:server-composables',
+      enforce: 'pre',
+      applyToEnvironment: environment => environment.name === 'nitro',
+      resolveId(id) {
+        if (id === '#i18n' || id === appComposables) {
+          return this.resolve(serverComposables)
+        }
+      },
+    })
+  }
 
   nuxt.hook('nitro:config', async (nitroConfig) => {
     // inline module runtime in Nitro bundle
     nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...ctx.localeFilePaths] })
-    nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
+    nitroConfig.alias!['#i18n-server-runtime'] = serverRuntime
+    if (serverApi === 'nitro2' || !nuxt.options.experimental.nitroViteEnvironment) {
+      nitroConfig.alias!['#i18n'] = serverComposables
+    }
 
     // type the locale detector file in the server tsconfig, where `#i18n` resolves server composables
     if (localeDetector.path) {
