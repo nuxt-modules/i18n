@@ -1,6 +1,7 @@
 import { isRef, unref } from 'vue'
 
 import { useCookie, useRequestURL, useState } from '#imports'
+import { $fetch } from '#build/fetch'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
