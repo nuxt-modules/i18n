@@ -24,6 +24,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
+      server: 'nitro3',
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore property removed in Nuxt 4
       bridge: false,
