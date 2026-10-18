@@ -51,7 +51,7 @@ function createRedirectResponse(event: H3Event, dest: string, code: number) {
 
 export const useRuntimeConfig = (event?: ServerEvent) => _useRuntimeConfig(event)
 
-export const useStorage = (base: string) => _useStorage(base)
+export const useStorage = (base: string): ReturnType<typeof _useStorage> => _useStorage(base)
 
 export const I18N_HANDLER_CACHE_PREFIX = 'nitro:handlers:i18n'
 

@@ -15,7 +15,7 @@ const parseTranslateArgs = parseArgs as (...args: unknown[]) => [string, Record<
 
 type CoreContext = Omit<ReturnType<typeof createCoreContext>, 'locale'> & { locale: unknown }
 
-interface RequestEvent {
+export interface RequestEvent {
   req: Request
   res: { headers: Headers }
   context: Record<string, unknown>
@@ -28,18 +28,18 @@ type WithEvent<T> = T extends (request: Request, ...args: infer Args) => infer R
 const withEvent = <T extends (request: Request, ...args: never[]) => unknown>(fn: T) =>
   ((event: Pick<RequestEvent, 'req'>, ...args: never[]) => fn(event.req, ...args)) as WithEvent<T>
 
-export const getCookieLocale = withEvent(utils.getCookieLocale)
-export const getHeaderLanguage = withEvent(utils.getHeaderLanguage)
-export const getHeaderLanguages = withEvent(utils.getHeaderLanguages)
-export const getHeaderLocale = withEvent(utils.getHeaderLocale)
-export const getHeaderLocales = withEvent(utils.getHeaderLocales)
-export const getPathLocale = withEvent(utils.getPathLocale)
-export const getQueryLocale = withEvent(utils.getQueryLocale)
-export const tryCookieLocale = withEvent(utils.tryCookieLocale)
-export const tryHeaderLocale = withEvent(utils.tryHeaderLocale)
-export const tryHeaderLocales = withEvent(utils.tryHeaderLocales)
-export const tryPathLocale = withEvent(utils.tryPathLocale)
-export const tryQueryLocale = withEvent(utils.tryQueryLocale)
+export const getCookieLocale: WithEvent<typeof utils.getCookieLocale> = withEvent(utils.getCookieLocale)
+export const getHeaderLanguage: WithEvent<typeof utils.getHeaderLanguage> = withEvent(utils.getHeaderLanguage)
+export const getHeaderLanguages: WithEvent<typeof utils.getHeaderLanguages> = withEvent(utils.getHeaderLanguages)
+export const getHeaderLocale: WithEvent<typeof utils.getHeaderLocale> = withEvent(utils.getHeaderLocale)
+export const getHeaderLocales: WithEvent<typeof utils.getHeaderLocales> = withEvent(utils.getHeaderLocales)
+export const getPathLocale: WithEvent<typeof utils.getPathLocale> = withEvent(utils.getPathLocale)
+export const getQueryLocale: WithEvent<typeof utils.getQueryLocale> = withEvent(utils.getQueryLocale)
+export const tryCookieLocale: WithEvent<typeof utils.tryCookieLocale> = withEvent(utils.tryCookieLocale)
+export const tryHeaderLocale: WithEvent<typeof utils.tryHeaderLocale> = withEvent(utils.tryHeaderLocale)
+export const tryHeaderLocales: WithEvent<typeof utils.tryHeaderLocales> = withEvent(utils.tryHeaderLocales)
+export const tryPathLocale: WithEvent<typeof utils.tryPathLocale> = withEvent(utils.tryPathLocale)
+export const tryQueryLocale: WithEvent<typeof utils.tryQueryLocale> = withEvent(utils.tryQueryLocale)
 
 export function setCookieLocale(
   event: Pick<RequestEvent, 'res'>,

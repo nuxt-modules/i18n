@@ -40,7 +40,7 @@ export function definePlugin(setup: (hooks: I18nServerHooks<ServerEvent>) => voi
 
 export const useRuntimeConfig = (_event?: ServerEvent) => _useRuntimeConfig()
 
-export const useStorage = (base: string) => _useStorage(base)
+export const useStorage = (base: string): ReturnType<typeof _useStorage> => _useStorage(base)
 
 export const I18N_HANDLER_CACHE_PREFIX = 'nitrohandlers:i18n'
 
