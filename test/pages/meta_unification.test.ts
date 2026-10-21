@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { describe, test, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
-import { createPureOptionsResolver, analyzeNuxtPages, normalizeRouteMeta, NuxtPageAnalyzeContext } from '../../src/pages'
+import { createPureOptionsResolver, analyzeNuxtPages, normalizeRouteMeta, NuxtPageAnalyzeContext, resolvePageFileAliases } from '../../src/pages'
 import { getNuxtOptions } from './utils'
 
 import type { NuxtPage } from '@nuxt/schema'
@@ -38,6 +38,23 @@ describe('normalizeRouteMeta', () => {
       locales: ['en', 'fr'],
     })
     expect(pages[1]!.meta?.i18n).toBe(false)
+  })
+
+  test('reads `defineI18nRoute()` from pages added with an aliased file path', () => {
+    const pages: NuxtPage[] = [
+      { path: '/about', file: '~/pages/about.vue', children: [] },
+    ]
+    const options = getNuxtOptions({}, 'page')
+
+    resolvePageFileAliases(pages, { '~': resolve(__dirname, '../fixtures/custom_route/simple') })
+    const ctx = new NuxtPageAnalyzeContext(options.pages)
+    analyzeNuxtPages(ctx, 'pages', pages)
+    normalizeRouteMeta(ctx, pages, localeCodes, 'page')
+
+    expect(pages[0]!.file).toBe(resolve(__dirname, '../fixtures/custom_route/simple/pages/about.vue'))
+    expect(pages[0]!.meta?.i18n).toEqual({
+      paths: { en: '/about-us', fr: '/a-propos', ja: '/about-ja' },
+    })
   })
 
   test('normalizes `defineI18nRoute()` into route meta', () => {

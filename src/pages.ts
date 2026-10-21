@@ -1,4 +1,4 @@
-import { addTemplate, updateTemplates } from '@nuxt/kit'
+import { addTemplate, resolveAlias, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -89,6 +89,9 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async (pages) => {
+      // pages added in `pages:extend` may use aliases (e.g. `~/extra-pages/profile.vue`, as in the Nuxt docs)
+      resolvePageFileAliases(pages, nuxt.options.alias)
+
       const ctx = new NuxtPageAnalyzeContext(options.pages)
 
       // analyze layer pages
@@ -325,6 +328,21 @@ function analyzePagePath(pagePath: string, parents = 0) {
  */
 function stripRouteGroups(path: string): string {
   return path.split('/').filter(s => !/^\([^)]+\)$/.test(s)).join('/')
+}
+
+/**
+ * Resolve aliases in `page.file` so the page component can be read from disk and
+ * matched against the pages directory.
+ */
+export function resolvePageFileAliases(pages: NuxtPage[], alias: Record<string, string>): void {
+  for (const page of pages) {
+    if (page.file != null) {
+      page.file = resolveAlias(page.file, alias)
+    }
+    if (page.children?.length) {
+      resolvePageFileAliases(page.children, alias)
+    }
+  }
 }
 
 /**
