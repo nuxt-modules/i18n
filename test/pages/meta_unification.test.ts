@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { describe, test, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
-import { createPureOptionsResolver, analyzeNuxtPages, normalizeRouteMeta, NuxtPageAnalyzeContext, resolvePageFileAliases } from '../../src/pages'
+import { createPureOptionsResolver, analyzeNuxtPages, normalizeRouteMeta, NuxtPageAnalyzeContext } from '../../src/pages'
 import { getNuxtOptions } from './utils'
 
 import type { NuxtPage } from '@nuxt/schema'
@@ -40,20 +40,42 @@ describe('normalizeRouteMeta', () => {
     expect(pages[1]!.meta?.i18n).toBe(false)
   })
 
-  test('reads `defineI18nRoute()` from pages added with an aliased file path', () => {
+  test('reads `defineI18nRoute()` from pages with an aliased file path, keeping `page.file`', () => {
     const pages: NuxtPage[] = [
-      { path: '/about', file: '~/pages/about.vue', children: [] },
+      {
+        path: '/parent',
+        file: '~/pages/about.vue',
+        children: [
+          { path: 'child', file: '~/pages/about.vue', children: [] },
+        ],
+      },
     ]
     const options = getNuxtOptions({}, 'page')
 
-    resolvePageFileAliases(pages, { '~': resolve(__dirname, '../fixtures/custom_route/simple') })
-    const ctx = new NuxtPageAnalyzeContext(options.pages)
+    const ctx = new NuxtPageAnalyzeContext(options.pages, { '~': resolve(__dirname, '../fixtures/custom_route/simple') })
     analyzeNuxtPages(ctx, 'pages', pages)
     normalizeRouteMeta(ctx, pages, localeCodes, 'page')
 
-    expect(pages[0]!.file).toBe(resolve(__dirname, '../fixtures/custom_route/simple/pages/about.vue'))
+    const expected = { paths: { en: '/about-us', fr: '/a-propos', ja: '/about-ja' } }
+    expect(pages[0]!.file).toBe('~/pages/about.vue')
+    expect(pages[0]!.meta?.i18n).toEqual(expected)
+    expect(pages[0]!.children![0]!.meta?.i18n).toEqual(expected)
+  })
+
+  test('matches `pages` config for pages with an aliased file path', () => {
+    const pages: NuxtPage[] = [
+      { path: '/about', file: '~/pages/about.vue', children: [] },
+    ]
+    const options = getNuxtOptions({ about: { en: '/about-us', fr: '/a-propos', ja: false } })
+
+    const ctx = new NuxtPageAnalyzeContext(options.pages, { '~': '/path/to/nuxt-app' })
+    // the module passes an absolute pages directory
+    analyzeNuxtPages(ctx, '/path/to/nuxt-app/pages', pages)
+    normalizeRouteMeta(ctx, pages, localeCodes, 'config')
+
     expect(pages[0]!.meta?.i18n).toEqual({
-      paths: { en: '/about-us', fr: '/a-propos', ja: '/about-ja' },
+      paths: { en: '/about-us', fr: '/a-propos' },
+      locales: ['en', 'fr'],
     })
   })
 

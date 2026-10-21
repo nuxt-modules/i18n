@@ -23,9 +23,19 @@ import { type CallExpression, type ExpressionStatement, type ObjectExpression, p
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
   pages: Map<string, { path: string, name?: string }> = new Map()
+  alias: Record<string, string>
 
-  constructor(config: NuxtI18nOptions['pages']) {
+  constructor(config: NuxtI18nOptions['pages'], alias: Record<string, string> = {}) {
     this.config = config || {}
+    this.alias = alias
+  }
+
+  /**
+   * Resolve aliases in a page file path (e.g. `~/extra-pages/profile.vue` added in `pages:extend`,
+   * as in the Nuxt docs) without changing `page.file` itself.
+   */
+  resolveFile(file: string): string {
+    return resolveAlias(file, this.alias)
   }
 
   addPage(page: NuxtPage, path: string, name?: string) {
@@ -89,10 +99,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async (pages) => {
-      // pages added in `pages:extend` may use aliases (e.g. `~/extra-pages/profile.vue`, as in the Nuxt docs)
-      resolvePageFileAliases(pages, nuxt.options.alias)
-
-      const ctx = new NuxtPageAnalyzeContext(options.pages)
+      const ctx = new NuxtPageAnalyzeContext(options.pages, nuxt.options.alias)
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
@@ -331,21 +338,6 @@ function stripRouteGroups(path: string): string {
 }
 
 /**
- * Resolve aliases in `page.file` so the page component can be read from disk and
- * matched against the pages directory.
- */
-export function resolvePageFileAliases(pages: NuxtPage[], alias: Record<string, string>): void {
-  for (const page of pages) {
-    if (page.file != null) {
-      page.file = resolveAlias(page.file, alias)
-    }
-    if (page.children?.length) {
-      resolvePageFileAliases(page.children, alias)
-    }
-  }
-}
-
-/**
  * Construct the map of full paths from NuxtPage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
@@ -355,7 +347,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
   for (const page of pages) {
     if (page.file == null) { continue }
 
-    const [, filePath] = page.file.split(pagesDir)
+    const [, filePath] = ctx.resolveFile(page.file).split(pagesDir)
     if (filePath == null) { continue }
 
     // if route has an index child the parent will not have a name
@@ -378,7 +370,7 @@ export function createPureOptionsResolver(
   const cache = new Map<string, ComputedRouteOptions | undefined>()
   return (route, localeCodes) => {
     // skip - stub pages nuxt injects for `routeRules` redirects, the rules only match unprefixed paths (#3606)
-    if (stubFile && route.file?.replace(/\.\w+$/, '') === stubFile) { return undefined }
+    if (stubFile && route.file && ctx.resolveFile(route.file).replace(/\.\w+$/, '') === stubFile) { return undefined }
     const key = `${route.file ?? route.name ?? route.path}::${localeCodes.join(',')}`
     if (cache.has(key)) { return cache.get(key) }
     const resolved = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
@@ -470,7 +462,7 @@ export function normalizeRouteMeta(
         const raw = getConfigValue(ctx, page)
         value = raw === undefined ? undefined : configValueToI18nRoute(raw, localeCodes)
       } else if (mode === 'page') {
-        value = getI18nRouteConfig(page.file, vfs)
+        value = getI18nRouteConfig(ctx.resolveFile(page.file), vfs)
       }
 
       if ((page.meta?.i18n as I18nRoute | false | undefined) === undefined) {
@@ -518,7 +510,7 @@ function getRouteOptions(
   } else if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
   } else if (mode === 'page') {
-    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(route.file!))
+    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(ctx.resolveFile(route.file!)))
   }
 
   // routing disabled
