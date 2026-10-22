@@ -1,4 +1,4 @@
-import { addTemplate, updateTemplates } from '@nuxt/kit'
+import { addTemplate, resolveAlias, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -22,13 +22,23 @@ import { type CallExpression, type ExpressionStatement, type ObjectExpression, p
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
-  pages: Map<string, { path: string, name?: string }> = new Map()
+  pages: Map<string, { path?: string, name?: string }> = new Map()
+  alias: Record<string, string>
 
-  constructor(config: NuxtI18nOptions['pages']) {
+  constructor(config: NuxtI18nOptions['pages'], alias: Record<string, string> = {}) {
     this.config = config || {}
+    this.alias = alias
   }
 
-  addPage(page: NuxtPage, path: string, name?: string) {
+  /**
+   * Resolve aliases in a page file path (e.g. `~/extra-pages/profile.vue` added in `pages:extend`,
+   * as in the Nuxt docs) without changing `page.file` itself.
+   */
+  resolveFile(file: string): string {
+    return resolveAlias(file, this.alias)
+  }
+
+  addPage(page: NuxtPage, path: string | undefined, name?: string) {
     this.pages.set(page.file!, { path, name })
   }
 }
@@ -89,7 +99,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async (pages) => {
-      const ctx = new NuxtPageAnalyzeContext(options.pages)
+      const ctx = new NuxtPageAnalyzeContext(options.pages, nuxt.options.alias)
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
@@ -337,8 +347,16 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
   for (const page of pages) {
     if (page.file == null) { continue }
 
-    const [, filePath] = page.file.split(pagesDir)
-    if (filePath == null) { continue }
+    const [, filePath] = ctx.resolveFile(page.file).split(pagesDir)
+    if (filePath == null) {
+      // a page outside this pages directory (e.g. added in `pages:extend`) can still be configured by its name;
+      // don't overwrite an entry recorded for another layer's pages directory
+      if (page.name && !ctx.pages.has(page.file)) {
+        ctx.addPage(page, undefined, page.name)
+      }
+      analyzeNuxtPages(ctx, pagesDir, page.children)
+      continue
+    }
 
     // if route has an index child the parent will not have a name
     ctx.addPage(page, analyzePagePath(filePath), page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name)
@@ -360,7 +378,7 @@ export function createPureOptionsResolver(
   const cache = new Map<string, ComputedRouteOptions | undefined>()
   return (route, localeCodes) => {
     // skip - stub pages nuxt injects for `routeRules` redirects, the rules only match unprefixed paths (#3606)
-    if (stubFile && route.file?.replace(/\.\w+$/, '') === stubFile) { return undefined }
+    if (stubFile && route.file && ctx.resolveFile(route.file).replace(/\.\w+$/, '') === stubFile) { return undefined }
     const key = `${route.file ?? route.name ?? route.path}::${localeCodes.join(',')}`
     if (cache.has(key)) { return cache.get(key) }
     const resolved = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
@@ -452,7 +470,7 @@ export function normalizeRouteMeta(
         const raw = getConfigValue(ctx, page)
         value = raw === undefined ? undefined : configValueToI18nRoute(raw, localeCodes)
       } else if (mode === 'page') {
-        value = getI18nRouteConfig(page.file, vfs)
+        value = getI18nRouteConfig(ctx.resolveFile(page.file), vfs)
       }
 
       if ((page.meta?.i18n as I18nRoute | false | undefined) === undefined) {
@@ -500,7 +518,7 @@ function getRouteOptions(
   } else if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
   } else if (mode === 'page') {
-    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(route.file!))
+    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(ctx.resolveFile(route.file!)))
   }
 
   // routing disabled
