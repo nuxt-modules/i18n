@@ -98,7 +98,7 @@
     "unhead": "^3.2.3",
     "unplugin": "^3.3.0",
     "unrouting": "^0.2.2",
-    "unstorage": "^1.17.5",
+    "unstorage": "^1.17.6",
     "vue-i18n": "^11.4.8",
     "vue-router": "^5.2.0"
   },
@@ -114,7 +114,7 @@
     "get-port-please": "^3.2.0",
     "jiti": "^2.7.0",
     "knip": "6.29.0",
-    "nitropack": "^2.13.4",
+    "nitropack": "^2.13.5",
     "nuxt": "^4.5.1",
     "ofetch": "^1.5.1",
     "playwright-core": "^1.62.0",
