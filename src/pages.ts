@@ -22,7 +22,7 @@ import { type CallExpression, type ExpressionStatement, type ObjectExpression, p
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
-  pages: Map<string, { path: string, name?: string }> = new Map()
+  pages: Map<string, { path?: string, name?: string }> = new Map()
   alias: Record<string, string>
 
   constructor(config: NuxtI18nOptions['pages'], alias: Record<string, string> = {}) {
@@ -38,7 +38,7 @@ export class NuxtPageAnalyzeContext {
     return resolveAlias(file, this.alias)
   }
 
-  addPage(page: NuxtPage, path: string, name?: string) {
+  addPage(page: NuxtPage, path: string | undefined, name?: string) {
     this.pages.set(page.file!, { path, name })
   }
 }
@@ -348,7 +348,15 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
     if (page.file == null) { continue }
 
     const [, filePath] = ctx.resolveFile(page.file).split(pagesDir)
-    if (filePath == null) { continue }
+    if (filePath == null) {
+      // a page outside this pages directory (e.g. added in `pages:extend`) can still be configured by its name;
+      // don't overwrite an entry recorded for another layer's pages directory
+      if (page.name && !ctx.pages.has(page.file)) {
+        ctx.addPage(page, undefined, page.name)
+      }
+      analyzeNuxtPages(ctx, pagesDir, page.children)
+      continue
+    }
 
     // if route has an index child the parent will not have a name
     ctx.addPage(page, analyzePagePath(filePath), page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name)

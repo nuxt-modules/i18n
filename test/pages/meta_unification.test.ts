@@ -79,6 +79,35 @@ describe('normalizeRouteMeta', () => {
     })
   })
 
+  test('matches `pages` config by name for a page outside the pages directory', () => {
+    const pages: NuxtPage[] = [
+      { path: '/profile', name: 'profile', file: '~/extra-pages/profile.vue', children: [] },
+    ]
+    const options = getNuxtOptions({ profile: { en: '/my-profile', fr: '/mon-profil', ja: false } })
+
+    const ctx = new NuxtPageAnalyzeContext(options.pages, { '~': '/path/to/nuxt-app' })
+    analyzeNuxtPages(ctx, '/path/to/nuxt-app/pages', pages)
+    normalizeRouteMeta(ctx, pages, localeCodes, 'config')
+
+    expect(pages[0]!.meta?.i18n).toEqual({
+      paths: { en: '/my-profile', fr: '/mon-profil' },
+      locales: ['en', 'fr'],
+    })
+  })
+
+  test('keeps the pages-directory entry when another layer sees the page as outside', () => {
+    const pages: NuxtPage[] = [
+      { path: '/about', name: 'about', file: '/path/to/layer/pages/about.vue', children: [] },
+    ]
+    const options = getNuxtOptions({})
+
+    const ctx = new NuxtPageAnalyzeContext(options.pages)
+    analyzeNuxtPages(ctx, '/path/to/layer/pages', pages)
+    analyzeNuxtPages(ctx, '/path/to/nuxt-app/pages', pages)
+
+    expect(ctx.pages.get('/path/to/layer/pages/about.vue')).toEqual({ path: 'about', name: 'about' })
+  })
+
   test('normalizes `defineI18nRoute()` into route meta', () => {
     const pages: NuxtPage[] = [
       {
