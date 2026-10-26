@@ -1,4 +1,4 @@
-import { fetchMessages, tryUseI18nContext } from '../context'
+import { initializeI18nContext, tryUseI18nContext } from '../context'
 import { deepCopy } from '@intlify/shared'
 import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 
@@ -11,7 +11,8 @@ export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: 
 
     // Merge messages into i18n context which contains unserializable messages from vue-i18n
     // configurations - read in-process, `$fetch` would serialize message functions away (#3880)
-    const messages = await (tryUseI18nContext(event)?.loadMessages(locale) ?? fetchMessages(locale))
+    const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+    const messages = await ctx.loadMessages(locale)
     for (const locale of Object.keys(messages)) {
       i18nCtx.messages![locale] ??= {}
       deepCopy(messages[locale], i18nCtx.messages![locale])
