@@ -1,6 +1,7 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { useSwitchLocalePath } from '#i18n'
 import { escapeHtmlAttr } from '../shared/utils'
+import { hasSwitchLocalePathLink } from '../shared/switch-locale-path'
 
 const identifier = __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__
 const switchLocalePathLinkWrapperExpr = new RegExp(
@@ -17,7 +18,8 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const switchLocalePath = useSwitchLocalePath(nuxt)
     nuxt.hook('app:rendered', (ctx) => {
-      if (ctx.renderResult?.html == null) { return }
+      // scanning the whole html costs time on every large page, so skip renders without a link
+      if (ctx.renderResult?.html == null || !hasSwitchLocalePathLink(ctx.ssrContext)) { return }
 
       ctx.renderResult.html = ctx.renderResult.html.replaceAll(
         switchLocalePathLinkWrapperExpr,
