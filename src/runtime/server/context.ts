@@ -8,13 +8,6 @@ import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
 import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
-export function useI18nContext(event: H3Event) {
-  if (event.context.nuxtI18n == null) {
-    throw new Error('Nuxt I18n server context has not been set up yet.')
-  }
-  return event.context.nuxtI18n
-}
-
 export function tryUseI18nContext(event: H3Event) {
   return event.context.nuxtI18n
 }
@@ -33,20 +26,6 @@ export async function initializeI18nContext(event: H3Event) {
 
   event.context.nuxtI18n = ctx
   return ctx
-}
-
-/**
- * Fetches the messages for the specified locale.
- * @internal
- */
-export const fetchMessages = async (locale: string) => {
-  const headers = new Headers({ 'x-nuxt-i18n': 'internal' })
-  if (import.meta.dev) {
-    headers.set('Cache-Control', 'no-cache')
-  }
-  return await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`, {
-    headers,
-  })
 }
 
 export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {

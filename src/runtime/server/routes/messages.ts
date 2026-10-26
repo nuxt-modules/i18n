@@ -1,6 +1,6 @@
 import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
 import { createError, defineEventHandler, getRouterParam } from 'h3'
-import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
+import { initializeI18nContext, tryUseI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
 
 import type { H3Event } from 'h3'
@@ -15,7 +15,7 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
     throw createError({ status: 400, message: 'Locale not specified.' })
   }
 
-  const ctx = useI18nContext(event)
+  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
   if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
@@ -36,7 +36,6 @@ const getCacheKey = (event: H3Event) =>
 async function shouldBypassCache(event: H3Event) {
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
-  // prerendering may require initializing context
   const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
   return !ctx.localeConfigs?.[locale]?.cacheable
 }

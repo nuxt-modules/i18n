@@ -1,7 +1,7 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runtime'
-import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
+import { initializeI18nContext, tryUseI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
 import { isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
@@ -98,15 +98,12 @@ export default defineNitroPlugin(async (nitro) => {
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
-  nitro.hooks.hook('request', async (event: H3Event) => {
-    await initializeI18nContext(event)
-  })
-
   nitro.hooks.hook('render:before', async (context) => {
-    if (!__I18N_SERVER_REDIRECT__) { return }
     const { event } = context
+    // set up on first use, so requests that render no page (assets, server routes) skip it (#4144)
+    const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+    if (!__I18N_SERVER_REDIRECT__) { return }
 
-    const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initializeI18nContext(event) : useI18nContext(event)
     const url = getRequestURL(event)
     const detector = useDetectors(event, detection)
     const localeSegment = detector.route(event.path)
