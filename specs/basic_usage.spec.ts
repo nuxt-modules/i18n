@@ -583,6 +583,10 @@ describe('basic usage', async () => {
       expect(jaRes?.['server-key']).toMatch('こんにちは！')
     })
 
+    test('(#4144) server routes do not set up the i18n server context', async () => {
+      expect(await $fetch('/api/i18n-context')).toEqual({ initialized: false })
+    })
+
     test('(#2220) vue-i18n message compiler works in server routes', async () => {
       const res = await $fetch('/api/vue-i18n-compile')
       expect(res).toMatchObject({ message: 'Hello, nitro!' })

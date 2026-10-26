@@ -1,7 +1,7 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
 import { deepCopy } from '@intlify/shared'
-import { type ServerEvent, fetchInternal, useRuntimeConfig } from '#i18n-server-runtime'
+import { type ServerEvent, useRuntimeConfig } from '#i18n-server-runtime'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
 import { cloneDeep } from '../shared/messages'
@@ -10,14 +10,6 @@ import { getMergedMessages } from './utils/messages'
 
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { ServerRedirect } from './runtime/types'
-
-export function useI18nContext(event: ServerEvent) {
-  const ctx = tryUseI18nContext(event)
-  if (ctx == null) {
-    throw new Error('Nuxt I18n server context has not been set up yet.')
-  }
-  return ctx
-}
 
 export function tryUseI18nContext(event: ServerEvent) {
   return (event.context as I18nEventContext).nuxtI18n
@@ -35,22 +27,6 @@ export async function initializeI18nContext(event: ServerEvent) {
 
   ;(event.context as I18nEventContext).nuxtI18n = ctx
   return ctx
-}
-
-/**
- * Fetches the messages for the specified locale.
- * @internal
- */
-export const fetchMessages = async (event: ServerEvent, locale: string) => {
-  const headers = new Headers({ 'x-nuxt-i18n': 'internal' })
-  if (import.meta.dev) {
-    headers.set('Cache-Control', 'no-cache')
-  }
-  return await fetchInternal<LocaleMessages<DefineLocaleMessage>>(
-    event,
-    `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`,
-    { headers },
-  )
 }
 
 export function createI18nContext(): I18nServerContext {

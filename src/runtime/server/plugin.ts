@@ -10,7 +10,7 @@ import {
   useRuntimeConfig,
   useStorage,
 } from '#i18n-server-runtime'
-import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
+import { initializeI18nContext, tryUseI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
 import { isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
@@ -94,14 +94,11 @@ export default definePlugin(async (hooks) => {
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
-  hooks.onRequest(async (event) => {
-    await initializeI18nContext(event)
-  })
-
   hooks.onBeforeRender(async (event) => {
+    // set up on first use, so requests that render no page (assets, server routes) skip it (#4144)
+    const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
     if (!__I18N_SERVER_REDIRECT__) { return }
 
-    const ctx = import.meta.prerender && !tryUseI18nContext(event) ? await initializeI18nContext(event) : useI18nContext(event)
     const renderPath = getRenderPath(event)
     const detector = useDetectors(event, detection, runtimeI18n)
     const localeSegment = detector.route(renderPath)

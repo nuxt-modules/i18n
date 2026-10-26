@@ -7,7 +7,6 @@ import {
   getRouterParam as _getRouterParam,
   setCookie as _setCookie,
   useRuntimeConfig as _useRuntimeConfig,
-  serverFetch,
   useServerHooks,
 } from 'nuxt/server'
 import { defineI18nMiddleware as _defineI18nMiddleware } from '../intlify'
@@ -64,13 +63,5 @@ export const getRenderPath = (event: ServerEvent) => event.url.pathname + event.
 
 export const setCookie = (event: ServerEvent, name: string, value: string, options: CookieSerializeOptions) =>
   _setCookie(event, name, value, options)
-
-export async function fetchInternal<T>(event: ServerEvent, path: string, init: { headers: Headers }): Promise<T> {
-  const response = await serverFetch(event, path, init)
-  if (!response.ok) {
-    throw _createError({ status: response.status, message: `Failed to fetch ${path}` })
-  }
-  return await response.json() as T
-}
 
 export const defineI18nMiddleware = (options: CoreOptions) => _defineI18nMiddleware(options)

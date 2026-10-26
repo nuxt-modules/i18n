@@ -6,7 +6,7 @@ import {
   defineEventHandler,
   getRouterParam,
 } from '#i18n-server-runtime'
-import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
+import { initializeI18nContext, tryUseI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
 
 /**
@@ -19,7 +19,7 @@ const _messagesHandler = defineEventHandler(async (event: ServerEvent) => {
     throw createError({ status: 400, message: 'Locale not specified.' })
   }
 
-  const ctx = useI18nContext(event)
+  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
   if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
@@ -40,7 +40,6 @@ const getCacheKey = (event: ServerEvent) =>
 async function shouldBypassCache(event: ServerEvent) {
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
-  // prerendering may require initializing context
   const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
   return !ctx.localeConfigs?.[locale]?.cacheable
 }
