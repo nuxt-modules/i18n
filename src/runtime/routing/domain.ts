@@ -44,7 +44,9 @@ export function setupMultiDomainLocales(defaultLocale: string, strategy: Strateg
   const nested = new Set(records.filter(actionFor).flatMap(route => descendantNames(route.children)))
 
   const unprefix = (path: string) =>
-    getLocaleFromRoutePath(path) === defaultLocale ? path.slice(defaultLocale.length + 1) || '/' : path
+    path.startsWith('/') && getLocaleFromRoutePath(path) === defaultLocale
+      ? path.slice(defaultLocale.length + 1) || '/'
+      : path
 
   for (const route of records) {
     const routeName = String(route.name)

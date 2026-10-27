@@ -535,7 +535,14 @@ describe('withImplicitDomainDefaults', () => {
 describe('setupMultiDomainLocales', () => {
   const pages = [
     { path: '/listing', name: 'listing', alias: '/' },
-    { path: '/parent', name: 'parent', children: [{ path: 'child', name: 'parent-child', alias: ['kid', '/kid'] }] },
+    {
+      path: '/parent',
+      name: 'parent',
+      children: [
+        { path: 'child', name: 'parent-child', alias: ['kid', '/kid'] },
+        { path: 'de', name: 'parent-de' },
+      ],
+    },
     { path: '/docs', name: 'docs', children: [{ path: ':slug(.*)*', name: 'docs-slug' }] },
   ]
 
@@ -572,6 +579,12 @@ describe('setupMultiDomainLocales', () => {
     const router = createDomainRouter('prefix_except_default', 'de')
 
     expect(router.resolve(path).matched.map(record => record.name)).toEqual(['parent___de', 'parent-child___de'])
+  })
+
+  test('a relative child path named like the domain default locale keeps its segment', () => {
+    const router = createDomainRouter('prefix_except_default', 'de')
+
+    expect(router.resolve('/parent/de').matched.map(record => record.name)).toEqual(['parent___de', 'parent-de___de'])
   })
 
   test('nested aliases are not served prefixed with the domain default locale', () => {
