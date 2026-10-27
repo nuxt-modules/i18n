@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import {
   canonicalDomainFromLocale,
   cookieSpansDomains,
@@ -14,6 +15,8 @@ import {
 import { getDefaultLocaleForDomain, resolveDefaultLocale } from '../src/runtime/shared/locales'
 import { createBaseUrlGetter, withConfiguredProtocol } from '../src/runtime/context'
 import { normalizeDomainLocale, withImplicitDomainDefaults } from '../src/utils'
+import { localizeRoutes } from '../src/routing'
+import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { getNormalizedLocales } from './pages/utils'
 
 // the runtime only ever sees build-normalized locales, resolve them the same way here
@@ -526,5 +529,78 @@ describe('withImplicitDomainDefaults', () => {
 
   test('locales without domains are left alone', () => {
     expect(defaultsFor(['en', 'fr'])).toEqual([['en', []], ['fr', []]])
+  })
+})
+
+describe('setupMultiDomainLocales', () => {
+  const pages = [
+    { path: '/listing', name: 'listing', alias: '/' },
+    { path: '/parent', name: 'parent', children: [{ path: 'child', name: 'parent-child', alias: ['kid', '/kid'] }] },
+    { path: '/docs', name: 'docs', children: [{ path: ':slug(.*)*', name: 'docs-slug' }] },
+  ]
+
+  type DomainStrategy = 'prefix_except_default' | 'prefix_and_default'
+
+  const localize = (strategy: DomainStrategy) =>
+    localizeRoutes(pages, {
+      strategy,
+      differentDomains: true,
+      locales: withImplicitDomainDefaults(getNormalizedLocales([
+        { code: 'en', domain: 'example.com' },
+        { code: 'de', domain: 'example.de' },
+      ])),
+      routesNameSeparator: '___',
+      defaultLocaleRouteNameSuffix: 'default',
+    })
+
+  function createDomainRouter(strategy: DomainStrategy, defaultLocale: string, routes = localize(strategy)) {
+    const router = createRouter({ routes: routes as never, history: createMemoryHistory() })
+    setupMultiDomainLocales(defaultLocale, strategy, router)
+    return router
+  }
+
+  test('(#4177) unprefixes the aliases of the domain default locale with its routes', () => {
+    const router = createDomainRouter('prefix_except_default', 'de')
+
+    expect(router.resolve('/').name).toBe('listing___de')
+    expect(router.resolve('/listing').name).toBe('listing___de')
+    expect(router.resolve('/de/').matched).toEqual([])
+    expect(router.resolve('/en/').name).toBe('listing___en')
+  })
+
+  test.each(['/parent/child', '/parent/kid', '/kid'])('nested alias %s is unprefixed with its parent', (path) => {
+    const router = createDomainRouter('prefix_except_default', 'de')
+
+    expect(router.resolve(path).matched.map(record => record.name)).toEqual(['parent___de', 'parent-child___de'])
+  })
+
+  test('nested aliases are not served prefixed with the domain default locale', () => {
+    const router = createDomainRouter('prefix_except_default', 'de')
+
+    expect(router.resolve('/de/kid').matched).toEqual([])
+  })
+
+  test('a child sorting after its parent stays nested under it', () => {
+    const router = createDomainRouter('prefix_except_default', 'de')
+
+    expect(router.resolve('/docs/a/b').matched.map(record => record.name)).toEqual(['docs___de', 'docs-slug___de'])
+  })
+
+  test('leaves the routes shared by every request untouched', () => {
+    const routes = localize('prefix_except_default')
+    createDomainRouter('prefix_except_default', 'de', routes)
+    const en = createDomainRouter('prefix_except_default', 'en', routes)
+
+    expect(en.resolve('/').name).toBe('listing___en')
+    expect(en.resolve('/kid').name).toBe('parent-child___en')
+    expect(en.resolve('/de/kid').name).toBe('parent-child___de')
+  })
+
+  test('`prefix_and_default` serves the domain default alias both unprefixed and prefixed', () => {
+    const router = createDomainRouter('prefix_and_default', 'de')
+
+    expect(router.resolve('/').name).toBe('listing___de___default')
+    expect(router.resolve('/de/').name).toBe('listing___de')
+    expect(router.resolve('/en/').name).toBe('listing___en')
   })
 })

@@ -25,16 +25,18 @@ describe('a domain serving one locale is its default without `domainDefault`', (
     expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
   })
 
-  test.each(hosts)('%s host serves an unprefixed path', async (locale, host) => {
-    const res = await undiciRequest('/about', { headers: { Host: host } })
+  const hostPaths = hosts.flatMap(([locale, host]) => ['/about', '/aliased', '/alias'].map(path => [locale, host, path] as const))
+
+  test.each(hostPaths)('%s host serves %s unprefixed', async (locale, host, path) => {
+    const res = await undiciRequest(path, { headers: { Host: host } })
 
     expect(res.statusCode).toBe(200)
     const dom = await getDom(await res.body.text())
     expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
   })
 
-  test.each(hosts)('%s host does not serve its own locale prefixed', async (locale, host) => {
-    const res = await undiciRequest(`/${locale}/about`, { headers: { Host: host } })
+  test.each(hostPaths)('%s host does not serve %s prefixed with its own locale', async (locale, host, path) => {
+    const res = await undiciRequest(`/${locale}${path}`, { headers: { Host: host } })
 
     expect(res.statusCode).toBe(404)
   })
