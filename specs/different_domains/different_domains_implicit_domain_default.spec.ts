@@ -25,17 +25,23 @@ describe('a domain serving one locale is its default without `domainDefault`', (
     expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
   })
 
-  const hostPaths = hosts.flatMap(([locale, host]) => ['/about', '/aliased', '/alias'].map(path => [locale, host, path] as const))
+  const pages = [
+    ['/about', '#about-header'],
+    ['/aliased', '#aliased-page'],
+    ['/alias', '#aliased-page'],
+  ] as const
+  const hostPaths = hosts.flatMap(([locale, host]) => pages.map(([path, page]) => [locale, path, host, page] as const))
 
-  test.each(hostPaths)('%s host serves %s unprefixed', async (locale, host, path) => {
+  test.each(hostPaths)('%s host serves %s unprefixed', async (locale, path, host, page) => {
     const res = await undiciRequest(path, { headers: { Host: host } })
 
     expect(res.statusCode).toBe(200)
     const dom = await getDom(await res.body.text())
+    expect(await dom.locator(page).count()).toBe(1)
     expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
   })
 
-  test.each(hostPaths)('%s host does not serve %s prefixed with its own locale', async (locale, host, path) => {
+  test.each(hostPaths)('%s host does not serve %s prefixed with its own locale', async (locale, path, host) => {
     const res = await undiciRequest(`/${locale}${path}`, { headers: { Host: host } })
 
     expect(res.statusCode).toBe(404)
