@@ -184,6 +184,44 @@ describe('localizeSingleRoute', () => {
     expect(frRoute.children![0].name).toBe('user-profile___fr')
   })
 
+  it('keeps the first character of nested custom paths when trailing slashes are enabled', () => {
+    // #4179: with `trailingSlash: true` the parent's localized path ends with a slash,
+    // and `handlePathNesting` sliced the child segment with that raw parent path,
+    // eating the child's first character (`/de/konto/bestellungen` -> `estellungen`)
+    const ctx = createRouteContext({
+      trailingSlash: true,
+      defaultLocales: ['de'],
+      routesNameSeparator: '___',
+      defaultLocaleRouteNameSuffix: 'default',
+      optionsResolver: createMockOptionsResolver({
+        account: { locales: ['de'], paths: { de: '/konto' } },
+        'account-orders': { locales: ['de'], paths: { de: '/konto/bestellungen' } },
+      }),
+    })
+
+    const route: LocalizableRoute = {
+      path: '/account',
+      name: 'account',
+      children: [
+        { path: 'orders', name: 'account-orders' },
+      ],
+    }
+
+    const params: LocalizeRouteParams = {
+      locales: ['de'],
+      defaultTree: false,
+      shouldPrefix: defaultShouldPrefix,
+    }
+
+    const result = localizeSingleRoute(route, params, ctx)
+
+    const parent = findRoute(result, 'account___de')!
+    expect(parent.path).toBe('/de/konto/')
+    expect(parent.children).toHaveLength(1)
+    expect(parent.children![0].name).toBe('account-orders___de')
+    expect(parent.children![0].path).toBe('bestellungen/')
+  })
+
   it('localizes aliases', () => {
     const ctx = createRouteContext({
       trailingSlash: false,

@@ -60,12 +60,17 @@ function handlePathNesting(localizedPath: string, parentLocalizedPath: string = 
     return localizedPath
   }
 
-  const index = localizedPath.indexOf(parentLocalizedPath)
+  // the parent path can end with a slash when trailing slashes are enabled,
+  // normalize it so the slice below does not eat the child's first character
+  const parentPath = parentLocalizedPath.replace(/\/+$/, '')
+  if (!parentPath) { return localizedPath }
+
+  const index = localizedPath.indexOf(parentPath)
   if (index >= 0) {
     // parent path is found, slice from index + parent length + slash, for example:
     // * parent='/foo', child='/foo/bar'       => 'bar'
     // * parent='bar',  child='/foo/bar/:id()' => ':id()'
-    return localizedPath.slice(localizedPath.indexOf(parentLocalizedPath) + parentLocalizedPath.length + 1)
+    return localizedPath.slice(index + parentPath.length + 1)
   }
 
   return localizedPath
