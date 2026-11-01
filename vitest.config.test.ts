@@ -18,6 +18,9 @@ export default defineConfig({
       '#app': 'nuxt',
       '#imports': resolve('./test/mocks/imports.ts'),
       '#i18n-server-runtime': resolve('./src/runtime/server/runtime/nitro2.ts'),
+      '#internal/nuxt.config.mjs': resolve('./test/mocks/nitro-internals.ts'),
+      '#internal/i18n-locale-detector.mjs': resolve('./test/mocks/nitro-internals.ts'),
+      '#internal/i18n-options.mjs': resolve('./test/mocks/nitro-internals.ts'),
       // resolve from source - the package `imports` map points at `dist`, which may be stale
       '#i18n-kit': resolve('./src/runtime/kit'),
     },
