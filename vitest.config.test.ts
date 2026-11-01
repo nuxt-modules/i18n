@@ -17,6 +17,9 @@ export default defineConfig({
       '#build/i18n-route-resources.mjs': resolve('./test/mocks/i18n.route-resources.ts'),
       '#app': 'nuxt',
       '#imports': resolve('./test/mocks/imports.ts'),
+      '#internal/nuxt.config.mjs': resolve('./test/mocks/nitro-internals.ts'),
+      '#internal/i18n-locale-detector.mjs': resolve('./test/mocks/nitro-internals.ts'),
+      '#internal/i18n-options.mjs': resolve('./test/mocks/nitro-internals.ts'),
       // resolve from source - the package `imports` map points at `dist`, which may be stale
       '#i18n-kit': resolve('./src/runtime/kit'),
     },

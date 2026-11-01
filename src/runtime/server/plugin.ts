@@ -38,15 +38,6 @@ export default defineNitroPlugin(async (nitro) => {
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
   const _defaultLocale: string = runtimeI18n.defaultLocale || ''
 
-  // attempt to clear cache for i18n handlers on startup
-  try {
-    const cacheStorage = useStorage('cache')
-    const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
-    await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
-  } catch {
-    // no-op
-  }
-
   const detection = useI18nDetection(undefined)
   const cookieOptions = {
     path: '/',
@@ -197,6 +188,16 @@ export default defineNitroPlugin(async (nitro) => {
 
     nitro.hooks.hook('request', i18nMiddleware.onRequest)
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
+  }
+
+  // attempt to clear cache for i18n handlers on startup
+  // nitro does not await plugins, so this stays after the hooks: a slow cache must not delay them
+  try {
+    const cacheStorage = useStorage('cache')
+    const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
+    await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
+  } catch {
+    // no-op
   }
 })
 
