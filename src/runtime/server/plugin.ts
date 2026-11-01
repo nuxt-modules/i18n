@@ -180,6 +180,9 @@ export default definePlugin(async (hooks) => {
     }
   })
 
+  // nitro does not await plugins, so a slow cache must not hold up anything else here
+  void clearHandlerCache()
+
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
     const options = await setupVueI18nOptions(_defaultLocale)
@@ -191,9 +194,12 @@ export default definePlugin(async (hooks) => {
     hooks.onRequest(i18nMiddleware.onRequest)
     hooks.onAfterResponse(i18nMiddleware.onAfterResponse)
   }
+})
 
-  // attempt to clear cache for i18n handlers on startup
-  // nitro does not await plugins, so this stays after the hooks: a slow cache must not delay them
+/**
+ * Attempt to clear cache for i18n handlers on startup
+ */
+async function clearHandlerCache() {
   try {
     const cacheStorage = useStorage('cache')
     const cachedKeys = await cacheStorage.getKeys(I18N_HANDLER_CACHE_PREFIX)
@@ -201,7 +207,7 @@ export default definePlugin(async (hooks) => {
   } catch {
     // no-op
   }
-})
+}
 
 /**
  * Drops only the locales `devalue` cannot carry - a message function the build missed (#3880) would
