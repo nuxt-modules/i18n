@@ -38,15 +38,6 @@ export default defineNitroPlugin(async (nitro) => {
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
   const _defaultLocale: string = runtimeI18n.defaultLocale || ''
 
-  // attempt to clear cache for i18n handlers on startup
-  try {
-    const cacheStorage = useStorage('cache')
-    const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
-    await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
-  } catch {
-    // no-op
-  }
-
   const detection = useI18nDetection(undefined)
   const cookieOptions = {
     path: '/',
@@ -187,6 +178,9 @@ export default defineNitroPlugin(async (nitro) => {
     }
   })
 
+  // nitro does not await plugins, so a slow cache must not hold up anything else here
+  void clearHandlerCache()
+
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
     const options = await setupVueI18nOptions(_defaultLocale)
@@ -199,6 +193,19 @@ export default defineNitroPlugin(async (nitro) => {
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
+
+/**
+ * Attempt to clear cache for i18n handlers on startup
+ */
+async function clearHandlerCache() {
+  try {
+    const cacheStorage = useStorage('cache')
+    const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
+    await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
+  } catch {
+    // no-op
+  }
+}
 
 /**
  * Drops only the locales `devalue` cannot carry - a message function the build missed (#3880) would
