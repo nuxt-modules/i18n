@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
@@ -164,6 +164,33 @@ describe('localeHead', () => {
     await router.push('/products/big-chair?foo=bar')
     const noMatch = localeHead(ctx, { seo: { canonicalQueries: ['page'] } })
     expect(noMatch.link.find(x => x.rel === 'canonical')!.href).toBe('https://example.com/products/big-chair')
+  })
+
+  test('(#4182) a missing `baseUrl` is only reported when seo links are generated', async () => {
+    const { router, ctx } = createTestContext('en')
+    ctx.getBaseUrl = () => ''
+    await router.push('/')
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    try {
+      expect(localeHead(ctx, { seo: false }).link).toEqual([])
+      expect(warn).not.toHaveBeenCalled()
+
+      localeHead(ctx, { seo: true })
+      expect(warn).toHaveBeenCalledWith('I18n `baseUrl` is required to generate valid SEO tag links.')
+    }
+    finally {
+      warn.mockRestore()
+    }
+  })
+
+  test('(#4182) strict seo does not require `baseUrl` when seo links are disabled', async () => {
+    const { router, ctx } = createTestContext('en', { strictSeo: true })
+    ctx.getBaseUrl = () => ''
+    await router.push('/')
+
+    expect(() => localeHead(ctx, { seo: false })).not.toThrow()
+    expect(() => localeHead(ctx, { seo: true })).toThrow('I18n `baseUrl` is required to generate valid SEO tag links.')
   })
 })
 

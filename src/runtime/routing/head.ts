@@ -43,7 +43,8 @@ function createHeadContext(
   // alternate links resolve through the same routing as navigation, shaped for the canonical domain
   const alternateCtx = { ...ctx, afterSwitchLocalePath: ctx.getAlternatePath }
 
-  if (!baseUrl && !ctx.routingOptions.domains) {
+  // links are only generated with `seo` enabled, a missing `baseUrl` affects nothing otherwise
+  if (config.seo && !baseUrl && !ctx.routingOptions.domains) {
     if (ctx.strictSeo) {
       throw new Error('I18n `baseUrl` is required to generate valid SEO tag links.')
     }
