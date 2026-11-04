@@ -103,7 +103,14 @@ describe('intlify aliases', () => {
     return { appDir, alias: Object.fromEntries(Object.entries(nuxt.options.alias).map(([k, v]) => [k, normalize(v)])) }
   }
 
-  test('resolve `vue-i18n` from the app and its `@intlify` dependencies from `vue-i18n`', async () => {
+  const [major, minor, patch] = moduleVersion.split('.').map(part => Number.parseInt(part))
+  const olderParts = [major, minor, patch]
+  olderParts[olderParts.findLastIndex(Boolean)]--
+
+  test.each([
+    ['the same version', moduleVersion],
+    ['a newer version', `${major}.${minor}.${patch + 10}`]
+  ])('resolve `vue-i18n` from the app and its `@intlify` dependencies from `vue-i18n` when the app installs %s', async (_, version) => {
     const vueI18n = 'node_modules/vue-i18n'
     const coreBase = `${vueI18n}/node_modules/@intlify/core-base`
     const { appDir, alias } = await setupApp({
@@ -112,7 +119,7 @@ describe('intlify aliases', () => {
       [`${vueI18n}/node_modules/@intlify/shared`]: 'index.mjs',
       [coreBase]: 'index.mjs',
       [`${coreBase}/node_modules/@intlify/message-compiler`]: 'index.mjs'
-    })
+    }, version)
 
     expect(alias['vue-i18n']).toEqual(join(appDir, vueI18n, 'dist/vue-i18n.mjs'))
     expect(alias['@intlify/shared']).toEqual(join(appDir, vueI18n, 'node_modules/@intlify/shared/index.mjs'))
@@ -126,13 +133,16 @@ describe('intlify aliases', () => {
     expect(alias['vue-i18n']).toEqual(moduleVueI18n)
   })
 
-  test('fall back to the module `vue-i18n` when the app installs another major', async () => {
+  test.each([
+    ['another major', `${major + 1}.0.0`],
+    ['an older version', olderParts.join('.')]
+  ])('fall back to the module `vue-i18n` when the app installs %s', async (_, version) => {
     const { appDir, alias } = await setupApp({
       'node_modules/vue-i18n': 'dist/vue-i18n.mjs',
       'node_modules/vue-i18n/node_modules/@intlify/shared': 'index.mjs',
       'node_modules/vue-i18n/node_modules/@intlify/core-base': 'index.mjs',
       'node_modules/vue-i18n/node_modules/@intlify/message-compiler': 'index.mjs'
-    }, `${Number.parseInt(moduleVersion) + 1}.0.0`)
+    }, version)
 
     expect(alias['vue-i18n']).toEqual(moduleVueI18n)
     expect(alias['@intlify/shared']).not.toContain(appDir)

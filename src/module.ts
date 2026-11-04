@@ -87,7 +87,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
     let vueI18nPackageURL = packageURL('vue-i18n', [directoryToURL(nuxt.options.rootDir), moduleURL])
     const appVueI18nVersion = packageVersion(vueI18nPackageURL)
     const moduleVueI18nVersion = packageVersion(moduleVueI18nURL)
-    if (appVueI18nVersion.split('.')[0] !== moduleVueI18nVersion.split('.')[0]) {
+    if (
+      appVueI18nVersion.split('.')[0] !== moduleVueI18nVersion.split('.')[0]
+      || appVueI18nVersion.localeCompare(moduleVueI18nVersion, 'en', { numeric: true }) < 0
+    ) {
       logger.warn(`Ignoring \`vue-i18n@${appVueI18nVersion}\` installed in the project, using \`vue-i18n@${moduleVueI18nVersion}\` from \`@nuxtjs/i18n\` instead.`)
       vueI18nPackageURL = moduleVueI18nURL
     }
