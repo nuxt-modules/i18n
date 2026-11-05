@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
-import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
+import { resolveDomainRoutes } from '../src/runtime/routing/domain'
 import { _useLocaleHead, _useSetI18nParams, localeHead, missesClusterFallback } from '../src/runtime/routing/head'
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
@@ -58,10 +58,6 @@ function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) 
   const { strictSeo = false, domains = false, defaultLocale: configuredDefault = 'en' } = opts
   let locale = initialLocale
   const cluster = typeof domains === 'object' ? (domains.locales ?? clusterLocales) : undefined
-  const router = createRouter({
-    history: createMemoryHistory(),
-    routes: cluster ? clusterRoutesFor(cluster) : routes,
-  })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
   const domainLocales = getNormalizedLocales(
     locales.map(l => ({ ...l, domain: `${l.code}.example.com`, defaultForDomains: [`${l.code}.example.com`] })),
@@ -72,10 +68,11 @@ function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) 
     : domains ? `${initialLocale}.example.com` : 'example.com'
   // resolved the way the runtime plugin does, rather than supplied
   const hostDefault = resolveDefaultLocale(host, configuredDefault, testLocales)
-  if (domains) {
-    // rebuild the route table for the current host, mirrors the runtime plugin
-    setupMultiDomainLocales(hostDefault, 'prefix_except_default', router)
-  }
+  const baseRoutes = cluster ? clusterRoutesFor(cluster) : routes
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: domains ? resolveDomainRoutes(baseRoutes, hostDefault, 'prefix_except_default') : baseRoutes,
+  })
   const ctx = {
     ...createRoutingContext({
       router,

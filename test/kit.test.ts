@@ -10,7 +10,7 @@ import { ref, unref } from 'vue'
 import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
-import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
+import { resolveDomainRoutes } from '../src/runtime/routing/domain'
 import { createTestBaseUrls, getNormalizedLocales } from './pages/utils'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
 import type { NuxtPage } from '@nuxt/schema'
@@ -325,10 +325,9 @@ describe('switchLocalePath with differentDomains', () => {
       differentDomains: true,
       locales
     })
-    const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
     // resolved the way the runtime does, rather than supplied, so the test cannot drift from it
     const hostDefault = resolveDefaultLocale(opts.host, opts.defaultLocale, locales)
-    setupMultiDomainLocales(hostDefault, opts.strategy, router)
+    const router = createRouter({ routes: resolveDomainRoutes(localized as any, hostDefault, opts.strategy), history: createMemoryHistory() })
 
     const ctx = createRoutingContext({
       router,

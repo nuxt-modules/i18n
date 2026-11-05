@@ -221,7 +221,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       const locales = options.getLocales()
       const target = locales.find(l => l.code === locale)
 
-      // `setupMultiDomainLocales` already unprefixed this host's own default locale in the route
+      // `resolveDomainRoutes` already unprefixed this host's own default locale in the route
       // table, so a path resolved here needs no reshaping
       if (isLocaleOnHost(target, host)) {
         return path
