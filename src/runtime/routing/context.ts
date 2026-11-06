@@ -1,6 +1,13 @@
 import { joinURL } from 'ufo'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './utils'
-import { createTrailingSlashFormatter, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
+import {
+  createTrailingSlashFormatter,
+  defaultRouteNameSuffix,
+  getLocaleFromRoutePath,
+  getRouteBaseName,
+  normalizeRouteName,
+  prefixable,
+} from '#i18n-kit/routing'
 import { isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
 import { canonicalDomain, isLocaleOnHost, normalizeDomain } from '../shared/domain'
 
@@ -79,7 +86,22 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     domains: options.domains,
   }
   const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
-  const getLocalizedRouteName = createLocaleRouteNameGetter(name => router.hasRoute(name), config)
+  const _getLocalizedRouteName = createLocaleRouteNameGetter(name => router.hasRoute(name), config)
+  // `experimental.localeAgnosticDefaultRoutes` adds one more candidate to the getter's probe: the
+  // locale-agnostic `<base>___default`, for the host's default locale only. That name carries no
+  // locale, so `defaultLocale` - which comes from runtime config - can differ from the one the
+  // build was made with and still address the unprefixed tree. Wrapped here rather than inside
+  // `createLocaleRouteNameGetter` because that helper is deliberately locale-blind, and this is the
+  // only place the resolved default locale is known.
+  const getLocalizedRouteName = !__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__
+    ? _getLocalizedRouteName
+    : (name: RouteRecordNameGeneric | null, locale: string) => {
+        if (locale === defaultLocale) {
+          const agnosticName = normalizeRouteName(name) + defaultRouteNameSuffix
+          if (router.hasRoute(agnosticName)) { return agnosticName }
+        }
+        return _getLocalizedRouteName(name, locale)
+      }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
     route.name = getRouteBaseName(route.name || router.currentRoute.value) // fallback to current route name
