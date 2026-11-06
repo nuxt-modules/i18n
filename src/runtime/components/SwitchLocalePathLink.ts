@@ -5,6 +5,7 @@ import { hasProtocol } from 'ufo'
 import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
 import { useComposableContext } from '../composable-context'
 import { useNuxtI18nContext } from '../context'
+import { markSwitchLocalePathLink } from '../shared/switch-locale-path'
 
 import type { PropType } from 'vue'
 
@@ -68,6 +69,9 @@ export default defineComponent({
   },
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
+    if (import.meta.server) {
+      markSwitchLocalePathLink(useNuxtApp().ssrContext)
+    }
     return () => [
       h(Comment, `${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}-[${props.locale}]`),
       h(SlpComponent, { ...attrs, ...props }, slots.default),
