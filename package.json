@@ -73,11 +73,11 @@
     "@nuxtjs/i18n": "workspace:*"
   },
   "dependencies": {
-    "@intlify/core": "^11.4.8",
+    "@intlify/core": "^11.4.18",
     "@intlify/h3": "^0.7.4",
-    "@intlify/message-compiler": "^11.4.8",
-    "@intlify/shared": "^11.4.8",
-    "@intlify/unplugin-vue-i18n": "^11.2.4",
+    "@intlify/message-compiler": "^11.4.18",
+    "@intlify/shared": "^11.4.18",
+    "@intlify/unplugin-vue-i18n": "^11.2.8",
     "@intlify/utils": "^0.14.1",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
     "@nuxt/kit": "^4.6.2",
@@ -100,7 +100,7 @@
     "unhead": "^3.2.3",
     "unplugin": "^3.3.0",
     "unrouting": "^0.2.2",
-    "vue-i18n": "^11.4.8",
+    "vue-i18n": "^11.4.18",
     "vue-router": "^5.4.0"
   },
   "devDependencies": {
