@@ -257,13 +257,13 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
   },
   {
     "children": [],
-    "name": "about___en",
-    "path": "/about",
+    "name": "home___en",
+    "path": "/",
   },
   {
     "children": [],
-    "name": "home___en",
-    "path": "/",
+    "name": "about___en",
+    "path": "/about",
   },
 ]
 `;

@@ -21,7 +21,7 @@ export function createLocaleRouteNameGetter(
   return (name, locale) => {
     const normalized = normalizeRouteName(name)
     // which locales get an unprefixed `___default` variant is decided by the strategy at build
-    // time and pruned per host by `setupMultiDomainLocales`, so the route table is the authority
+    // time and pruned per host by `resolveDomainRoutes`, so the route table is the authority
     const suffixed = getLocalizedRouteName(normalized, locale, true)
     return hasRoute(suffixed) ? suffixed : getLocalizedRouteName(normalized, locale, false)
   }
