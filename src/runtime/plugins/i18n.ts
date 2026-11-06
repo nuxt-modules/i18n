@@ -51,7 +51,7 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
-    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(nuxt), nuxt)
+    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(runtimeI18n), runtimeI18n)
 
     const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, !!optionsI18n.flatJson)
     nuxt._nuxtI18n = ctx

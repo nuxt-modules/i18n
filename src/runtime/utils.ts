@@ -5,7 +5,7 @@ import { useNuxtI18nContext } from './context'
 import { useComposableContext } from './composable-context'
 import { isSupportedLocale } from './shared/locales'
 import { createLocaleDetector, useDetectors } from './shared/detection'
-import { useI18nDetection } from './shared/utils'
+import { useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { resolveLocaleReach } from './shared/domain'
 
 import type { Locale } from 'vue-i18n'
@@ -39,8 +39,9 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
 }
 
 export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): string {
-  const detectConfig = useI18nDetection(nuxtApp)
-  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, nuxtApp)
+  const runtimeI18n = useRuntimeI18n(nuxtApp)
+  const detectConfig = useI18nDetection(runtimeI18n)
+  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, runtimeI18n)
   const ctx = useNuxtI18nContext(nuxtApp)
   const detect = createLocaleDetector({
     detection: detectConfig,
@@ -56,7 +57,8 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
 
   const ctx = useNuxtI18nContext(nuxtApp)
   const _ctx = useComposableContext(nuxtApp)
-  const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
+  const runtimeI18n = useRuntimeI18n(nuxtApp)
+  const detectors = useDetectors(useRequestEvent(), useI18nDetection(runtimeI18n), runtimeI18n)
   const host = __I18N_DOMAINS__ ? useRequestURL({ xForwardedHost: true }).host : ''
   const resolve = createNavigationResolver({
     localeReach: __I18N_DOMAINS__

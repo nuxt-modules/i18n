@@ -24,6 +24,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
+      server: 'nitro3',
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore property removed in Nuxt 4
       bridge: false,
@@ -89,8 +90,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // the aliased node build has no declaration file, drop the generated paths entries
     // so TS resolves types from the package `types` export (`dist/core.d.ts`) instead
-    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig }) => {
-      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig]) {
+    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig }) => {
+      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig]) {
         delete cfg?.compilerOptions?.paths?.['@intlify/core']
       }
     })

@@ -1,23 +1,15 @@
 import type { NuxtApp } from '#app'
-import { useRuntimeConfig } from '#imports'
 import { isString } from '@intlify/shared'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, RootRedirectOptions } from '#internal-i18n-types'
-import type { H3Event } from 'h3'
 
-export function useRuntimeI18n(nuxtApp?: NuxtApp, event?: H3Event) {
-  if (!nuxtApp) {
-    // in nitro `useRuntimeConfig` accepts an event to apply env overrides, while the app-side
-    // signature accepts no arguments (https://github.com/nuxt/nuxt/pull/35376) - cast to support both
-    const getRuntimeConfig = useRuntimeConfig as (event?: H3Event) => ReturnType<typeof useRuntimeConfig>
-    return getRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
-  }
+export function useRuntimeI18n(nuxtApp: NuxtApp) {
   return nuxtApp.$config.public.i18n as unknown as I18nPublicRuntimeConfig
 }
 
 export function useI18nDetection(
-  nuxtApp: NuxtApp | undefined,
+  runtimeI18n: I18nPublicRuntimeConfig,
 ): DetectBrowserLanguageOptions & { enabled: boolean, cookieKey: string } {
-  const detectBrowserLanguage = useRuntimeI18n(nuxtApp).detectBrowserLanguage
+  const detectBrowserLanguage = runtimeI18n.detectBrowserLanguage
   const detect = detectBrowserLanguage || {}
   return {
     ...detect,

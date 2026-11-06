@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { getCookie, getRequestHeader, getRequestURL } from 'h3'
 import { parsePath } from 'ufo'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
@@ -8,30 +7,30 @@ import { parseAcceptLanguage } from '@intlify/utils'
 import { cookieSpansDomains, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
-import { type useI18nDetection, useRuntimeI18n } from '../shared/utils'
+import { type RequestEventLike, getRequestHost as getEventHost, getRequestCookie, getRequestHeader } from './request'
+import type { useI18nDetection } from '../shared/utils'
 import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '../../types'
 
-import type { H3Event } from 'h3'
 import type { CompatRoute } from '../types'
-import { type NuxtApp, useCookie } from '#app'
+import { useCookie } from '#app'
 
 // TODO: add unit tests for these detectors
 
-const getCookieLocale = (event: H3Event | undefined, cookieName: string): string | undefined =>
-  (import.meta.client ? useCookie(cookieName).value : getCookie(event!, cookieName)) || undefined
+const getCookieLocale = (event: RequestEventLike | undefined, cookieName: string): string | undefined =>
+  (import.meta.client ? useCookie(cookieName).value : getRequestCookie(event!, cookieName)) || undefined
 
-const getRouteLocale = (event: H3Event | undefined, route: string | CompatRoute): string | undefined =>
+const getRouteLocale = (event: RequestEventLike | undefined, route: string | CompatRoute): string | undefined =>
   getLocaleFromRoute(route)
 
-const getHeaderLocale = (event: H3Event | undefined) =>
+const getHeaderLocale = (event: RequestEventLike | undefined) =>
   findBrowserLocale(normalizedLocales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
 
-const getNavigatorLocale = (event: H3Event | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
+const getNavigatorLocale = (event: RequestEventLike | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
 
-const getRequestHost = (event: H3Event | undefined) =>
-  import.meta.client ? new URL(window.location.href).host : getRequestURL(event!, { xForwardedHost: true }).host
+const getRequestHost = (event: RequestEventLike | undefined) =>
+  import.meta.client ? new URL(window.location.href).host : getEventHost(event!)
 
-const getRefererHost = (event: H3Event | undefined): string | undefined => {
+const getRefererHost = (event: RequestEventLike | undefined): string | undefined => {
   const referer = import.meta.client ? document.referrer : getRequestHeader(event!, 'referer')
   try {
     return (referer && new URL(referer).host) || undefined
@@ -44,15 +43,14 @@ const getDomainLocales = (domainLocales: I18nPublicRuntimeConfig['domainLocales'
   normalizedLocales.map(l => withRuntimeDomain(l, domainLocales))
 
 export const useDetectors = (
-  event: H3Event | undefined,
+  event: RequestEventLike | undefined,
   config: { cookieKey: string, cookieDomain?: string | null },
-  nuxtApp?: NuxtApp,
+  runtimeI18n: I18nPublicRuntimeConfig,
 ) => {
   if (import.meta.server && !event) {
-    throw new Error('H3Event is required for server-side locale detection')
+    throw new Error('A request event is required for server-side locale detection')
   }
 
-  const runtimeI18n = useRuntimeI18n(nuxtApp)
   // constant for the lifetime of these detectors, a fresh set is created per request
   let host: string | undefined
   let locales: NormalizedLocaleObject[] | undefined

@@ -20,6 +20,7 @@ export default createConfigForNuxt({
         '.nuxt',
         'dist',
         'playground',
+        'playground-v5',
         'specs',
         'test',
         'coverage',
