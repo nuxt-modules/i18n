@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useRequestEvent, useRequestURL } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
@@ -21,11 +21,8 @@ import type { I18nHeadOptions } from '#internal-i18n-types'
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: __PARALLEL_PLUGIN__,
-  async setup(_nuxt) {
-    Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
-
-    // @ts-expect-error untyped internal id parameter
-    const nuxt = useNuxtApp(_nuxt._id)
+  async setup(nuxt) {
+    Object.defineProperty(nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
     const runtimeI18n = useRuntimeI18n(nuxt)
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
     const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
