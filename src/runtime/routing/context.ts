@@ -31,6 +31,11 @@ export type RoutingContext = {
   getLocalizedDynamicParams: (locale: string) => Record<string, unknown> | false | undefined
   /** Prepares a route object to be resolved as a localized route */
   resolveLocalizedRouteObject: (route: RouteLike, locale: string) => RouteLike
+  /**
+   * Localizes a plain absolute path without resolving it, set only when routes are not localized
+   * and locales are not resolved from domains, where every locale shares the same path
+   */
+  localizePlainPath?: (path: string) => string
   getRouteLocalizedParams: () => Partial<I18nRouteMeta>
 }
 
@@ -252,5 +257,8 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         ? resolveLocalizedRouteByPath(route, locale)
         : resolveLocalizedRouteByName(route, locale)
     },
+    localizePlainPath: config.routing || config.domains
+      ? undefined
+      : path => formatTrailingSlash(path, true),
   }
 }
