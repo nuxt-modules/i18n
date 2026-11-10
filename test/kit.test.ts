@@ -127,6 +127,27 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
   const localeRoute = (route: RouteLocationRaw, locale?: string) => _localeRoute(ctx, route, locale)
   const switchLocalePath = (locale: string) => _switchLocalePath(ctx, locale)
 
+  test.runIf(strategy === 'no_prefix')('localePath returns plain paths without resolving them', async () => {
+    await router.push(pp('/'))
+    const paths = ['/', '/about', '/about/', '/not-a-page', '/category/foo-bar_1.2~x']
+    // what the router resolves them to, without the trailing slash `trailingSlash: false` strips
+    const expected = paths.map(path => path === '/' ? path : router.resolve(path).fullPath.replace(/\/$/, ''))
+
+    const resolve = vi.spyOn(router, 'resolve')
+    try {
+      expect(paths.map(path => localePath(path))).toEqual(expected)
+      expect(paths.map(path => localePath(path, 'ja'))).toEqual(expected)
+      expect(resolve).not.toHaveBeenCalled()
+
+      // anything else still goes through the router
+      expect(localePath('/about?foo=1#bar')).toEqual('/about?foo=1#bar')
+      expect(localePath('/café')).toEqual(router.resolve('/café').fullPath)
+      expect(resolve).toHaveBeenCalled()
+    } finally {
+      resolve.mockRestore()
+    }
+  })
+
   test('localePath', async () => {
     await router.push(pp('/'))
 

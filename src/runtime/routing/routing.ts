@@ -11,12 +11,25 @@ export type RouteLikeWithName = RouteLocationNamedRaw & { path?: string }
 export type RouteLike = RouteLikeWithPath | RouteLikeWithName
 
 /**
+ * An absolute path `router.resolve()` returns as is: no query, hash, encoded or reserved characters.
+ */
+const PLAIN_PATH_RE = /^\/(?!\/)[\w\-.~/]*$/
+
+/**
  * Resolves a localized path of the passed in route.
  */
 export function localePath(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()): string {
-  // return external url as is
-  if (isString(route) && hasProtocol(route, { acceptRelative: true })) {
-    return route
+  if (isString(route)) {
+    // return external url as is
+    if (hasProtocol(route, { acceptRelative: true })) {
+      return route
+    }
+
+    // without localized routes a plain path is the same for every locale, and resolving it
+    // through the router (a linear scan of its matchers) would only hand it back
+    if (ctx.localizePlainPath && PLAIN_PATH_RE.test(route)) {
+      return ctx.localizePlainPath(route)
+    }
   }
 
   try {
