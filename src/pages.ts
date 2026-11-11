@@ -112,6 +112,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
         locales: normalizedLocales,
         optionsResolver: resolver,
         compactRoutes: !!options.experimental?.compactRoutes,
+        multiDomainLocales: !!options.multiDomainLocales,
         onLocalize: resources.collect,
       }
 

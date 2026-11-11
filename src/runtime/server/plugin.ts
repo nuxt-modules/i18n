@@ -75,6 +75,7 @@ export default definePlugin(async (hooks) => {
     strategy: __I18N_STRATEGY__,
     routing: __I18N_ROUTING__,
     domains: __I18N_DOMAINS__,
+    isolate: __I18N_ISOLATE_MULTIDOMAINLOCALES__,
   })
 
   /**
@@ -123,7 +124,7 @@ export default definePlugin(async (hooks) => {
       pathLocale,
       ctx.vueI18nOptions!.defaultLocale,
       detector,
-      __I18N_DOMAINS__ ? locale => resolveRelocation(event, locale, path) : undefined,
+      __I18N_DOMAINS__ && !__I18N_ISOLATE_MULTIDOMAINLOCALES__ ? locale => resolveRelocation(event, locale, path) : undefined,
     )
     if (resolved.path && (resolved.origin || resolved.path !== pathname)) {
       ctx.detectLocale = resolved.locale
