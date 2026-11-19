@@ -1,7 +1,6 @@
 import { isRef, unref } from 'vue'
 
-import { useCookie, useRequestURL, useState } from '#imports'
-import { $fetch } from '#build/fetch'
+import { useCookie, useRequestFetch, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
@@ -165,6 +164,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const detectConfig = useI18nDetection(runtimeI18n)
   const serverLocaleConfigs = useLocaleConfigs()
   const localeCookie = useI18nCookie(detectConfig)
+  // `$fetch` is a global before Nuxt 4.5 and a `#build/fetch` export after, Nuxt 5 drops the global in the app
+  const $fetch = useRequestFetch()
   const loadMap = new Set<string>()
 
   /** Get computed config for locale */

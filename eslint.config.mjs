@@ -123,6 +123,16 @@ export default createConfigForNuxt({
         ],
       },
     },
+    // `#build/fetch` only exports `$fetch` since Nuxt 4.5, and Nuxt 5 no longer defines the global in the app
+    {
+      files: ['src/runtime/**'],
+      ignores: ['src/runtime/server/**'],
+      name: 'local/no-ambient-fetch',
+      rules: {
+        'no-restricted-globals': ['error', { message: 'Use `useRequestFetch()` instead.', name: '$fetch' }],
+        'no-restricted-imports': ['error', { message: 'Use `useRequestFetch()` instead.', name: '#build/fetch' }],
+      },
+    },
     {
       rules: {
         '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
