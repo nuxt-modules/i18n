@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useRequestEvent, useRequestURL } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useRequestEvent } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
@@ -12,11 +12,14 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
+import { getHost } from '../shared/request'
 import { setupMultiDomainLocales } from '../routing/domain'
+import { getRouter } from '../composable-context'
 import { withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
+import type { I18nServerContext } from '../server/context'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -24,20 +27,21 @@ export default defineNuxtPlugin({
   async setup(nuxt) {
     Object.defineProperty(nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
     const runtimeI18n = useRuntimeI18n(nuxt)
-    const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
+    const event = useRequestEvent(nuxt)
+    const preloadedOptions = event?.context?.nuxtI18n?.vueI18nOptions
+    const _defaultLocale = resolveDefaultLocale(getHost(event), runtimeI18n.defaultLocale)
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
     if (import.meta.server) {
-      localeConfigs.value = useRequestEvent()!.context.nuxtI18n?.localeConfigs || {}
+      localeConfigs.value = event!.context.nuxtI18n?.localeConfigs || {}
     } else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
     }
 
     if (__I18N_DOMAINS__) {
-      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
+      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__, getRouter(nuxt))
     }
 
     prerenderRoutes(
@@ -48,13 +52,13 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
-    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(runtimeI18n), runtimeI18n)
+    const detectors = useDetectors(event, useI18nDetection(runtimeI18n), runtimeI18n)
 
     const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, !!optionsI18n.flatJson)
     nuxt._nuxtI18n = ctx
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server) {
-      wrapTranslationFunctions(ctx)
+      wrapTranslationFunctions(ctx, event?.context.nuxtI18n)
     }
 
     // extend i18n instance
@@ -158,7 +162,7 @@ export default defineNuxtPlugin({
 /**
  * Wrap translation functions to track translation keys used during SSR
  */
-function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestEvent()?.context?.nuxtI18n) {
+function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n: I18nServerContext | undefined) {
   if (!serverI18n) { return }
 
   const i18n = ctx.vueI18n.global

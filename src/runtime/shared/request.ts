@@ -26,3 +26,11 @@ export function getRequestHost(event: RequestEventLike): string {
     || getRequestHeader(event, 'host')
     || 'localhost'
 }
+
+/**
+ * The host the app is served on. Takes the event instead of using `useRequestURL()`, which finds
+ * it through the ambient Nuxt app - that can be another request's during SSR (#4148)
+ */
+export function getHost(event: RequestEventLike | undefined): string {
+  return import.meta.client ? window.location.host : getRequestHost(event!)
+}

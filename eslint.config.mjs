@@ -133,6 +133,34 @@ export default createConfigForNuxt({
         'no-restricted-imports': ['error', { message: 'Use `useRequestFetch()` instead.', name: '#build/fetch' }],
       },
     },
+    // While plugins are set up `useNuxtApp()` can resolve another request's app (#4148), code running
+    // there reads from the Nuxt app it is given instead of looking one up
+    {
+      files: [
+        'src/runtime/plugins/**',
+        'src/runtime/composable-context.ts',
+        'src/runtime/context.ts',
+        'src/runtime/routing/domain.ts',
+        'src/runtime/utils.ts',
+      ],
+      name: 'local/no-ambient-app',
+      rules: {
+        'no-restricted-imports': ['error', {
+          paths: [
+            { message: 'Use `useRequestFetch()` instead.', name: '#build/fetch' },
+            ...['#imports', '#app'].map(name => ({
+              importNames: ['useNuxtApp', 'useRequestURL', 'useRoute', 'useRouter'],
+              message: 'Take the Nuxt app as an argument and read from it instead.',
+              name,
+            })),
+          ],
+        }],
+        'no-restricted-syntax': ['error', {
+          message: 'Pass the Nuxt app, `useRequestEvent(nuxtApp)`.',
+          selector: 'CallExpression[callee.name="useRequestEvent"][arguments.length=0]',
+        }],
+      },
+    },
     {
       rules: {
         '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],

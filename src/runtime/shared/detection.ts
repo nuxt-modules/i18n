@@ -7,7 +7,7 @@ import { parseAcceptLanguage } from '@intlify/utils'
 import { cookieSpansDomains, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
-import { type RequestEventLike, getRequestHost as getEventHost, getRequestCookie, getRequestHeader } from './request'
+import { type RequestEventLike, getRequestCookie, getRequestHeader, getHost as getRequestHost } from './request'
 import type { useI18nDetection } from '../shared/utils'
 import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '../../types'
 
@@ -26,9 +26,6 @@ const getHeaderLocale = (event: RequestEventLike | undefined) =>
   findBrowserLocale(normalizedLocales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
 
 const getNavigatorLocale = (event: RequestEventLike | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
-
-const getRequestHost = (event: RequestEventLike | undefined) =>
-  import.meta.client ? new URL(window.location.href).host : getEventHost(event!)
 
 const getRefererHost = (event: RequestEventLike | undefined): string | undefined => {
   const referer = import.meta.client ? document.referrer : getRequestHeader(event!, 'referer')

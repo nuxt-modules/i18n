@@ -1,7 +1,9 @@
-import { useHead, useNuxtApp, useRequestURL, useRouter } from '#imports'
+import { useHead, useRequestEvent } from '#imports'
 import { createRoutingContext } from './routing/context'
+import { getHost } from './shared/request'
 
 import type { NuxtApp } from '#app'
+import type { Router } from 'vue-router'
 import type { I18nHeadMetaInfo, I18nHeadOptions } from '#internal-i18n-types'
 import type { NuxtI18nContext } from './context'
 import type { RoutingContext } from './routing/context'
@@ -43,17 +45,23 @@ export function useComposableContext(nuxtApp: NuxtApp): ComposableContext {
   return context
 }
 
-export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp = useNuxtApp()): ComposableContext {
+/**
+ * The app's router, read from the app instead of the ambient `useRouter()` (#4148). This module
+ * is typechecked without pages, where `$router` is typed as Nuxt's built-in router
+ */
+export const getRouter = (nuxtApp: NuxtApp) => nuxtApp.$router as unknown as Router
+
+export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp): ComposableContext {
   const localePathPayload = getLocalePathPayload(nuxtApp)
   const routingCtx = createRoutingContext({
-    router: useRouter(),
+    router: getRouter(nuxtApp),
     defaultLocale: ctx.getDefaultLocale(),
     configuredDefaultLocale: ctx.config.defaultLocale || '',
     getLocale: ctx.getLocale,
     getLocales: ctx.getLocales,
     getBaseUrl: ctx.getBaseUrl,
     getCanonicalBaseUrl: ctx.getCanonicalBaseUrl,
-    getHost: () => useRequestURL({ xForwardedHost: true }).host,
+    getHost: () => getHost(useRequestEvent(nuxtApp)),
     getLocalePathPayload: () => __I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && localePathPayload,
     strategy: __I18N_STRATEGY__,
     routing: __I18N_ROUTING__,
@@ -91,7 +99,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
   }
 }
 
-function getLocalePathPayload(nuxtApp = useNuxtApp()) {
+function getLocalePathPayload(nuxtApp: NuxtApp) {
   const payload = import.meta.client && document.querySelector(`[data-nuxt-i18n-slp="${nuxtApp._id}"]`)?.textContent
   return JSON.parse(payload || '{}') as Record<string, Record<string, string> | false>
 }

@@ -1,5 +1,6 @@
 import { isRef, unref } from 'vue'
 
+// eslint-disable-next-line no-restricted-imports -- `useRequestURL` is the only way to the request protocol, see `requestUrl`
 import { useCookie, useRequestFetch, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
