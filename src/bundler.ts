@@ -111,7 +111,10 @@ export function getDefineConfig(
     __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
     // gate for domain-based locale resolution
-    __I18N_DOMAINS__: String(options.differentDomains || options.multiDomainLocales),
+    __I18N_DOMAINS__: String(!!(options.differentDomains || options.multiDomainLocales)),
+    __I18N_ISOLATE_MULTIDOMAINLOCALES__: String(
+      typeof options.multiDomainLocales === 'object' && !!options.multiDomainLocales.isolate,
+    ),
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),

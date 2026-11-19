@@ -297,9 +297,14 @@ export type NuxtI18nOptions<
    * Enable when using different domains with different locales
    *
    * If enabled, `locales` must be configured as an array of `LocaleObject` objects with the `domains` and `defaultForDomains` property set.
+   *
+   * Set to `{ isolate: true }` when each domain sells the same product under its own regional
+   * brand name rather than one brand serving every region under the same name: a locale not
+   * served on the current domain 404s instead of being cross-domain redirected there, and the
+   * locale switcher/hreflang alternates only include locales served on the current domain.
    * @default false
    */
-  multiDomainLocales?: boolean
+  multiDomainLocales?: boolean | { isolate?: boolean }
   /**
    * Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
    *
