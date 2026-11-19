@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useRequestEvent } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useRequestEvent, useRequestURL } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
@@ -12,7 +12,6 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
-import { getHost } from '../shared/request'
 import { setupMultiDomainLocales } from '../routing/domain'
 import { getRouter } from '../composable-context'
 import { withRuntimeDomain } from '../shared/domain'
@@ -29,7 +28,8 @@ export default defineNuxtPlugin({
     const runtimeI18n = useRuntimeI18n(nuxt)
     const event = useRequestEvent(nuxt)
     const preloadedOptions = event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale = resolveDefaultLocale(getHost(event), runtimeI18n.defaultLocale)
+    const host = useRequestURL({ xForwardedHost: true }).host
+    const _defaultLocale = resolveDefaultLocale(host, runtimeI18n.defaultLocale)
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
@@ -52,7 +52,7 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
-    const detectors = useDetectors(event, useI18nDetection(runtimeI18n), runtimeI18n)
+    const detectors = useDetectors(event, useI18nDetection(runtimeI18n), runtimeI18n, host)
 
     const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, !!optionsI18n.flatJson)
     nuxt._nuxtI18n = ctx

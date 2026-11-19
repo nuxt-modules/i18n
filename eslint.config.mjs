@@ -149,7 +149,7 @@ export default createConfigForNuxt({
           paths: [
             { message: 'Use `useRequestFetch()` instead.', name: '#build/fetch' },
             ...['#imports', '#app'].map(name => ({
-              importNames: ['useNuxtApp', 'useRequestURL', 'useRoute', 'useRouter'],
+              importNames: ['useNuxtApp', 'useRoute', 'useRouter'],
               message: 'Take the Nuxt app as an argument and read from it instead.',
               name,
             })),

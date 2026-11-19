@@ -17,20 +17,3 @@ export function getRequestHeader(event: RequestEventLike, name: string): string 
 export function getRequestCookie(event: RequestEventLike, name: string): string | undefined {
   return parse(getRequestHeader(event, 'cookie') || '')[name]
 }
-
-/**
- * The request host, preferring `x-forwarded-host`
- */
-export function getRequestHost(event: RequestEventLike): string {
-  return getRequestHeader(event, 'x-forwarded-host')?.split(',')[0]?.trim()
-    || getRequestHeader(event, 'host')
-    || 'localhost'
-}
-
-/**
- * The host the app is served on. Takes the event instead of using `useRequestURL()`, which finds
- * it through the ambient Nuxt app - that can be another request's during SSR (#4148)
- */
-export function getHost(event: RequestEventLike | undefined): string {
-  return import.meta.client ? window.location.host : getRequestHost(event!)
-}

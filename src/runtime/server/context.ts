@@ -1,11 +1,10 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
 import { deepCopy } from '@intlify/shared'
-import { type ServerEvent, useRuntimeConfig } from '#i18n-server-runtime'
+import { type ServerEvent, getRequestURL, useRuntimeConfig } from '#i18n-server-runtime'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
 import { cloneDeep } from '../shared/messages'
-import { getRequestHost } from '../shared/request'
 import { getMergedMessages } from './utils/messages'
 
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
@@ -18,7 +17,7 @@ export function tryUseI18nContext(event: ServerEvent) {
 export async function initializeI18nContext(event: ServerEvent) {
   const runtimeI18n = useRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
   const defaultLocale: string = runtimeI18n.defaultLocale || ''
-  const options = await setupVueI18nOptions(resolveDefaultLocale(getRequestHost(event), defaultLocale))
+  const options = await setupVueI18nOptions(resolveDefaultLocale(getRequestURL(event).host, defaultLocale))
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
   const ctx = createI18nContext()
 

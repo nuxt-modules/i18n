@@ -33,6 +33,14 @@ describe('a domain serving one locale is its default without `domainDefault`', (
     expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
   })
 
+  test.each(['FR.nuxt-app.localhost', 'fr.nuxt-app.localhost:80'])('(#4193) %s is matched like the configured domain', async (host) => {
+    const res = await undiciRequest('/', { headers: { Host: host } })
+
+    expect(res.statusCode).toBe(200)
+    const dom = await getDom(await res.body.text())
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('fr')
+  })
+
   test.each(hosts)('%s host does not serve its own locale prefixed', async (locale, host) => {
     const res = await undiciRequest(`/${locale}/about`, { headers: { Host: host } })
 

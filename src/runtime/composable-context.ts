@@ -1,6 +1,5 @@
-import { useHead, useRequestEvent } from '#imports'
+import { useHead, useRequestURL } from '#imports'
 import { createRoutingContext } from './routing/context'
-import { getHost } from './shared/request'
 
 import type { NuxtApp } from '#app'
 import type { Router } from 'vue-router'
@@ -61,7 +60,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp):
     getLocales: ctx.getLocales,
     getBaseUrl: ctx.getBaseUrl,
     getCanonicalBaseUrl: ctx.getCanonicalBaseUrl,
-    getHost: () => getHost(useRequestEvent(nuxtApp)),
+    getHost: () => useRequestURL({ xForwardedHost: true }).host,
     getLocalePathPayload: () => __I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && localePathPayload,
     strategy: __I18N_STRATEGY__,
     routing: __I18N_ROUTING__,

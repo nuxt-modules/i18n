@@ -107,7 +107,7 @@ export default definePlugin(async (hooks) => {
     if (!__I18N_SERVER_REDIRECT__) { return }
 
     const renderPath = getRenderPath(event)
-    const detector = useDetectors(event, detection, runtimeI18n)
+    const detector = useDetectors(event, detection, runtimeI18n, __I18N_DOMAINS__ ? getRequestURL(event).host : '')
     const localeSegment = detector.route(renderPath)
     const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
     // `renderPath` has no `app.baseURL` and `parsePath` splits off the query string - so `path`

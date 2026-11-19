@@ -1,4 +1,4 @@
-import { navigateTo, useRequestEvent } from '#imports'
+import { navigateTo, useRequestEvent, useRequestURL } from '#imports'
 import { localePath, switchLocalePath } from './routing/routing'
 import { createNavigationResolver } from './routing/navigation'
 import { useNuxtI18nContext } from './context'
@@ -7,7 +7,6 @@ import { isSupportedLocale } from './shared/locales'
 import { createLocaleDetector, useDetectors } from './shared/detection'
 import { useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { resolveLocaleReach } from './shared/domain'
-import { getHost } from './shared/request'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -39,10 +38,13 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
   return locale
 }
 
+/** Only domains resolve anything from the host */
+const getHost = () => (__I18N_DOMAINS__ ? useRequestURL({ xForwardedHost: true }).host : '')
+
 export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): string {
   const runtimeI18n = useRuntimeI18n(nuxtApp)
   const detectConfig = useI18nDetection(runtimeI18n)
-  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, runtimeI18n)
+  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, runtimeI18n, getHost())
   const ctx = useNuxtI18nContext(nuxtApp)
   const detect = createLocaleDetector({
     detection: detectConfig,
@@ -59,9 +61,8 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
   const ctx = useNuxtI18nContext(nuxtApp)
   const _ctx = useComposableContext(nuxtApp)
   const runtimeI18n = useRuntimeI18n(nuxtApp)
-  const event = useRequestEvent(nuxtApp)
-  const detectors = useDetectors(event, useI18nDetection(runtimeI18n), runtimeI18n)
-  const host = __I18N_DOMAINS__ ? getHost(event) : ''
+  const host = getHost()
+  const detectors = useDetectors(useRequestEvent(nuxtApp), useI18nDetection(runtimeI18n), runtimeI18n, host)
   const resolve = createNavigationResolver({
     localeReach: __I18N_DOMAINS__
       ? locale => resolveLocaleReach(_ctx.getLocales(), host, locale)
