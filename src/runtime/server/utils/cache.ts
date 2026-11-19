@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useStorage } from 'nitropack/runtime'
-import { prefixStorage } from 'unstorage'
+import { useStorage } from '#i18n-server-runtime'
 
 export interface CacheOptions<ArgsT extends unknown[] = any[]> {
   name?: string
@@ -13,7 +12,7 @@ export interface CacheOptions<ArgsT extends unknown[] = any[]> {
   maxAge?: number
 }
 
-const storage = prefixStorage(useStorage(), 'i18n')
+const storage = useStorage('i18n')
 type CachedValue<T> = { ttl: number, value: T, mtime: number }
 
 /**

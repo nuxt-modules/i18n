@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
+import { normalize } from 'pathe'
 import { localizeRoutes } from '../../src/routing'
 import { createPureOptionsResolver, analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../src/pages'
-import { getNuxtOptions, stripFilePropertyFromPages } from './utils'
+import { getNuxtOptions, stripDynamicMetaFromPages, stripFilePropertyFromPages } from './utils'
 import { vi, afterAll, describe, test, expect } from 'vitest'
 
 import { deepCopy } from '@intlify/shared'
@@ -222,7 +223,10 @@ describe('Extract page meta', () => {
     } catch {
       // ignore build errors
     }
-    expect(stripFilePropertyFromPages(await localizedPages)).toMatchSnapshot()
+    const resolvedPages = await localizedPages
+    // nuxt tracks unextracted `definePageMeta` keys by page file, so localized copies must keep it
+    expect(new Set(resolvedPages.map(page => page.file))).toEqual(new Set([normalize(pages[0].file)]))
+    expect(stripDynamicMetaFromPages(stripFilePropertyFromPages(resolvedPages))).toMatchSnapshot()
   })
 })
 

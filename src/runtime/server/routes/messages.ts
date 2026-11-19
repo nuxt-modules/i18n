@@ -1,14 +1,18 @@
-import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
-import { createError, defineEventHandler, getRouterParam } from 'h3'
+import {
+  type ServerEvent,
+  createError,
+  defineCachedFunction,
+  defineCachedHandler,
+  defineEventHandler,
+  getRouterParam,
+} from '#i18n-server-runtime'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
-
-import type { H3Event } from 'h3'
 
 /**
  * Load messages for the specified locale event parameter
  */
-const _messagesHandler = defineEventHandler(async (event: H3Event) => {
+const _messagesHandler = defineEventHandler(async (event: ServerEvent) => {
   const locale = getRouterParam(event, 'locale')
 
   if (!locale) {
@@ -30,10 +34,10 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   return messages
 })
 
-const getCacheKey = (event: H3Event) =>
+const getCacheKey = (event: ServerEvent) =>
   [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
 
-async function shouldBypassCache(event: H3Event) {
+async function shouldBypassCache(event: ServerEvent) {
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
   // prerendering may require initializing context
@@ -51,7 +55,7 @@ const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
 /**
  * Load messages for the specified locale event parameter (cached)
  */
-const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
+const _messagesHandlerCached = defineCachedHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : __I18N_HTTP_CACHE_DURATION__,
   swr: false,

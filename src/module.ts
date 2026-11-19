@@ -14,6 +14,8 @@ import { relative } from 'pathe'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { generateI18nTypes, simplifyLocaleOptions } from './gen'
 
+const moduleURL = new URL(import.meta.url)
+
 export * from './types'
 
 export default defineNuxtModule<NuxtI18nOptions>({
@@ -22,6 +24,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
+      server: 'nitro3',
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore property removed in Nuxt 4
       bridge: false,
@@ -78,17 +81,17 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     for (const dep of deps) {
       if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
-      nuxt.options.alias[dep] = resolveModule(dep)
+      nuxt.options.alias[dep] = resolveModule(dep, { url: moduleURL })
     }
     const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
-    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`)
-    nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`)
+    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`, { url: moduleURL })
+    nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`, { url: moduleURL })
     nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
 
     // the aliased node build has no declaration file, drop the generated paths entries
     // so TS resolves types from the package `types` export (`dist/core.d.ts`) instead
-    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig }) => {
-      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig]) {
+    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig }) => {
+      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig]) {
         delete cfg?.compilerOptions?.paths?.['@intlify/core']
       }
     })

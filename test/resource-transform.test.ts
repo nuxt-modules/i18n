@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { ResourcePlugin } from '../src/transform/resource'
+import { asI18nVirtual } from '../src/transform/utils'
 
 import type { ResolvedI18nContext } from '../src/context'
 
-function createPlugin(paths: string[]) {
+function createPlugin(paths: string[], rawResourcePaths: string[] = []) {
   const ctx = {
     localeFileMetas: paths.map(path => ({ path, hash: path })),
+    rawResourcePaths: new Set(rawResourcePaths),
     vueI18nConfigPaths: []
   } as unknown as ResolvedI18nContext
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,6 +21,15 @@ async function transform(code: string, id: string) {
 }
 
 describe('ResourcePlugin', () => {
+  it('does not resolve raw resource virtual IDs in Vite server environments', () => {
+    const path = '/app/i18n/locales/en.yml'
+    const plugin = createPlugin([path], [path])
+    const id = asI18nVirtual(path)
+
+    expect(plugin.resolveId.call({ environment: { config: { consumer: 'server' } } }, id)).toBeUndefined()
+    expect(plugin.resolveId.call({ environment: { config: { consumer: 'client' } } }, id)).toBe(path)
+  })
+
   it('unwraps `defineI18nLocale` calls', async () => {
     const code = `export default defineI18nLocale(() => ({ msg: 'English message' }))`
 

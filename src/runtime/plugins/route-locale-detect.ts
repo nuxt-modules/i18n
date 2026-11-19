@@ -1,6 +1,6 @@
 import { useNuxtI18nContext, useResolvedLocale } from '../context'
 import { detectLocale, loadAndSetLocale, navigate } from '../utils'
-import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
+import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware, navigateTo, useNuxtApp } from '#imports'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:route-locale-detect',
@@ -9,6 +9,17 @@ export default defineNuxtPlugin({
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     const ctx = useNuxtI18nContext(nuxt)
+
+    // skips rendering a page the server has already redirected
+    const serverRedirect = import.meta.server && __I18N_SERVER_REDIRECT__
+      ? nuxt.ssrContext?.event.context.nuxtI18n?.redirect
+      : undefined
+    if (serverRedirect) {
+      await nuxt.runWithContext(() =>
+        navigateTo(serverRedirect.location, { external: true, redirectCode: serverRedirect.status }),
+      )
+      return
+    }
 
     const resolvedLocale = useResolvedLocale()
     await nuxt.runWithContext(() =>

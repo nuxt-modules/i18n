@@ -1,6 +1,7 @@
 packages:
   - docs
   - playground
+  - playground-v5
   - specs/fixtures/*
 
 onlyBuiltDependencies:

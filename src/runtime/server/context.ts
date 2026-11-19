@@ -1,37 +1,39 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
 import { deepCopy } from '@intlify/shared'
-import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
+import { type ServerEvent, fetchInternal, useRuntimeConfig } from '#i18n-server-runtime'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
-import { useRuntimeI18n } from '../shared/utils'
 import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
 import { cloneDeep } from '../shared/messages'
+import { getRequestHost } from '../shared/request'
 import { getMergedMessages } from './utils/messages'
 
-export function useI18nContext(event: H3Event) {
-  if (event.context.nuxtI18n == null) {
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { ServerRedirect } from './runtime/types'
+
+export function useI18nContext(event: ServerEvent) {
+  const ctx = tryUseI18nContext(event)
+  if (ctx == null) {
     throw new Error('Nuxt I18n server context has not been set up yet.')
   }
-  return event.context.nuxtI18n
+  return ctx
 }
 
-export function tryUseI18nContext(event: H3Event) {
-  return event.context.nuxtI18n
+export function tryUseI18nContext(event: ServerEvent) {
+  return (event.context as I18nEventContext).nuxtI18n
 }
 
-const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true }).host
-
-export async function initializeI18nContext(event: H3Event) {
-  const runtimeI18n = useRuntimeI18n(undefined, event)
+export async function initializeI18nContext(event: ServerEvent) {
+  const runtimeI18n = useRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
   const defaultLocale: string = runtimeI18n.defaultLocale || ''
-  const options = await setupVueI18nOptions(resolveDefaultLocale(getHost(event), defaultLocale))
+  const options = await setupVueI18nOptions(resolveDefaultLocale(getRequestHost(event), defaultLocale))
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
   const ctx = createI18nContext()
 
   ctx.vueI18nOptions = options
   ctx.localeConfigs = localeConfigs
 
-  event.context.nuxtI18n = ctx
+  ;(event.context as I18nEventContext).nuxtI18n = ctx
   return ctx
 }
 
@@ -39,17 +41,19 @@ export async function initializeI18nContext(event: H3Event) {
  * Fetches the messages for the specified locale.
  * @internal
  */
-export const fetchMessages = async (locale: string) => {
+export const fetchMessages = async (event: ServerEvent, locale: string) => {
   const headers = new Headers({ 'x-nuxt-i18n': 'internal' })
   if (import.meta.dev) {
     headers.set('Cache-Control', 'no-cache')
   }
-  return await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`, {
-    headers,
-  })
+  return await fetchInternal<LocaleMessages<DefineLocaleMessage>>(
+    event,
+    `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`,
+    { headers },
+  )
 }
 
-export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
+export function createI18nContext(): I18nServerContext {
   return {
     messages: {},
     slp: {},
@@ -83,42 +87,51 @@ interface ServerLocaleConfig {
   fallbacks: string[]
 }
 
+/** @internal */
+export interface I18nServerContext {
+  /**
+   * Cached locale configurations based on runtime config
+   * @internal
+   */
+  localeConfigs?: Record<string, ServerLocaleConfig>
+  /**
+   * SwitchLocalePath dynamic parameters state
+   * @internal
+   */
+  slp: Record<string, unknown>
+  /**
+   * The loaded messages for the current request, used to insert into the rendered HTML for hydration
+   * @internal
+   */
+  messages: LocaleMessages<DefineLocaleMessage>
+  /**
+   * The list of keys that are tracked for the current request
+   * @internal
+   */
+  trackMap: Record<string, Set<string>>
+  /**
+   * Track message key for the current request
+   * @internal
+   */
+  trackKey: (key: string, locale: string) => void
+  /**
+   * Load merged messages for a locale, skipping the messages endpoint round-trip
+   * @internal
+   */
+  loadMessages: (locale: string) => Promise<LocaleMessages<DefineLocaleMessage>>
+  detectLocale?: string
+  /**
+   * Redirect resolved for the current page request
+   * @internal
+   */
+  redirect?: ServerRedirect
+  vueI18nOptions?: ResolvedI18nOptions
+}
+
+interface I18nEventContext {
+  nuxtI18n?: I18nServerContext
+}
+
 declare module 'h3' {
-  interface H3EventContext {
-    /** @internal */
-    nuxtI18n?: {
-      /**
-       * Cached locale configurations based on runtime config
-       * @internal
-       */
-      localeConfigs?: Record<string, ServerLocaleConfig>
-      /**
-       * SwitchLocalePath dynamic parameters state
-       * @internal
-       */
-      slp: Record<string, unknown>
-      /**
-       * The loaded messages for the current request, used to insert into the rendered HTML for hydration
-       * @internal
-       */
-      messages: LocaleMessages<DefineLocaleMessage>
-      /**
-       * The list of keys that are tracked for the current request
-       * @internal
-       */
-      trackMap: Record<string, Set<string>>
-      /**
-       * Track message key for the current request
-       * @internal
-       */
-      trackKey: (key: string, locale: string) => void
-      /**
-       * Load merged messages for a locale, skipping the messages endpoint round-trip
-       * @internal
-       */
-      loadMessages: (locale: string) => Promise<LocaleMessages<DefineLocaleMessage>>
-      detectLocale?: string
-      vueI18nOptions?: ResolvedI18nOptions
-    }
-  }
+  interface H3EventContext extends I18nEventContext {}
 }

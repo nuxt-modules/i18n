@@ -63,8 +63,10 @@ export function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     }
     // `prepend` - without it kit appends after ResourcePlugin, which then claims the virtual ids
     addVitePlugin(() => jsonParsePlugin!.vite(), { client: false, prepend: true })
-    addVitePlugin(() => VueI18nPlugin.vite(vueI18nPluginOptions), { server: false })
-    addVitePlugin(() => VueI18nPlugin.vite(serverPluginOptions), { client: false })
+    // `prepend` - kit's environment wrapper drops the inner `enforce: 'pre'` for `post`, landing
+    // the resource transform after vite's builtin json-to-esm (#4116)
+    addVitePlugin(() => VueI18nPlugin.vite(vueI18nPluginOptions), { server: false, prepend: true })
+    addVitePlugin(() => VueI18nPlugin.vite(serverPluginOptions), { client: false, prepend: true })
     addWebpackPlugin(() => VueI18nPlugin.webpack(vueI18nPluginOptions))
   } else {
     addBuildPlugin({
