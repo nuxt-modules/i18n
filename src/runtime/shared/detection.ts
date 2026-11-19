@@ -7,7 +7,7 @@ import { parseAcceptLanguage } from '@intlify/utils'
 import { cookieSpansDomains, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
-import { type RequestEventLike, getRequestHost as getEventHost, getRequestCookie, getRequestHeader } from './request'
+import { type RequestEventLike, getRequestCookie, getRequestHeader } from './request'
 import type { useI18nDetection } from '../shared/utils'
 import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '../../types'
 
@@ -27,9 +27,6 @@ const getHeaderLocale = (event: RequestEventLike | undefined) =>
 
 const getNavigatorLocale = (event: RequestEventLike | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
 
-const getRequestHost = (event: RequestEventLike | undefined) =>
-  import.meta.client ? new URL(window.location.href).host : getEventHost(event!)
-
 const getRefererHost = (event: RequestEventLike | undefined): string | undefined => {
   const referer = import.meta.client ? document.referrer : getRequestHeader(event!, 'referer')
   try {
@@ -46,26 +43,25 @@ export const useDetectors = (
   event: RequestEventLike | undefined,
   config: { cookieKey: string, cookieDomain?: string | null },
   runtimeI18n: I18nPublicRuntimeConfig,
+  host: string,
 ) => {
   if (import.meta.server && !event) {
     throw new Error('A request event is required for server-side locale detection')
   }
 
   // constant for the lifetime of these detectors, a fresh set is created per request
-  let host: string | undefined
   let locales: NormalizedLocaleObject[] | undefined
-  const getHost = () => (host ??= getRequestHost(event))
   const getLocales = () => (locales ??= getDomainLocales(runtimeI18n.domainLocales))
 
   return {
     cookie: () => getCookieLocale(event, config.cookieKey),
     header: () => (import.meta.server ? getHeaderLocale(event) : undefined),
     navigator: () => (import.meta.client ? getNavigatorLocale(event) : undefined),
-    host: (path: string) => matchDomainLocale(getLocales(), getHost(), getLocaleFromRoutePath(path)),
+    host: (path: string) => matchDomainLocale(getLocales(), host, getLocaleFromRoutePath(path)),
     route: (path: string | CompatRoute) => getRouteLocale(event, path),
     /** Passes the locale through when the current host serves it, `undefined` otherwise */
     onHost: (locale: string | null | undefined) =>
-      !locale || isLocaleServedOnHost(getLocales(), getHost(), locale) ? locale : undefined,
+      !locale || isLocaleServedOnHost(getLocales(), host, locale) ? locale : undefined,
     /** Whether the visitor arrived from one of the configured domains */
     fromOwnDomain: () => {
       const referer = getRefererHost(event)

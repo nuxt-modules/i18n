@@ -17,12 +17,3 @@ export function getRequestHeader(event: RequestEventLike, name: string): string 
 export function getRequestCookie(event: RequestEventLike, name: string): string | undefined {
   return parse(getRequestHeader(event, 'cookie') || '')[name]
 }
-
-/**
- * The request host, preferring `x-forwarded-host`
- */
-export function getRequestHost(event: RequestEventLike): string {
-  return getRequestHeader(event, 'x-forwarded-host')?.split(',')[0]?.trim()
-    || getRequestHeader(event, 'host')
-    || 'localhost'
-}

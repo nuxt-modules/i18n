@@ -1,6 +1,5 @@
 import type { Router } from 'vue-router'
 import type { Strategies } from '#internal-i18n-types'
-import { useRouter } from '#imports'
 import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
 
 /**
@@ -8,7 +7,7 @@ import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routin
  * every domain default. Used by both `differentDomains` and `multiDomainLocales` under the
  * `*_default` strategies.
  */
-export function setupMultiDomainLocales(defaultLocale: string, strategy: Strategies, router: Router = useRouter()) {
+export function setupMultiDomainLocales(defaultLocale: string, strategy: Strategies, router: Router) {
   if (strategy !== 'prefix_except_default' && strategy !== 'prefix_and_default') { return }
 
   // `prefix_and_default` serves its default locale both unprefixed and prefixed, so the host's

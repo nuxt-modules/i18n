@@ -583,6 +583,11 @@ describe('basic usage', async () => {
       expect(jaRes?.['server-key']).toMatch('こんにちは！')
     })
 
+    test('(#3690) a second Nuxt app on the page resolves routes with its own router', async () => {
+      const { page } = await renderPage('/second-app')
+      await expect.poll(() => page.locator('#second-app-switched-path').innerText()).toEqual('/fr/about')
+    })
+
     test('(#4144) server routes do not set up the i18n server context', async () => {
       expect(await $fetch('/api/i18n-context')).toEqual({ initialized: false })
       expect(await $fetch('/api/i18n-context?next=/__nuxt_island/example')).toEqual({ initialized: false })
