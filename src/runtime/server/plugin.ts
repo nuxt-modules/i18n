@@ -94,6 +94,13 @@ export default definePlugin(async (hooks) => {
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
+  // server components are rendered by their own handler, no other hook runs before their app does
+  hooks.onRequest(async (event) => {
+    if (getRenderPath(event).includes('/__nuxt_island/')) {
+      await initializeI18nContext(event)
+    }
+  })
+
   hooks.onBeforeRender(async (event) => {
     // set up on first use, so requests that render no page (assets, server routes) skip it (#4144)
     const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
