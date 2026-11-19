@@ -378,6 +378,26 @@ describe('localizeRoutes', function () {
           expect(router.resolve(path).matched.map(x => x.name)).toEqual(table.resolve(path).matched.map(x => x.name))
         }
       })
+
+      it('keeps aliases when rebuilding a router created from other routes', function () {
+        const localized = localizeRoutes([{ path: '/about', name: 'about', alias: ['/a'] }] as LocalizableRoute[], {
+          ...nuxtOptions,
+          defaultLocale: 'en',
+          strategy: 'prefix_except_default',
+          differentDomains: true,
+          locales: getNormalizedLocales([
+            { code: 'en', domain: 'en.example.com' },
+            { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+          ])
+        }) as any[]
+
+        const router = createRouter({ routes: localized, history: createMemoryHistory() })
+        setupMultiDomainLocales('fr', 'prefix_except_default', router)
+
+        expect(router.resolve('/about').name).toBe('about___fr')
+        expect(router.resolve('/a').name).toBe('about___fr')
+        expect(router.resolve('/en/a').name).toBe('about___en')
+      })
     })
 
     it('keeps the configured trailing slash when unprefixing', function () {
