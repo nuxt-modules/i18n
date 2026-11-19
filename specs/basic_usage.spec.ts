@@ -585,6 +585,7 @@ describe('basic usage', async () => {
 
     test('(#4144) server routes do not set up the i18n server context', async () => {
       expect(await $fetch('/api/i18n-context')).toEqual({ initialized: false })
+      expect(await $fetch('/api/i18n-context?next=/__nuxt_island/example')).toEqual({ initialized: false })
     })
 
     test('(#4144) server components are rendered with the i18n server context', async () => {

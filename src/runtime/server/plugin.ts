@@ -96,7 +96,7 @@ export default definePlugin(async (hooks) => {
 
   // server components are rendered by their own handler, no other hook runs before their app does
   hooks.onRequest(async (event) => {
-    if (getRenderPath(event).includes('/__nuxt_island/')) {
+    if (parsePath(getRenderPath(event)).pathname.includes('/__nuxt_island/')) {
       await initializeI18nContext(event)
     }
   })
