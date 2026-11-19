@@ -583,6 +583,16 @@ describe('basic usage', async () => {
       expect(jaRes?.['server-key']).toMatch('こんにちは！')
     })
 
+    test('(#4144) server routes do not set up the i18n server context', async () => {
+      expect(await $fetch('/api/i18n-context')).toEqual({ initialized: false })
+      expect(await $fetch('/api/i18n-context?next=/__nuxt_island/example')).toEqual({ initialized: false })
+    })
+
+    test('(#4144) server components are rendered with the i18n server context', async () => {
+      const html = await $fetch<string>('/server-component')
+      expect(html).toMatch(/id="server-context"[^>]*>true</)
+    })
+
     test('(#2220) vue-i18n message compiler works in server routes', async () => {
       const res = await $fetch('/api/vue-i18n-compile')
       expect(res).toMatchObject({ message: 'Hello, nitro!' })

@@ -76,6 +76,4 @@ export const getRenderPath = (event: ServerEvent) => event.path
 export const setCookie = (event: ServerEvent, name: string, value: string, options: CookieSerializeOptions) =>
   _setCookie(event, name, value, options)
 
-export const fetchInternal = <T>(_event: ServerEvent, path: string, init: { headers: Headers }) => $fetch<T>(path, init)
-
 export const defineI18nMiddleware = (options: CoreOptions) => _defineI18nMiddleware(options)
