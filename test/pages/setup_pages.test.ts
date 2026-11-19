@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { setupPages } from '../../src/pages'
 import { getNormalizedLocales } from './utils'
@@ -96,5 +97,24 @@ describe('setupPages', () => {
 
     const resourcesTemplate = kitMocks.templates.find(template => template.filename === 'i18n-route-resources.mjs')
     expect(resourcesTemplate?.getContents?.()).toContain('export const pathToI18nConfig = {};')
+  })
+
+  it('localizes pages added with an aliased file path (#4164)', async () => {
+    const { nuxt, hooks } = createNuxt()
+    nuxt.options.alias = { '~': resolve(__dirname, '../fixtures/custom_route/simple') }
+    const context = createI18nContext('prefix_except_default')
+    context.options.customRoutes = 'page'
+    await setupPages(context, nuxt)
+
+    const pages: NuxtPage[] = [
+      { path: '/about', name: 'about', file: '~/pages/about.vue' },
+    ]
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await hooks.get('pages:extend')?.(pages)
+
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining("Couldn't read component data"))
+    warn.mockRestore()
+    expect(pages.map(page => page.path)).toEqual(expect.arrayContaining(['/about-us', '/fr/a-propos']))
+    expect(pages.every(page => page.file === '~/pages/about.vue')).toBe(true)
   })
 })
