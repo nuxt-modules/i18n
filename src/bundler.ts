@@ -102,7 +102,7 @@ export function getDefineConfig(
   const stripMessagesPayload = rawOptions.experimental?.stripMessagesPayload ?? !!options.experimental.preload
 
   const common = {
-    __IS_SSR__: String(nuxt.options.ssr),
+    __IS_SSR__: String(ctx.ssr),
     __IS_SSG__: String(ctx.staticDeploy),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
