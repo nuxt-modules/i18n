@@ -172,16 +172,12 @@ describe('localeHead', () => {
     await router.push('/')
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
-    try {
-      expect(localeHead(ctx, { seo: false }).link).toEqual([])
-      expect(warn).not.toHaveBeenCalled()
+    expect(localeHead(ctx, { seo: false }).link).toEqual([])
+    expect(warn).not.toHaveBeenCalled()
 
-      localeHead(ctx, { seo: true })
-      expect(warn).toHaveBeenCalledWith('I18n `baseUrl` is required to generate valid SEO tag links.')
-    }
-    finally {
-      warn.mockRestore()
-    }
+    localeHead(ctx, { seo: true })
+    expect(warn).toHaveBeenCalledWith('I18n `baseUrl` is required to generate valid SEO tag links.')
+    warn.mockRestore()
   })
 
   test('(#4182) strict seo does not require `baseUrl` when seo links are disabled', async () => {
