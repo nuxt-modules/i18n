@@ -12,47 +12,27 @@ const cachedCatalogue = () => Object.freeze({ ar: Object.freeze({ HOTELS: 'فن�
 
 describe('createI18nContext().loadMessages', () => {
   beforeEach(() => {
-    vi.stubGlobal('__I18N_PRELOAD__', true)
     getMergedMessages.mockReset()
   })
 
-  test('(#4152) a load after the preload pass leaves its frozen entry untouched', async () => {
+  test('(#4152) a load leaves the preload payload to the preload plugin', async () => {
     const ctx = createI18nContext()
-    ctx.messages.ar = Object.freeze({ HOTELS: 'فندق', FROM_VUE_I18N_CONFIG: 'اعداد' })
+    // the plugin stores the cached tree by reference, which is frozen
+    const preloaded = Object.freeze({ HOTELS: 'فندق' })
+    ctx.messages.ar = preloaded
     getMergedMessages.mockResolvedValue(cachedCatalogue())
 
-    await expect(ctx.loadMessages('ar')).resolves.toBeDefined()
-
-    expect(ctx.messages.ar).toEqual({ HOTELS: 'فندق', FROM_VUE_I18N_CONFIG: 'اعداد' })
-  })
-
-  test('a locale reached through a fallback chain lands once', async () => {
-    const ctx = createI18nContext()
-    getMergedMessages.mockResolvedValue(Object.freeze({
-      ar: Object.freeze({ HOTELS: 'فندق' }),
-      ku: Object.freeze({ HOTELS: 'ھۆتێل' }),
-    }))
-
-    await ctx.loadMessages('ku')
     await ctx.loadMessages('ar')
+    await ctx.loadMessages('ku')
 
-    expect(ctx.messages).toEqual({ ar: { HOTELS: 'فندق' }, ku: { HOTELS: 'ھۆتێل' } })
+    expect(ctx.messages).toEqual({ ar: preloaded })
+    expect(ctx.messages.ar).toBe(preloaded)
   })
 
-  test('the caller still receives the merged messages', async () => {
+  test('the caller receives the merged messages', async () => {
     const ctx = createI18nContext()
     getMergedMessages.mockResolvedValue(cachedCatalogue())
 
     await expect(ctx.loadMessages('ar')).resolves.toEqual({ ar: { HOTELS: 'فندق' } })
-  })
-
-  test('no payload is collected when preload is off', async () => {
-    vi.stubGlobal('__I18N_PRELOAD__', false)
-    const ctx = createI18nContext()
-    getMergedMessages.mockResolvedValue(cachedCatalogue())
-
-    await ctx.loadMessages('ar')
-
-    expect(ctx.messages).toEqual({})
   })
 })

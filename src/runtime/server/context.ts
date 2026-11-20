@@ -43,12 +43,6 @@ export function createI18nContext(): I18nServerContext {
     },
     async loadMessages(locale: string) {
       const messages = (await getMergedMessages(locale, this.localeConfigs?.[locale]?.fallbacks ?? [])) ?? {}
-      // only the payload reads `ctx.messages`, and copying the full tree per request is expensive
-      if (__I18N_PRELOAD__) {
-        for (const key of Object.keys(messages)) {
-          this.messages[key] ??= messages[key]!
-        }
-      }
       // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
       return this.vueI18nOptions?.flatJson ? cloneDeep(messages) : messages
     },
@@ -79,7 +73,7 @@ export interface I18nServerContext {
    */
   slp: Record<string, unknown>
   /**
-   * The loaded messages for the current request, used to insert into the rendered HTML for hydration
+   * The messages inserted into the rendered HTML for hydration, set by the preload plugin
    * @internal
    */
   messages: LocaleMessages<DefineLocaleMessage>
