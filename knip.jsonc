@@ -6,6 +6,7 @@
         "build.config.ts",
         "src/module.ts",
         "src/runtime/{plugins,components,composables}/**",
+        "src/runtime/router.options.ts",
         "src/runtime/server/**",
         "src/runtime/kit/**",
         "scripts/*",

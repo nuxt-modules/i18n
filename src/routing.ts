@@ -129,7 +129,7 @@ const usesDefaultVariants = (strategy: Strategies | undefined) =>
  */
 function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies): string[] {
   if (config.differentDomains || config.multiDomainLocales) {
-    // `setupMultiDomainLocales` keeps the current host's variant at runtime
+    // `resolveDomainRoutes` keeps the current host's variant at runtime
     return usesDefaultVariants(strategy) ? getDomainDefaultLocales(config.locales) : []
   }
   return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
