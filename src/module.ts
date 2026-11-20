@@ -1,4 +1,4 @@
-import { addComponent, addImports, addImportsSources, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, defineNuxtModule, resolveModule, useNitro } from '@nuxt/kit'
+import { addComponent, addImports, addImportsSources, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, defineNuxtModule, directoryToURL, resolveModule, useNitro } from '@nuxt/kit'
 import { defu } from 'defu'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
@@ -11,8 +11,11 @@ import { createContext, prerenderableLocales, resolveContext } from './context'
 import { prepareOptions } from './prepare/options'
 import { prepareTypeGeneration } from './prepare/type-generation'
 import { relative } from 'pathe'
+import { pathToFileURL } from 'node:url'
+import { readFileSync } from 'node:fs'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { generateI18nTypes, simplifyLocaleOptions } from './gen'
+import { logger } from './utils'
 
 const moduleURL = new URL(import.meta.url)
 
@@ -79,12 +82,31 @@ export default defineNuxtModule<NuxtI18nOptions>({
       '@intlify/message-compiler',
     ]
 
+    const packageURL = (pkg: string, url: URL | URL[]) => pathToFileURL(resolveModule(`${pkg}/package.json`, { url }))
+    const packageVersion = (url: URL) => (JSON.parse(readFileSync(url, 'utf-8')) as { version: string }).version
+    const moduleVueI18nURL = packageURL('vue-i18n', moduleURL)
+    let vueI18nPackageURL = packageURL('vue-i18n', [directoryToURL(nuxt.options.rootDir), moduleURL])
+    const appVueI18nVersion = packageVersion(vueI18nPackageURL)
+    const moduleVueI18nVersion = packageVersion(moduleVueI18nURL)
+    if (
+      appVueI18nVersion.split('.')[0] !== moduleVueI18nVersion.split('.')[0]
+      || appVueI18nVersion.localeCompare(moduleVueI18nVersion, 'en', { numeric: true }) < 0
+    ) {
+      logger.warn(`Ignoring \`vue-i18n@${appVueI18nVersion}\` installed in the project, using \`vue-i18n@${moduleVueI18nVersion}\` from \`@nuxtjs/i18n\` instead.`)
+      vueI18nPackageURL = moduleVueI18nURL
+    }
+    const resolveFrom: Record<string, URL> = {
+      '@intlify/shared': vueI18nPackageURL,
+      '@intlify/core-base': vueI18nPackageURL,
+      '@intlify/message-compiler': packageURL('@intlify/core-base', vueI18nPackageURL),
+    }
+
     for (const dep of deps) {
       if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
-      nuxt.options.alias[dep] = resolveModule(dep, { url: moduleURL })
+      nuxt.options.alias[dep] = resolveModule(dep, { url: resolveFrom[dep] ?? moduleURL })
     }
     const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
-    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`, { url: moduleURL })
+    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`, { url: vueI18nPackageURL })
     nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`, { url: moduleURL })
     nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
 

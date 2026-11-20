@@ -1,6 +1,8 @@
-import { loadNuxt } from '@nuxt/kit'
-import { resolve } from 'pathe'
-import { describe, expect, test } from 'vitest'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { loadNuxt, resolveModule } from '@nuxt/kit'
+import { dirname, join, normalize, resolve } from 'pathe'
+import { describe, expect, onTestFinished, test } from 'vitest'
 
 import type { LocaleObject } from '../src/types'
 
@@ -70,5 +72,81 @@ describe('inline module options', () => {
     // resolving it against the default `langDir` fails setup with ENOENT
     expect(generated).toMatch(/ja: \[\s*\{\s*key: "locale_ja_46json/)
     expect(generated).toMatch(/fr: \[\s*\{\s*key: "locale_fr_46json/)
+  })
+})
+
+describe('intlify aliases', () => {
+  const testURL = new URL(import.meta.url)
+  const moduleVueI18n = normalize(resolveModule('vue-i18n/dist/vue-i18n', { url: testURL }))
+  const moduleVersion: string = JSON.parse(readFileSync(resolveModule('vue-i18n/package.json', { url: testURL }), 'utf-8')).version
+
+  /**
+   * Loads the module for an app outside of this repository, so only packages written
+   * to its `node_modules` and the module's own dependencies can be resolved.
+   */
+  async function setupApp(packages: Record<string, string> = {}, version = moduleVersion) {
+    const appDir = realpathSync(mkdtempSync(join(tmpdir(), 'nuxt-i18n-app-')))
+    onTestFinished(() => rmSync(appDir, { recursive: true, force: true, maxRetries: 3 }))
+
+    for (const [dir, entry] of Object.entries(packages)) {
+      const pkgDir = join(appDir, dir)
+      mkdirSync(dirname(join(pkgDir, entry)), { recursive: true })
+      writeFileSync(join(pkgDir, entry), '')
+      writeFileSync(join(pkgDir, 'package.json'), JSON.stringify({ version, exports: { '.': `./${entry}`, './*': './*' } }))
+    }
+
+    const nuxt = await loadNuxt({
+      dev: false,
+      overrides: { rootDir: appDir, modules: ['@nuxtjs/i18n'], pages: false }
+    })
+    await nuxt.close()
+    return { appDir, alias: Object.fromEntries(Object.entries(nuxt.options.alias).map(([k, v]) => [k, normalize(v)])) }
+  }
+
+  const [major, minor, patch] = moduleVersion.split('.').map(part => Number.parseInt(part))
+  const olderParts = [major, minor, patch]
+  olderParts[olderParts.findLastIndex(Boolean)]--
+
+  test.each([
+    ['the same version', moduleVersion],
+    ['a newer version', `${major}.${minor}.${patch + 10}`]
+  ])('resolve `vue-i18n` from the app and its `@intlify` dependencies from `vue-i18n` when the app installs %s', async (_, version) => {
+    const vueI18n = 'node_modules/vue-i18n'
+    const coreBase = `${vueI18n}/node_modules/@intlify/core-base`
+    const { appDir, alias } = await setupApp({
+      'node_modules/@intlify/shared': 'index.mjs',
+      [vueI18n]: 'dist/vue-i18n.mjs',
+      [`${vueI18n}/node_modules/@intlify/shared`]: 'index.mjs',
+      [coreBase]: 'index.mjs',
+      [`${coreBase}/node_modules/@intlify/message-compiler`]: 'index.mjs'
+    }, version)
+
+    expect(alias['vue-i18n']).toEqual(join(appDir, vueI18n, 'dist/vue-i18n.mjs'))
+    expect(alias['@intlify/shared']).toEqual(join(appDir, vueI18n, 'node_modules/@intlify/shared/index.mjs'))
+    expect(alias['@intlify/core-base']).toEqual(join(appDir, coreBase, 'index.mjs'))
+    expect(alias['@intlify/message-compiler']).toEqual(join(appDir, coreBase, 'node_modules/@intlify/message-compiler/index.mjs'))
+  })
+
+  test('fall back to the module `vue-i18n` when the app does not install it', async () => {
+    const { alias } = await setupApp()
+
+    expect(alias['vue-i18n']).toEqual(moduleVueI18n)
+  })
+
+  test.each([
+    ['another major', `${major + 1}.0.0`],
+    ['an older version', olderParts.join('.')]
+  ])('fall back to the module `vue-i18n` when the app installs %s', async (_, version) => {
+    const { appDir, alias } = await setupApp({
+      'node_modules/vue-i18n': 'dist/vue-i18n.mjs',
+      'node_modules/vue-i18n/node_modules/@intlify/shared': 'index.mjs',
+      'node_modules/vue-i18n/node_modules/@intlify/core-base': 'index.mjs',
+      'node_modules/vue-i18n/node_modules/@intlify/message-compiler': 'index.mjs'
+    }, version)
+
+    expect(alias['vue-i18n']).toEqual(moduleVueI18n)
+    expect(alias['@intlify/shared']).not.toContain(appDir)
+    expect(alias['@intlify/core-base']).not.toContain(appDir)
+    expect(alias['@intlify/message-compiler']).not.toContain(appDir)
   })
 })
