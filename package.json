@@ -116,7 +116,7 @@
     "jiti": "^2.7.0",
     "knip": "6.29.0",
     "nitro": "^3.0.260903-beta",
-    "nitropack": "^2.13.4",
+    "nitropack": "^2.13.6",
     "nuxt": "^4.6.2",
     "ofetch": "^1.5.1",
     "playwright-core": "^1.62.0",
