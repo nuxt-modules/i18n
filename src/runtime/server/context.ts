@@ -4,6 +4,7 @@ import { deepCopy } from '@intlify/shared'
 import { type ServerEvent, getRequestURL, useRuntimeConfig } from '#i18n-server-runtime'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
+import { getDomainLocales } from '../shared/domain'
 import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
@@ -17,7 +18,9 @@ export function tryUseI18nContext(event: ServerEvent) {
 export async function initializeI18nContext(event: ServerEvent) {
   const runtimeI18n = useRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
   const defaultLocale: string = runtimeI18n.defaultLocale || ''
-  const options = await setupVueI18nOptions(resolveDefaultLocale(getRequestURL(event).host, defaultLocale))
+  const options = await setupVueI18nOptions(
+    resolveDefaultLocale(getRequestURL(event).host, defaultLocale, getDomainLocales(runtimeI18n.domainLocales)),
+  )
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
   const ctx = createI18nContext()
 

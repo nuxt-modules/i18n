@@ -14,7 +14,7 @@ import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
 import { getRouter } from '../composable-context'
-import { withRuntimeDomain } from '../shared/domain'
+import { getDomainLocales, withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
@@ -29,7 +29,7 @@ export default defineNuxtPlugin({
     const event = useRequestEvent(nuxt)
     const preloadedOptions = event?.context?.nuxtI18n?.vueI18nOptions
     const host = useRequestURL({ xForwardedHost: true }).host
-    const _defaultLocale = resolveDefaultLocale(host, runtimeI18n.defaultLocale)
+    const _defaultLocale = resolveDefaultLocale(host, runtimeI18n.defaultLocale, getDomainLocales(runtimeI18n.domainLocales))
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
