@@ -211,6 +211,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const cdnPrefix = (locale: string) =>
     import.meta.client && __I18N_CDN__ && isPrerenderable(locale) ? (nuxt.$config.app.cdnURL || '') : ''
 
+  const getServerContext = () => (import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined)
+
   const loadMessagesFromLoaders = async (locale: string) => {
     // merging `{}` for a `fallbackLocale` that is not a configured locale would create it
     if (locale in localeLoaders === false) { return }
@@ -236,7 +238,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
     // during SSR the messages endpoint runs in this same process - `$fetch` would serialize the
     // whole message tree to JSON and parse it back on every request
-    const serverCtx = import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined
+    const serverCtx = getServerContext()
     if (serverCtx?.loadMessages && installMessages) {
       const messages = await serverCtx.loadMessages(locale)
       for (const k of deliverable(messages)) {
@@ -316,19 +318,22 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       try {
         const fallbacks = getLocaleConfig(locale)?.fallbacks ?? []
         const chain = fallbacks.includes(locale) ? fallbacks : [...fallbacks, locale]
-        // the endpoint merges a locale with its fallbacks, so one request covers a chain of them
-        if (!chain.some(x => ctx.usesRuntimeLoaders(x))) {
+        // the endpoint merges a locale with its fallbacks, so one request covers a chain of them -
+        // except for fallbacks an app-context config declares, which only reach the server context
+        // of the request being rendered (#4150)
+        const merged = !__I18N_APP_CONTEXT_CONFIG__ || !!getServerContext()
+        if (merged && !chain.some(x => ctx.usesRuntimeLoaders(x))) {
           return await loadMessagesFromServer(locale)
         }
         // a mixed chain has to take each locale from whichever source holds it, and one failing
         // fallback should not keep the rest from loading
-        for (const k of chain) {
+        await Promise.all(chain.map(async (k) => {
           try {
             await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
           } catch (e) {
             console.warn(`Failed to load messages for locale "${k}"`, e)
           }
-        }
+        }))
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       } finally {
