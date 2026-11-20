@@ -437,6 +437,8 @@ describe('localizeRoutes with custom paths', () => {
         // not nested under their parent, they only start or end with the same characters
         'account-statement': custom('/kontoauszug'),
         'account-orders-special': custom('/konto/sonderbestellungen'),
+        // ends with the segment of its parent, under another path
+        'account-orders-archive': custom('/archiv/bestellungen'),
       }),
     })
     const routes: LocalizableRoute[] = [
@@ -450,6 +452,7 @@ describe('localizeRoutes with custom paths', () => {
             children: [
               { path: ':id()', name: 'account-orders-id' },
               { path: 'special', name: 'account-orders-special' },
+              { path: 'archive', name: 'account-orders-archive' },
             ],
           },
           { path: 'statement', name: 'account-statement' },
@@ -465,6 +468,7 @@ describe('localizeRoutes with custom paths', () => {
     expect(orders.path).toBe('bestellungen' + slash)
     expect(orders.children![0].path).toBe(':id()' + slash)
     expect(orders.children![1].path).toBe('/de/konto/sonderbestellungen' + slash)
+    expect(orders.children![2].path).toBe('/de/archiv/bestellungen' + slash)
 
     expect(findRoute(account.children!, 'account-statement___de')!.path).toBe('/de/kontoauszug' + slash)
   })

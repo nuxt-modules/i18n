@@ -40,6 +40,8 @@ export type LocalizeRouteParams = {
   parentLocalized?: LocalizableRoute
   /** accumulated full path of the parent route */
   parentPath?: string
+  /** accumulated full path of the localized parent route */
+  parentLocalizedPath?: string
 }
 
 /**
@@ -53,23 +55,14 @@ export function joinPath(parent: string | undefined, path: string): string {
   return full.replace(/\/+$/, '') || '/'
 }
 
-function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
-  // with `trailingSlash` the parent path ends in a slash, which is not part of what the child repeats (#4179)
-  const trimmed = parentLocalizedPath.replace(/\/+$/, '')
-  if (!trimmed || localizedPath[0] !== '/') { return localizedPath }
-
-  // a nested parent path is relative, the slash makes it start on a segment of the child path
-  const parentPath = trimmed[0] === '/' ? trimmed : '/' + trimmed
-  const index = localizedPath.indexOf(parentPath)
-  const nested = index >= 0 ? localizedPath.slice(index + parentPath.length) : undefined
-  // the parent path only counts when it ends on a segment too, the slash after it is dropped as well:
-  // * parent='/foo', child='/foo/bar'       => 'bar'
-  // * parent='bar',  child='/foo/bar/:id()' => ':id()'
-  // * parent='/foo', child='/foobar'        => '/foobar'
-  // * parent='bar',  child='/foo/rebar'     => '/foo/rebar'
-  if (nested === '' || nested?.[0] === '/') { return nested.slice(1) }
-
-  return localizedPath
+/**
+ * A custom path is absolute, a child keeps the part after its parent's full localized path. Only
+ * the full path tells whether it is nested there, a segment with the same name is not enough (#4179)
+ */
+function handlePathNesting(localizedPath: string, parentPath: string = '') {
+  if (!parentPath || parentPath === '/' || localizedPath[0] !== '/') { return localizedPath }
+  if (localizedPath === parentPath) { return '' }
+  return localizedPath.startsWith(parentPath + '/') ? localizedPath.slice(parentPath.length + 1) : localizedPath
 }
 
 function createHandleTrailingSlash(ctx: RouteContext): RouteContext['handleTrailingSlash'] {
@@ -99,6 +92,7 @@ function createLocalizeChildren(ctx: RouteContext): RouteContext['localizeChildr
       locales: [locale],
       parentLocalized,
       parentPath: joinPath(opts.parentPath, route.path),
+      parentLocalizedPath: joinPath(opts.parentLocalizedPath, parentLocalized.path),
     }
     return route.children?.flatMap(child => localizeSingleRoute(child, localizeParams, ctx)) ?? []
   }
@@ -111,7 +105,7 @@ function getLocalizedRoute(
   options: LocalizeRouteParams,
   ctx: RouteContext,
 ) {
-  const path = handlePathNesting(localizedPath, options.parentLocalized?.path)
+  const path = handlePathNesting(localizedPath, options.parentLocalizedPath)
   const localized: LocalizableRoute = { ...route }
   localized.path = ctx.handleTrailingSlash(path, !!options.parent)
   localized.name &&= ctx.localizeRouteName(localized, locale, options.defaultTree)
