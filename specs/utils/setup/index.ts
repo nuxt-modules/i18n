@@ -4,6 +4,19 @@ import { startServer, stopServer } from '../server'
 import { createBrowser } from '../browser'
 import setupVitest from './vitest'
 import consola from 'consola'
+import { appendFileSync } from 'node:fs'
+
+// temporary: phase timings for the CI measurement, written when `PHASE_OUT` names a file
+const record = (file: string, name: string, since: number) => {
+  if (process.env.PHASE_OUT) {
+    appendFileSync(process.env.PHASE_OUT, `${file}\t${name}\t${Math.round(performance.now() - since)}\n`)
+  }
+}
+const phase = async (file: string, name: string, fn: () => unknown) => {
+  const start = performance.now()
+  await fn()
+  record(file, name, start)
+}
 
 import type { TestContext, TestHooks, TestOptions, VitestContext } from '../types'
 
@@ -53,12 +66,20 @@ function createTest(options: Partial<TestOptions>): TestHooks {
     setTestContext(undefined)
   }
 
+  let file = 'unknown'
+  let ready = performance.now()
+
   const afterAll = async () => {
-    if (ctx.serverProcess || ctx.staticServers) {
-      setTestContext(ctx)
-      stopServer()
-      setTestContext(undefined)
-    }
+    record(file, 'tests', ready)
+    const start = performance.now()
+
+    await phase(file, 'teardown: server', () => {
+      if (ctx.serverProcess || ctx.staticServers) {
+        setTestContext(ctx)
+        stopServer()
+        setTestContext(undefined)
+      }
+    })
 
     activeContexts.delete(ctx)
 
@@ -66,26 +87,32 @@ function createTest(options: Partial<TestOptions>): TestHooks {
       await ctx.nuxt.close()
     }
 
-    if (ctx.browser) {
-      await ctx.browser.close()
-    }
+    await phase(file, 'teardown: browser', async () => {
+      if (ctx.browser) {
+        await ctx.browser.close()
+      }
+    })
 
     if (ctx.teardown) {
       await Promise.all(ctx.teardown.map(fn => fn()))
     }
+    record(file, 'teardown', start)
   }
 
   const setup = async (testContext: VitestContext) => {
+    // @ts-ignore the suite or file this hook runs for
+    file = String(testContext?.file?.name ?? testContext?.name ?? 'unknown')
+
     if (ctx.options.fixture) {
-      await loadFixture(testContext)
+      await phase(file, 'load', () => loadFixture(testContext))
     }
 
     if (ctx.options.build) {
-      await buildFixture()
+      await phase(file, 'build', () => buildFixture())
     }
 
     if (ctx.options.server) {
-      await startServer()
+      await phase(file, 'server', () => startServer())
     }
 
     if (ctx.options.waitFor) {
@@ -93,8 +120,9 @@ function createTest(options: Partial<TestOptions>): TestHooks {
     }
 
     if (ctx.options.browser) {
-      await createBrowser()
+      await phase(file, 'browser', () => createBrowser())
     }
+    ready = performance.now()
   }
 
   return {

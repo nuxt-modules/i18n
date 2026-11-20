@@ -16,7 +16,8 @@ export default defineConfig({
     },
     setupFiles: ['./specs/utils/setup-env.ts'],
     exclude: [...configDefaults.exclude, '**/*.config.*'],
-    maxWorkers: process.env.CI ? undefined : 4,
+    // temporary: `VITEST_MAX_WORKERS` lets the CI measurement compare worker counts
+    maxWorkers: Number(process.env.VITEST_MAX_WORKERS) || (process.env.CI ? undefined : 4),
   },
   resolve: {
     alias: {

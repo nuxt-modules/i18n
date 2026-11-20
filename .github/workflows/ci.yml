@@ -92,10 +92,17 @@ jobs:
       - build
     runs-on: ${{ matrix.os }}
     strategy:
+      # temporary: every worker count runs to completion for the measurement
+      fail-fast: false
       matrix:
         node-version: [lts/*]
         os: [ubuntu-latest, windows-latest]
+        # temporary: '' leaves the vitest default (one worker per core)
+        workers: ['', '2', '3']
     timeout-minutes: 25
+    env:
+      VITEST_MAX_WORKERS: ${{ matrix.workers }}
+      PHASE_OUT: ${{ github.workspace }}/phases.tsv
 
     steps:
       - name: Checkout codes
@@ -125,6 +132,11 @@ jobs:
 
       - name: Testing
         run: pnpm test
+
+      # temporary: prints where the e2e harness spent its time
+      - name: Phase timings
+        if: always()
+        run: node specs/utils/phase-summary.mjs
 
   edge-release:
     if: |
