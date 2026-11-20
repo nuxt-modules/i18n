@@ -274,11 +274,12 @@ declare module '#app' {
 }
 
 declare module '@nuxt/schema' {
+  // typed through the interface so other modules can add their own options to it (#4138)
   interface NuxtConfig {
-    ['i18n']?: Partial<UserNuxtI18nOptions>
+    ['i18n']?: Partial<ModuleOptions>
   }
   interface NuxtOptions {
-    ['i18n']: UserNuxtI18nOptions
+    ['i18n']: ModuleOptions
   }
   interface NuxtHooks extends ModuleHooks {}
   interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
