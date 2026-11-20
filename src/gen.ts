@@ -42,6 +42,14 @@ type LocaleLoaderData = {
 /** A loader that resolves to no messages, for the graph a locale file is kept out of */
 export const STUB_LOADER = '() => Promise.resolve({})'
 
+/**
+ * A dynamic import resolving to the default export. Unwrapped where it is imported - a module
+ * namespace is only recognizable as one while it stays a native import, a bundler merging the
+ * server into one file (wrangler) turns it into a plain object (#4133)
+ */
+const genDefaultImport = (id: string, key: string) =>
+  `${genDynamicImport(id, { comment: `webpackChunkName: ${key}` })}.then(m => m.default)`
+
 export function generateLoaderOptions(
   ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales' | 'runtimeDir'>,
 ) {
@@ -72,9 +80,7 @@ export function generateLoaderOptions(
           key,
           virtualId,
           cache: meta.cache ?? true,
-          // unwrapped here - a module namespace is only recognizable as one while it stays a native
-          // import, a bundler merging the server into one file (wrangler) turns it into a plain object (#4133)
-          load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}`, interopDefault: true }),
+          load: genDefaultImport(virtualId, key),
           loadServer: meta.appContext
             ? STUB_LOADER
             : meta.assetKey
@@ -98,7 +104,7 @@ export function generateLoaderOptions(
 
     importStatements.add(genImport(virtualId, identifier))
     vueI18nConfigs.push({
-      importer: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}`, interopDefault: true }),
+      importer: genDefaultImport(virtualId, key),
       importerServer: `() => Promise.resolve(${identifier})`,
       virtualId,
     })
