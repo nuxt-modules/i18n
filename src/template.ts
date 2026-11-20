@@ -9,7 +9,8 @@ type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 const loadConfigsFn = `
 async function loadCfg(config) {
   const nuxt = useNuxtApp()
-  const { default: resolver } = await config()
+  const loaded = await config()
+  const resolver = loaded?.default || loaded
   return typeof resolver === 'function' ? await nuxt.runWithContext(() => resolver()) : resolver
 }\n`
 function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders']) {
