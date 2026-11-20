@@ -423,6 +423,56 @@ describe('localizeRoutes with custom paths', () => {
     expect(frAccount.children![0].path).toBe('profile')
   })
 
+  it.each([false, true])('(#4179) keeps nested custom paths intact (trailingSlash: %s)', (trailingSlash) => {
+    const custom = (path: string) => ({ locales: ['de'], paths: { de: path } })
+    const config = createTestConfig({
+      locales: ['de'],
+      strategy: 'prefix',
+      defaultLocale: 'de',
+      trailingSlash,
+      optionsResolver: createMockOptionsResolver({
+        'account': custom('/konto'),
+        'account-orders': custom('/konto/bestellungen'),
+        'account-orders-id': custom('/konto/bestellungen/:id()'),
+        // not nested under their parent, they only start or end with the same characters
+        'account-statement': custom('/kontoauszug'),
+        'account-orders-special': custom('/konto/sonderbestellungen'),
+        // ends with the segment of its parent, under another path
+        'account-orders-archive': custom('/archiv/bestellungen'),
+      }),
+    })
+    const routes: LocalizableRoute[] = [
+      {
+        path: '/account',
+        name: 'account',
+        children: [
+          {
+            path: 'orders',
+            name: 'account-orders',
+            children: [
+              { path: ':id()', name: 'account-orders-id' },
+              { path: 'special', name: 'account-orders-special' },
+              { path: 'archive', name: 'account-orders-archive' },
+            ],
+          },
+          { path: 'statement', name: 'account-statement' },
+        ],
+      },
+    ]
+    const slash = trailingSlash ? '/' : ''
+
+    const account = findRoute(localizeRoutes(routes, config), 'account___de')!
+    expect(account.path).toBe('/de/konto' + slash)
+
+    const orders = findRoute(account.children!, 'account-orders___de')!
+    expect(orders.path).toBe('bestellungen' + slash)
+    expect(orders.children![0].path).toBe(':id()' + slash)
+    expect(orders.children![1].path).toBe('/de/konto/sonderbestellungen' + slash)
+    expect(orders.children![2].path).toBe('/de/archiv/bestellungen' + slash)
+
+    expect(findRoute(account.children!, 'account-statement___de')!.path).toBe('/de/kontoauszug' + slash)
+  })
+
   it('handles dynamic route parameters', () => {
     const resolver = createMockOptionsResolver({
       'blog-slug': { locales: ['en', 'fr'], paths: { fr: '/article/:slug' } },
