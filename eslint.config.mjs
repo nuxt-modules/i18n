@@ -3,6 +3,16 @@ import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
 import typegen from 'eslint-typegen'
 import perfectionist from 'eslint-plugin-perfectionist'
 
+const restrictedFetch = { message: 'Use `useRequestFetch()` instead.', name: '$fetch' }
+const restrictedFlags = [
+  '__I18N_DOMAINS__',
+  '__I18N_STRATEGY__',
+  '__I18N_ROUTING__',
+  '__TRAILING_SLASH__',
+  '__I18N_STRICT_SEO__',
+  '__I18N_COMPACT_ROUTES__',
+].map(name => ({ message: 'Pass the flag through the factory config, flags are read at composition points.', name }))
+
 // @see reference https://github.com/nuxt/nuxt/blob/ec59aceeba3c9564ec0c3c2dfa5b468fbc464c10/eslint.config.mjs
 export default createConfigForNuxt({
   features: {
@@ -95,7 +105,18 @@ export default createConfigForNuxt({
   })
 
   .append(
-    // The parameterized routing/detection layer receives flags as config, reads live at composition points
+    // `#build/fetch` only exports `$fetch` since Nuxt 4.5, and Nuxt 5 no longer defines the global in the app
+    {
+      files: ['src/runtime/**'],
+      ignores: ['src/runtime/server/**'],
+      name: 'local/no-ambient-fetch',
+      rules: {
+        'no-restricted-globals': ['error', restrictedFetch],
+        'no-restricted-imports': ['error', { message: 'Use `useRequestFetch()` instead.', name: '#build/fetch' }],
+      },
+    },
+    // The parameterized routing/detection layer receives flags as config, reads live at composition points.
+    // A later block replaces the options of a rule, so the `$fetch` restriction is repeated here
     {
       files: [
         'src/runtime/kit/**',
@@ -104,33 +125,19 @@ export default createConfigForNuxt({
         'src/runtime/routing/head.ts',
         'src/runtime/routing/navigation.ts',
         'src/runtime/routing/utils.ts',
-        'src/runtime/server/utils/redirect.ts',
         'src/runtime/shared/detection.ts',
         'src/runtime/shared/domain.ts',
       ],
       name: 'local/no-flag-reads',
       rules: {
-        'no-restricted-globals': [
-          'error',
-          ...[
-            '__I18N_DOMAINS__',
-            '__I18N_STRATEGY__',
-            '__I18N_ROUTING__',
-            '__TRAILING_SLASH__',
-            '__I18N_STRICT_SEO__',
-            '__I18N_COMPACT_ROUTES__',
-          ].map(name => ({ message: 'Pass the flag through the factory config, flags are read at composition points.', name })),
-        ],
+        'no-restricted-globals': ['error', restrictedFetch, ...restrictedFlags],
       },
     },
-    // `#build/fetch` only exports `$fetch` since Nuxt 4.5, and Nuxt 5 no longer defines the global in the app
     {
-      files: ['src/runtime/**'],
-      ignores: ['src/runtime/server/**'],
-      name: 'local/no-ambient-fetch',
+      files: ['src/runtime/server/utils/redirect.ts'],
+      name: 'local/no-flag-reads/server',
       rules: {
-        'no-restricted-globals': ['error', { message: 'Use `useRequestFetch()` instead.', name: '$fetch' }],
-        'no-restricted-imports': ['error', { message: 'Use `useRequestFetch()` instead.', name: '#build/fetch' }],
+        'no-restricted-globals': ['error', ...restrictedFlags],
       },
     },
     // While plugins are set up `useNuxtApp()` can resolve another request's app (#4148), code running
