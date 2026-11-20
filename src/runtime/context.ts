@@ -327,13 +327,13 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         }
         // a mixed chain has to take each locale from whichever source holds it, and one failing
         // fallback should not keep the rest from loading
-        for (const k of chain) {
+        await Promise.all(chain.map(async (k) => {
           try {
             await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
           } catch (e) {
             console.warn(`Failed to load messages for locale "${k}"`, e)
           }
-        }
+        }))
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       } finally {
