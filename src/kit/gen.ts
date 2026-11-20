@@ -55,15 +55,18 @@ export function joinPath(parent: string | undefined, path: string): string {
 
 function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
   // with `trailingSlash` the parent path ends in a slash, which is not part of what the child repeats (#4179)
-  const parentPath = parentLocalizedPath.replace(/\/+$/, '')
-  if (!parentPath || localizedPath[0] !== '/') { return localizedPath }
+  const trimmed = parentLocalizedPath.replace(/\/+$/, '')
+  if (!trimmed || localizedPath[0] !== '/') { return localizedPath }
 
+  // a nested parent path is relative, the slash makes it start on a segment of the child path
+  const parentPath = trimmed[0] === '/' ? trimmed : '/' + trimmed
   const index = localizedPath.indexOf(parentPath)
   const nested = index >= 0 ? localizedPath.slice(index + parentPath.length) : undefined
-  // the parent path only counts when it ends on a segment, the slash after it is dropped as well:
+  // the parent path only counts when it ends on a segment too, the slash after it is dropped as well:
   // * parent='/foo', child='/foo/bar'       => 'bar'
   // * parent='bar',  child='/foo/bar/:id()' => ':id()'
   // * parent='/foo', child='/foobar'        => '/foobar'
+  // * parent='bar',  child='/foo/rebar'     => '/foo/rebar'
   if (nested === '' || nested?.[0] === '/') { return nested.slice(1) }
 
   return localizedPath
