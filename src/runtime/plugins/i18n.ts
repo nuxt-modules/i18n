@@ -38,11 +38,15 @@ export default defineNuxtPlugin({
       const serverI18n = event!.context.nuxtI18n
       // nitro resolved its options without the stubbed config, so the fallbacks and `flatJson` it
       // declares only exist on the options the app just resolved (#4150)
-      if (__I18N_APP_CONTEXT_CONFIG__ && serverI18n) {
-        serverI18n.vueI18nOptions = optionsI18n
-        serverI18n.localeConfigs = createLocaleConfigs(optionsI18n.fallbackLocale)
+      if (__I18N_APP_CONTEXT_CONFIG__) {
+        localeConfigs.value = createLocaleConfigs(optionsI18n.fallbackLocale)
+        if (serverI18n) {
+          serverI18n.vueI18nOptions = optionsI18n
+          serverI18n.localeConfigs = localeConfigs.value
+        }
+      } else {
+        localeConfigs.value = serverI18n?.localeConfigs || {}
       }
-      localeConfigs.value = serverI18n?.localeConfigs || {}
     } else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)

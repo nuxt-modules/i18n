@@ -195,7 +195,7 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
       '/i18n/plain.config.ts': `export default defineI18nConfig(() => ({ locale: 'en' }))`,
       '/i18n/app.config.ts': `export default defineI18nConfig(() => ({ locale: useRequestURL().host }))`
     }
-    const ctx = buildContext()
+    const { ctx } = buildContext()
     ctx.vueI18nConfigPaths = Object.keys(configs).map(path => resolveVueI18nConfigInfo(path, configs))
     // the configs are walked back to front, so the app-context one comes out first
     const { vueI18nConfigs, importStatements } = generateLoaderOptions(ctx)
