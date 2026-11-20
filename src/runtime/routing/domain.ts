@@ -1,4 +1,4 @@
-import type { RouteRecordRaw, Router } from 'vue-router'
+import type { RouteRecordNormalized, RouteRecordRaw, Router } from 'vue-router'
 import type { Strategies } from '#internal-i18n-types'
 import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
 
@@ -99,14 +99,29 @@ export function setupMultiDomainLocales(defaultLocale: string, strategy: Strateg
   if (!routes || domainRouteTableLocales.get(routes) === defaultLocale) { return }
 
   const rules = createHostRules(routes, defaultLocale, strategy)
-  // the live matcher lists nested routes too, so variants under any parent are found by name
-  for (const route of router.getRoutes()) {
-    if (rules.prunes(route.name)) { router.removeRoute(route.name!) }
+  // the live records carry what the app has changed, nested routes and aliases are records of their own
+  const records = new Map<unknown, RouteRecordNormalized>()
+  const aliases = new Map<RouteRecordNormalized, string[]>()
+  for (const record of router.getRoutes()) {
+    if (rules.prunes(record.name)) {
+      router.removeRoute(record.name!)
+    } else if (record.aliasOf) {
+      aliases.set(record.aliasOf, [...aliases.get(record.aliasOf) ?? [], record.path])
+    } else {
+      records.set(record.name, record)
+    }
   }
-  // raw records still have the `alias` and `children` a matcher record has lost
+  // only top-level routes are added again, their children follow them
   for (const route of routes) {
     const name = routeName(route)
-    // a route the app has removed stays removed
-    if (rules.unprefixes(name) && router.hasRoute(name)) { router.addRoute(rules.unprefixRoute(route)) }
+    if (!rules.unprefixes(name)) { continue }
+    if (!route.name) {
+      // a parent without a name has no record to look up
+      if (router.hasRoute(name)) { router.addRoute(rules.unprefixRoute(route)) }
+      continue
+    }
+    // a route the app has removed has no record and stays removed
+    const record = records.get(route.name)
+    if (record) { router.addRoute(rules.unprefixRoute({ ...record, alias: aliases.get(record) ?? [] } as RouteRecordRaw)) }
   }
 }

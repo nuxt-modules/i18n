@@ -364,10 +364,15 @@ describe('localizeRoutes', function () {
           ])
         }) as any[]
 
-        const router = createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
-        expect(router.resolve('/about').name).toBe('about___fr')
-        expect(router.resolve('/a').name).toBe('about___fr')
-        expect(router.resolve('/en/a').name).toBe('about___en')
+        const rebuilt = createRouter({ routes: localized, history: createMemoryHistory() })
+        setupMultiDomainLocales('fr', 'prefix_except_default', rebuilt)
+
+        for (const router of [createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'prefix_except_default'), history: createMemoryHistory() }), rebuilt]) {
+          expect(router.resolve('/about').name).toBe('about___fr')
+          expect(router.resolve('/a').name).toBe('about___fr')
+          expect(router.resolve('/en/a').name).toBe('about___en')
+          expect(router.resolve('/fr/a').matched).toEqual([])
+        }
       })
 
       it('rebuilds a router created from other routes', function () {
@@ -380,14 +385,16 @@ describe('localizeRoutes', function () {
         }
       })
 
-      it('keeps the routes an app added to or removed from its router', function () {
+      it('keeps the routes an app added, replaced or removed', function () {
         const router = createRouter({ routes: localizedRoutes, history: createMemoryHistory() })
         router.addRoute({ path: '/health', name: 'health', component: {} })
+        router.addRoute({ path: '/fr', name: 'home___fr', component: {}, meta: { replaced: true } })
         router.removeRoute('user___fr')
         setupMultiDomainLocales('fr', 'prefix_except_default', router)
 
         expect(router.resolve('/health').name).toBe('health')
         expect(router.resolve('/').name).toBe('home___fr')
+        expect(router.resolve('/').meta.replaced).toBe(true)
         expect(router.hasRoute('user___fr')).toBe(false)
         expect(router.hasRoute('user-profile___fr')).toBe(false)
       })
