@@ -228,13 +228,17 @@ function createDefaultOptionsResolver(opts: { optionsResolver?: RouteOptionsReso
 function createLocalizeRouteName(opts: {
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
+  localeAgnosticDefaultRoutes?: boolean
 }): RouteContext['localizeRouteName'] {
   const separator = opts.routesNameSeparator || '___'
   const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
   return (route, locale, isDefault) => {
     if (route.name == null) { return }
-    return !isDefault
-      ? route.name + separator + locale
+    if (!isDefault) { return route.name + separator + locale }
+    // `localeAgnosticDefaultRoutes` drops the locale from the unprefixed tree's name, so it can be
+    // addressed without knowing which locale the build defaulted to
+    return opts.localeAgnosticDefaultRoutes
+      ? route.name + separator + defaultSuffix
       : route.name + separator + locale + separator + defaultSuffix
   }
 }
@@ -248,6 +252,7 @@ export function createRouteContext(opts: {
   optionsResolver?: RouteOptionsResolver
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
+  localeAgnosticDefaultRoutes?: boolean
   onLocalize?: RouteContext['onLocalize']
 }) {
   const ctx = { localizers: [] as RouteContext['localizers'] } as RouteContext
