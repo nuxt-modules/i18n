@@ -54,19 +54,17 @@ export function joinPath(parent: string | undefined, path: string): string {
 }
 
 function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
-  if (!parentLocalizedPath || parentLocalizedPath === '/') { return localizedPath }
+  // with `trailingSlash` the parent path ends in a slash, which is not part of what the child repeats (#4179)
+  const parentPath = parentLocalizedPath.replace(/\/+$/, '')
+  if (!parentPath || localizedPath[0] !== '/') { return localizedPath }
 
-  if (localizedPath[0] !== '/') {
-    return localizedPath
-  }
-
-  const index = localizedPath.indexOf(parentLocalizedPath)
-  if (index >= 0) {
-    // parent path is found, slice from index + parent length + slash, for example:
-    // * parent='/foo', child='/foo/bar'       => 'bar'
-    // * parent='bar',  child='/foo/bar/:id()' => ':id()'
-    return localizedPath.slice(localizedPath.indexOf(parentLocalizedPath) + parentLocalizedPath.length + 1)
-  }
+  const index = localizedPath.indexOf(parentPath)
+  const nested = index >= 0 ? localizedPath.slice(index + parentPath.length) : undefined
+  // the parent path only counts when it ends on a segment, the slash after it is dropped as well:
+  // * parent='/foo', child='/foo/bar'       => 'bar'
+  // * parent='bar',  child='/foo/bar/:id()' => ':id()'
+  // * parent='/foo', child='/foobar'        => '/foobar'
+  if (nested === '' || nested?.[0] === '/') { return nested.slice(1) }
 
   return localizedPath
 }
