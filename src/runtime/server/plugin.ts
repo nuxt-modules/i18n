@@ -25,7 +25,7 @@ import { isFunction } from '@intlify/shared'
 import type { CoreOptions } from '@intlify/core'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import { useDetectors } from '../shared/detection'
-import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
+import { domainForHost, domainFromLocale, getDomainLocales, normalizeDomain } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 import { createRedirectResolver } from './utils/redirect'
 
@@ -88,7 +88,11 @@ export default definePlugin(async (hooks) => {
     // a target on the current host would redirect to itself
     if (!origin || host === url.host) { return }
 
-    const relocated = matchLocalized(path, locale, resolveDefaultLocale(host, _defaultLocale))
+    const relocated = matchLocalized(
+      path,
+      locale,
+      resolveDefaultLocale(host, _defaultLocale, getDomainLocales(runtimeI18n.domainLocales)),
+    )
     if (!relocated) { return }
 
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }

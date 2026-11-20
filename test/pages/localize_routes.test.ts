@@ -559,9 +559,24 @@ describe('localizeRoutes', function () {
     })
 
     const names = localizedRoutes.map(x => x.name)
-    // `fr` has a domain to be the default for, `en` has none and the runtime resolves no default for it
+    // `en` names no domain here, the host table unprefixes its routes on the domain set at runtime
     expect(names).toContain('about___fr___default')
     expect(names).not.toContain('about___en___default')
+  })
+
+  it('(#4190) generates an unprefixed variant for `domainDefault` without a domain to serve both paths', function () {
+    const localizedRoutes = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
+      ...nuxtOptions,
+      defaultLocale: '',
+      strategy: 'prefix_and_default',
+      differentDomains: true,
+      locales: getNormalizedLocales([{ code: 'en', domainDefault: true }, { code: 'fr' }])
+    })
+
+    const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
+    expect(paths['about___en___default']).toBe('/about')
+    expect(paths['about___en']).toBe('/en/about')
+    expect(paths['about___fr___default']).toBeUndefined()
   })
 
   describe('strategy: "prefix_and_default" + differentDomains', function () {

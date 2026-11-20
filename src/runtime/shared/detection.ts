@@ -4,7 +4,7 @@ import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
-import { cookieSpansDomains, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
+import { cookieSpansDomains, getDomainLocales, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
 import { type RequestEventLike, getRequestCookie, getRequestHeader } from './request'
@@ -35,9 +35,6 @@ const getRefererHost = (event: RequestEventLike | undefined): string | undefined
     return undefined
   }
 }
-
-const getDomainLocales = (domainLocales: I18nPublicRuntimeConfig['domainLocales']) =>
-  normalizedLocales.map(l => withRuntimeDomain(l, domainLocales))
 
 export const useDetectors = (
   event: RequestEventLike | undefined,
