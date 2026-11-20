@@ -5,6 +5,7 @@ import { getNormalizedLocales, getNuxtOptions } from './utils'
 import { localizeRoutes, shouldLocalizeRoutes } from '../../src/routing'
 import { resolveDomainRoutes, setupMultiDomainLocales } from '../../src/runtime/routing/domain'
 import type { NuxtPage } from '@nuxt/schema'
+import type { Router } from 'vue-router'
 import type { LocaleObject } from '../../src/types'
 import { LocalizableRoute } from '../../src/kit/gen'
 
@@ -377,6 +378,49 @@ describe('localizeRoutes', function () {
         for (const path of ['/', '/fr', '/en', '/user/1/profile', '/fr/user/1/profile', '/en/user/1/profile']) {
           expect(router.resolve(path).matched.map(x => x.name)).toEqual(table.resolve(path).matched.map(x => x.name))
         }
+      })
+
+      it('keeps the routes an app added to or removed from its router', function () {
+        const router = createRouter({ routes: localizedRoutes, history: createMemoryHistory() })
+        router.addRoute({ path: '/health', name: 'health', component: {} })
+        router.removeRoute('user___fr')
+        setupMultiDomainLocales('fr', 'prefix_except_default', router)
+
+        expect(router.resolve('/health').name).toBe('health')
+        expect(router.resolve('/').name).toBe('home___fr')
+        expect(router.hasRoute('user___fr')).toBe(false)
+        expect(router.hasRoute('user-profile___fr')).toBe(false)
+      })
+
+      it('leaves the built-in router of an app without pages alone', function () {
+        const router = { options: {}, getRoutes: () => [] } as unknown as Router
+        expect(() => setupMultiDomainLocales('fr', 'prefix_except_default', router)).not.toThrow()
+      })
+
+      // a page with an index child, the parent route has no name
+      it('unprefixes a parent without a name', function () {
+        const localized = localizeRoutes([
+          { path: '/group', children: [{ path: '', name: 'group' }, { path: 'item', name: 'group-item' }] }
+        ] as LocalizableRoute[], {
+          ...nuxtOptions,
+          defaultLocale: 'en',
+          strategy: 'prefix_except_default',
+          differentDomains: true,
+          locales: getNormalizedLocales([
+            { code: 'en', domain: 'en.example.com' },
+            { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+          ])
+        }) as any[]
+
+        const router = createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
+        const matched = (path: string) => router.resolve(path).matched.map(x => x.path)
+
+        expect(router.resolve('/group').name).toBe('group___fr')
+        expect(router.resolve('/group/item').name).toBe('group-item___fr')
+        expect(matched('/group/item')).toEqual(['/group', '/group/item'])
+        expect(router.resolve('/en/group/item').name).toBe('group-item___en')
+        expect(matched('/fr/group')).toEqual([])
+        expect(matched('/fr/group/item')).toEqual([])
       })
     })
 

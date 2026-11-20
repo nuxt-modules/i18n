@@ -7,44 +7,55 @@ const domainRouteTableLocales = new WeakMap<readonly RouteRecordRaw[], string>()
 
 const isDefaultVariant = (name: unknown) => String(name).endsWith(defaultRouteNameSuffix)
 
-function hasDefaultVariant(routes: readonly RouteRecordRaw[], locale: string): boolean {
-  return routes.some(route =>
-    (isDefaultVariant(route.name) && getLocaleFromRouteName(String(route.name)) === locale)
-    || (route.children != null && hasDefaultVariant(route.children, locale)),
-  )
-}
-
-function pruneDefaultVariants(routes: readonly RouteRecordRaw[], keep: (name: string) => boolean): RouteRecordRaw[] {
-  const pruned: RouteRecordRaw[] = []
-  for (const route of routes) {
-    if (isDefaultVariant(route.name) && !keep(String(route.name))) { continue }
-    pruned.push(route.children ? { ...route, children: pruneDefaultVariants(route.children, keep) } : route)
+/** A parent with an index child has no name, its first named descendant tells which tree it belongs to */
+function routeName(route: RouteRecordRaw): string {
+  if (route.name) { return String(route.name) }
+  for (const child of route.children ?? []) {
+    const name = routeName(child)
+    if (name) { return name }
   }
-  return pruned
+  return ''
 }
 
-function createDomainRoutes(routes: readonly RouteRecordRaw[], defaultLocale: string, strategy: Strategies): RouteRecordRaw[] {
+function hasDefaultVariant(routes: readonly RouteRecordRaw[], locale: string): boolean {
+  return routes.some((route) => {
+    const name = routeName(route)
+    return isDefaultVariant(name) && getLocaleFromRouteName(name) === locale
+  })
+}
+
+function createHostRules(routes: readonly RouteRecordRaw[], defaultLocale: string, strategy: Strategies) {
+  const isHostLocale = (name: unknown) => getLocaleFromRouteName(String(name)) === defaultLocale
   // `prefix_and_default` serves its default locale both unprefixed and prefixed, so the host's
   // own variant is kept. The build only emits variants for locales that are a domain default
   // somewhere, so when the host default has none the prefixed route is unprefixed instead
   const keepsDefaultVariant = strategy === 'prefix_and_default' && hasDefaultVariant(routes, defaultLocale)
-  const table = pruneDefaultVariants(routes, name => keepsDefaultVariant && getLocaleFromRouteName(name) === defaultLocale)
-  if (keepsDefaultVariant) { return table }
-
   const prefix = new RegExp(`^/${defaultLocale}/?`)
   const unprefix = (path: string) => path.replace(prefix, '/')
+
+  return {
+    /** A `___default` variant this host does not serve */
+    prunes: (name: unknown) => isDefaultVariant(name) && !(keepsDefaultVariant && isHostLocale(name)),
+    /** A prefixed route of the host's own locale, served unprefixed here */
+    unprefixes: (name: unknown) => !keepsDefaultVariant && !isDefaultVariant(name) && isHostLocale(name),
+    unprefixRoute(route: RouteRecordRaw): RouteRecordRaw {
+      const record = { ...route, path: unprefix(route.path) } as RouteRecordRaw
+      if (route.alias != null) {
+        record.alias = Array.isArray(route.alias) ? route.alias.map(unprefix) : unprefix(route.alias)
+      }
+      return record
+    },
+  }
+}
+
+function createDomainRoutes(routes: readonly RouteRecordRaw[], defaultLocale: string, strategy: Strategies): RouteRecordRaw[] {
+  const rules = createHostRules(routes, defaultLocale, strategy)
   const prefixed: RouteRecordRaw[] = []
   const unprefixed: RouteRecordRaw[] = []
-  for (const route of table) {
-    if (getLocaleFromRouteName(String(route.name)) !== defaultLocale) {
-      prefixed.push(route)
-      continue
-    }
-    const record = { ...route, path: unprefix(route.path) } as RouteRecordRaw
-    if (route.alias != null) {
-      record.alias = Array.isArray(route.alias) ? route.alias.map(unprefix) : unprefix(route.alias)
-    }
-    unprefixed.push(record)
+  for (const route of routes) {
+    const name = routeName(route)
+    if (rules.prunes(name)) { continue }
+    if (rules.unprefixes(name)) { unprefixed.push(rules.unprefixRoute(route)) } else { prefixed.push(route) }
   }
   return [...prefixed, ...unprefixed]
 }
@@ -83,28 +94,19 @@ export function resolveDomainRoutes(routes: readonly RouteRecordRaw[], defaultLo
  */
 export function setupMultiDomainLocales(defaultLocale: string, strategy: Strategies, router: Router) {
   if (strategy !== 'prefix_except_default' && strategy !== 'prefix_and_default') { return }
-  if (domainRouteTableLocales.get(router.options.routes) === defaultLocale) { return }
+  // an app without pages runs Nuxt's built-in router, which has no route table
+  const routes = router.options.routes as readonly RouteRecordRaw[] | undefined
+  if (!routes || domainRouteTableLocales.get(routes) === defaultLocale) { return }
 
-  const keepsDefaultVariant = strategy === 'prefix_and_default'
-    && router.getRoutes().some((route) => {
-      const routeName = String(route.name)
-      return routeName.endsWith(defaultRouteNameSuffix) && getLocaleFromRouteName(routeName) === defaultLocale
-    })
-
-  // adjust routes to match the domain's locale and structure
+  const rules = createHostRules(routes, defaultLocale, strategy)
+  // the live matcher lists nested routes too, so variants under any parent are found by name
   for (const route of router.getRoutes()) {
-    const routeName = String(route.name)
-    const locale = getLocaleFromRouteName(routeName)
-
-    if (routeName.endsWith(defaultRouteNameSuffix)) {
-      if (!keepsDefaultVariant || locale !== defaultLocale) {
-        router.removeRoute(routeName)
-      }
-      continue
-    }
-
-    if (!keepsDefaultVariant && locale === defaultLocale) {
-      router.addRoute({ ...route, path: route.path.replace(new RegExp(`^/${locale}/?`), '/') })
-    }
+    if (rules.prunes(route.name)) { router.removeRoute(route.name!) }
+  }
+  // raw records still have the `alias` and `children` a matcher record has lost
+  for (const route of routes) {
+    const name = routeName(route)
+    // a route the app has removed stays removed
+    if (rules.unprefixes(name) && router.hasRoute(name)) { router.addRoute(rules.unprefixRoute(route)) }
   }
 }
