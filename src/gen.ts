@@ -72,7 +72,9 @@ export function generateLoaderOptions(
           key,
           virtualId,
           cache: meta.cache ?? true,
-          load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
+          // unwrapped here - a module namespace is only recognizable as one while it stays a native
+          // import, a bundler merging the server into one file (wrangler) turns it into a plain object (#4133)
+          load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}`, interopDefault: true }),
           loadServer: meta.appContext
             ? STUB_LOADER
             : meta.assetKey
@@ -96,7 +98,7 @@ export function generateLoaderOptions(
 
     importStatements.add(genImport(virtualId, identifier))
     vueI18nConfigs.push({
-      importer: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
+      importer: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}`, interopDefault: true }),
       importerServer: `() => Promise.resolve(${identifier})`,
       virtualId,
     })
