@@ -29,6 +29,9 @@ export type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = Custom
       href: string
       navigate: (e?: MouseEvent) => Promise<void>
       prefetch: (nuxtApp?: NuxtApp) => Promise<void>
+      // Passed since Nuxt 4.5, optional because older supported versions do not pass them
+      prefetched?: boolean
+      shouldPrefetch?: (mode: 'visibility' | 'interaction') => boolean
       route: (RouteLocation & { href: string }) | undefined
       rel: string | null
       target: '_blank' | '_parent' | '_self' | '_top' | (string & {}) | null
