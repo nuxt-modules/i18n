@@ -26,7 +26,7 @@ export type NuxtLinkLocaleProps<CustomProp extends boolean = false> = Omit<NuxtL
 // https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts
 export type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = CustomProp extends true
   ? {
-      href: string
+      href: string | null
       navigate: (e?: MouseEvent) => Promise<void>
       prefetch: (nuxtApp?: NuxtApp) => Promise<void>
       // Passed since Nuxt 4.5, optional because older supported versions do not pass them

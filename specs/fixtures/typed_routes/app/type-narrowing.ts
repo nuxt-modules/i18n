@@ -94,6 +94,7 @@ describe('`NuxtLinkLocale` exported types (#4202)', () => {
   it('exposes the slot props', () => {
     expectTypeOf<NuxtLinkLocaleSlotProps>().not.toBeAny()
     expectTypeOf<NuxtLinkLocaleSlotProps<true>['isExternal']>().toEqualTypeOf<boolean>()
+    expectTypeOf<NuxtLinkLocaleSlotProps<true>['href']>().toEqualTypeOf<string | null>()
     expectTypeOf<NuxtLinkLocaleSlotProps<true>['prefetched']>().toEqualTypeOf<boolean | undefined>()
     expectTypeOf<NuxtLinkLocaleSlotProps<true>['shouldPrefetch']>().toEqualTypeOf<
       ((mode: 'visibility' | 'interaction') => boolean) | undefined
