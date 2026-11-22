@@ -36,8 +36,8 @@ export type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = Custom
       rel: string | null
       target: '_blank' | '_parent' | '_self' | '_top' | (string & {}) | null
       isExternal: boolean
-      isActive: false
-      isExactActive: false
+      isActive: boolean
+      isExactActive: boolean
     }
   : UnwrapRef<UseLinkReturn>
 
