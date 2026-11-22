@@ -17,14 +17,14 @@ import type {
 import type { NuxtApp, NuxtLinkProps } from 'nuxt/app'
 import type { RouteLocation, UseLinkReturn } from 'vue-router'
 
-type NuxtLinkLocaleProps<CustomProp extends boolean = false> = Omit<NuxtLinkProps<CustomProp>, 'to'> & {
+export type NuxtLinkLocaleProps<CustomProp extends boolean = false> = Omit<NuxtLinkProps<CustomProp>, 'to'> & {
   to?: import('vue-router').RouteLocationNamedI18n
   locale?: Locale
 }
 
 // Mirrors `NuxtLink`'s slot props, which Nuxt does not export from `nuxt/app` (#3883).
 // https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts
-type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = CustomProp extends true
+export type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = CustomProp extends true
   ? {
       href: string
       navigate: (e?: MouseEvent) => Promise<void>
@@ -38,7 +38,7 @@ type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = CustomProp ex
     }
   : UnwrapRef<UseLinkReturn>
 
-type NuxtLinkLocaleSlots<CustomProp extends boolean = false> = {
+export type NuxtLinkLocaleSlots<CustomProp extends boolean = false> = {
   default?: (props: NuxtLinkLocaleSlotProps<CustomProp>) => VNode[]
 }
 

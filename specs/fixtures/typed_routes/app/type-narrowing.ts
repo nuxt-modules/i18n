@@ -10,6 +10,7 @@ import { describe, expectTypeOf, it } from 'vitest'
 import { useLocalePath, useLocaleRoute } from '#imports'
 import { useRoute, useRouter } from 'vue-router'
 import type { RouteLocationNamedI18n, RouteMapI18n } from 'vue-router'
+import type { NuxtLinkLocaleProps, NuxtLinkLocaleSlotProps } from '#i18n'
 
 describe('vue-router augmentation', () => {
   it('resolves generated route maps', () => {
@@ -80,5 +81,18 @@ describe('`NuxtLinkLocale` `to` prop', () => {
     expectTypeOf<{ name: 'nope' }>().not.toExtend<RouteLocationNamedI18n>()
     expectTypeOf<{ name: 'slug'; params: { slug: boolean } }>().not.toExtend<RouteLocationNamedI18n>()
     expectTypeOf<'nope'>().not.toExtend<RouteLocationNamedI18n>()
+  })
+})
+
+describe('`NuxtLinkLocale` exported types (#4202)', () => {
+  it('exposes the props for wrapping components', () => {
+    expectTypeOf<NuxtLinkLocaleProps>().not.toBeAny()
+    expectTypeOf<NuxtLinkLocaleProps['to']>().toEqualTypeOf<RouteLocationNamedI18n | undefined>()
+    expectTypeOf<NuxtLinkLocaleProps['locale']>().toEqualTypeOf<'en' | 'nl' | undefined>()
+  })
+
+  it('exposes the slot props', () => {
+    expectTypeOf<NuxtLinkLocaleSlotProps>().not.toBeAny()
+    expectTypeOf<NuxtLinkLocaleSlotProps<true>['isExternal']>().toEqualTypeOf<boolean>()
   })
 })
