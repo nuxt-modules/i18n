@@ -223,7 +223,20 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
             return ctx.handleTrailingSlash(aliasPath, !!params.parent)
           })
         }
+        compacted.children &&= prefixAbsoluteChildren(compacted.children, regexPrefix)
         return compacted
+      }
+
+      // Absolute child paths and aliases are not resolved against the parent, so they need the
+      // locale prefix too, the same way per-locale routes prefix them (`shouldPrefix`)
+      const prefixAbsoluteChildren = (children: LocalizableRoute[], regexPrefix: string): LocalizableRoute[] => {
+        const prefix = (path: string) => path.startsWith('/') ? ctx.handleTrailingSlash(regexPrefix + path, true) : path
+        return children.map((child) => {
+          const prefixed: LocalizableRoute = { ...child, path: prefix(child.path) }
+          prefixed.alias &&= (Array.isArray(prefixed.alias) ? prefixed.alias : [prefixed.alias]).map(prefix)
+          prefixed.children &&= prefixAbsoluteChildren(prefixed.children, regexPrefix)
+          return prefixed
+        })
       }
 
       if (strategy === 'prefix_except_default' && defaultLocale) {

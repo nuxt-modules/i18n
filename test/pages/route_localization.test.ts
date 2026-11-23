@@ -830,6 +830,44 @@ describe('compact routes', () => {
     })
   })
 
+  describe('children with absolute paths or aliases', () => {
+    const parent: LocalizableRoute = {
+      path: '/parent',
+      name: 'parent',
+      children: [
+        { path: 'child', name: 'parent-child', alias: ['/foo/child', 'relative'] },
+        { path: '/absolute', name: 'parent-absolute' },
+      ],
+    }
+
+    it('prefixes absolute child paths and aliases with the locale pattern', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', compactRoutes: true })
+      const [compacted] = localizeRoutes([parent], config)
+
+      expect(compacted?.path).toBe('/:locale(en|fr|ja)/parent')
+      const [child, absolute] = compacted?.children ?? []
+      expect(child?.path).toBe('child')
+      expect(child?.alias).toEqual(['/:locale(en|fr|ja)/foo/child', 'relative'])
+      expect(absolute?.path).toBe('/:locale(en|fr|ja)/absolute')
+    })
+
+    it('keeps the default locale tree unprefixed with prefix_except_default', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix_except_default', defaultLocale: 'en', compactRoutes: true })
+      const result = localizeRoutes([parent], config)
+
+      const defaultParent = findRoute(result, 'parent___en')
+      expect(defaultParent?.path).toBe('/parent')
+      const [defaultChild, defaultAbsolute] = defaultParent?.children ?? []
+      expect(defaultChild?.alias).toEqual(['/foo/child', 'relative'])
+      expect(defaultAbsolute?.path).toBe('/absolute')
+
+      const compacted = result.find(r => r.path === '/:locale(fr|ja)/parent')
+      const [child, absolute] = compacted?.children ?? []
+      expect(child?.alias).toEqual(['/:locale(fr|ja)/foo/child', 'relative'])
+      expect(absolute?.path).toBe('/:locale(fr|ja)/absolute')
+    })
+  })
+
   describe('ineligible routes — must stay per-locale', () => {
     it('does NOT compact a route with custom per-locale paths', () => {
       const resolver = createMockOptionsResolver({
