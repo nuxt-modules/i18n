@@ -169,11 +169,24 @@ export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string
     return true
   }
 
+  // Expands a `/:locale(...)/rest` path and its static descendants
+  const expandCompact = (page: NarrowedNuxtPage) => {
+    const match = compactRouteRE.exec(page.path)
+    if (!match) { return }
+    const locales = match[1]!.split('|')
+    const rest = match[2]!
+    if (!emit(locales, rest)) { return }
+    walkChildren(page.children, locales, rest)
+  }
+
   const walkChildren = (children: NarrowedNuxtPage[] | undefined, locales: readonly string[], parentRest: string) => {
     if (!children?.length) { return }
     for (const child of children) {
-      // Absolute path: Vue Router does not compose it with the parent.
-      if (child.path.startsWith('/')) { continue }
+      // Absolute path: Vue Router does not compose it with the parent, it carries its own locale prefix
+      if (child.path.startsWith('/')) {
+        expandCompact(child)
+        continue
+      }
       // Index child shares the parent's URL — already emitted, but its grandchildren may not be.
       if (child.path === '') {
         walkChildren(child.children, locales, parentRest)
@@ -187,12 +200,7 @@ export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string
 
   for (const route of pages) {
     if (!(route.meta as Record<string, unknown> | undefined)?.__i18nCompact) { continue }
-    const match = compactRouteRE.exec(route.path)
-    if (!match) { continue }
-    const locales = match[1]!.split('|')
-    const rest = match[2]!
-    if (!emit(locales, rest)) { continue }
-    walkChildren(route.children, locales, rest)
+    expandCompact(route)
   }
 
   return out

@@ -1034,6 +1034,22 @@ describe('compact routes', () => {
       ])
       expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/relative', '/fr/parent/relative'])
     })
+
+    it('expands locale-prefixed absolute children on their own path', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/parent', 'parent', [
+          { path: '/:locale(en|fr)/absolute', name: 'absolute', children: [{ path: 'nested', name: 'absolute-nested' }] },
+        ]),
+      ])
+      expect(out).toEqual([
+        '/en/parent',
+        '/fr/parent',
+        '/en/absolute',
+        '/fr/absolute',
+        '/en/absolute/nested',
+        '/fr/absolute/nested',
+      ])
+    })
   })
 
   describe('mixed app — some routes compacted, some per-locale', () => {
