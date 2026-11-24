@@ -207,3 +207,21 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
     expect(importStatements.join('\n')).toContain(plain!.virtualId)
   })
 })
+
+describe('a locale configured without files', () => {
+  const info = resolveLocales('/i18n', [{ code: 'en', file: 'en.ts' }, { code: 'nofiles' }] as LocaleObject[], { '/i18n/en.ts': SOURCES[LOCALES.plain]! })
+  const { dynamicLocales, undeliverableLocales } = resolveDeliveryLocales(info)
+
+  test('has no messages response to fetch or prerender', () => {
+    const prerenderable = createPrerenderablePredicate({ dynamic: dynamicLocales, undeliverable: undeliverableLocales })
+    expect(undeliverableLocales).toEqual(['nofiles'])
+    expect(prerenderable('nofiles')).toBe(false)
+    expect(prerenderable('en')).toBe(true)
+  })
+
+  test('runs its (empty) loaders instead of reading the messages endpoint', () => {
+    const usesLoaders = createRuntimeLoaderPredicate(delivery({ dynamic: dynamicLocales, undeliverable: undeliverableLocales }))
+    expect(usesLoaders('nofiles')).toBe(true)
+    expect(usesLoaders('en')).toBe(false)
+  })
+})
