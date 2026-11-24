@@ -1,29 +1,46 @@
 name: agent-scan
 
 on:
+  # zizmor: ignore[dangerous-triggers] - DO NOT add actions/checkout to this workflow, it uses pull_request_target
   pull_request_target:
     types:
-      - closed
-      - labeled
+      - opened
+      - reopened
 
-permissions:
-  pull-requests: write
+concurrency:
+  group: agent-scan-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
 
 jobs:
-  rename:
-    if: >-
-      github.event.pull_request.state == 'closed'
-      && !github.event.pull_request.merged
-      && contains(github.event.pull_request.labels.*.name, 'possible bot')
-      && (github.event.action == 'closed' || github.event.label.name == 'possible bot')
+  scan:
+    name: AgentScan
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    outputs:
+      flagged: ${{ contains(fromJSON('["automation","mixed"]'), steps.agentscan.outputs.classification) || steps.agentscan.outputs.community-flagged == 'true' }}
+      close: ${{ steps.agentscan.outputs.classification == 'automation' || steps.agentscan.outputs.community-flagged == 'true' }}
+
     steps:
-      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      - name: AgentScan
+        id: agentscan
+        uses: MatteoGabriele/agentscan-action@8112fb79b33fafb8506159df20129a34209ac410 # v2.5.0
         with:
-          script: |
-            await github.rest.pulls.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              title: '🚨 unwelcome pr from bot 🚨',
-            })
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          mode: 'labels'
+          # `owner` is never returned on an org-owned repo, and the i18n maintainers are collaborators rather than nuxt-modules members
+          trusted-author-associations: 'member, collaborator'
+
+  flag:
+    name: Flag as possible bot
+    needs: scan
+    if: needs.scan.outputs.flagged == 'true'
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/possible-bot-flag.yml
+    with:
+      close: ${{ needs.scan.outputs.close == 'true' }}
