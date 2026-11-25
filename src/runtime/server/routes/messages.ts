@@ -5,9 +5,13 @@ import {
   defineCachedHandler,
   defineEventHandler,
   getRouterParam,
+  setResponseHeader,
 } from '#i18n-server-runtime'
 import { initializeI18nContext, tryUseI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
+
+// bound once, the define inlines an object literal
+const localeHashes: Record<string, string> = __I18N_LOCALE_HASHES__
 
 /**
  * Load messages for the specified locale event parameter
@@ -20,7 +24,8 @@ const _messagesHandler = defineEventHandler(async (event: ServerEvent) => {
   }
 
   const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
-  if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
+  // `in` would also accept `constructor` and other prototype keys
+  if (ctx.localeConfigs && !Object.hasOwn(ctx.localeConfigs, locale)) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
 
@@ -64,10 +69,21 @@ const _messagesHandlerCached = defineCachedHandler(_cachedMessageLoader, {
   shouldBypassCache,
 })
 
+const messagesHandler = import.meta.dev ? _messagesHandler : _messagesHandlerCached
+
 /**
  * Load messages for the specified locale event parameter
  * - uses `messagesHandler` in development
  * - uses `cachedMessagesHandler` in production
  */
-// export default _messagesHandler
-export default import.meta.dev ? _messagesHandler : _messagesHandlerCached
+export default defineEventHandler((event: ServerEvent) => {
+  const locale = getRouterParam(event, 'locale')
+  if (locale != null && getRouterParam(event, 'hash') === localeHashes[locale]) {
+    return messagesHandler(event)
+  }
+
+  // any other hash is still served, for a client of a previous build, but kept out of every cache -
+  // each one would otherwise get an entry of its own
+  setResponseHeader(event, 'cache-control', 'no-store')
+  return _messagesHandler(event)
+})

@@ -11,6 +11,7 @@ import {
   getRequestURL as _getRequestURL,
   getRouterParam as _getRouterParam,
   setCookie as _setCookie,
+  setResponseHeader as _setResponseHeader,
   sanitizeStatusCode,
 } from 'h3'
 import { defineI18nMiddleware as _defineI18nMiddleware } from '@intlify/h3'
@@ -75,5 +76,7 @@ export const getRenderPath = (event: ServerEvent) => event.path
 
 export const setCookie = (event: ServerEvent, name: string, value: string, options: CookieSerializeOptions) =>
   _setCookie(event, name, value, options)
+
+export const setResponseHeader = (event: ServerEvent, name: string, value: string) => _setResponseHeader(event, name, value)
 
 export const defineI18nMiddleware = (options: CoreOptions) => _defineI18nMiddleware(options)
