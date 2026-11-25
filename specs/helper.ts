@@ -122,7 +122,7 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
     // gotoPath(page, path)
 
     await page.goto(url(path))
-    await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
+    await page.waitForFunction(() => window.useNuxtApp?.().isHydrating === false)
   }
 
   return {
