@@ -25,20 +25,17 @@ export type NuxtLinkLocaleProps<CustomProp extends boolean = false> = Omit<NuxtL
 // Mirrors `NuxtLink`'s slot props, which Nuxt does not export from `nuxt/app` (#3883).
 // https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts
 export type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = CustomProp extends true
-  ? {
-      href: string | null
-      navigate: (e?: MouseEvent) => Promise<void>
-      prefetch: (nuxtApp?: NuxtApp) => Promise<void>
-      // Passed since Nuxt 4.5, optional because older supported versions do not pass them
-      prefetched?: boolean
-      shouldPrefetch?: (mode: 'visibility' | 'interaction') => boolean
-      route: (RouteLocation & { href: string }) | undefined
-      rel: string | null
-      target: '_blank' | '_parent' | '_self' | '_top' | (string & {}) | null
-      isExternal: boolean
-      isActive: boolean
-      isExactActive: boolean
-    }
+  ? Omit<UnwrapRef<UseLinkReturn>, 'href' | 'route'> & {
+    href: string | null
+    route: (RouteLocation & { href: string }) | undefined
+    prefetch: (nuxtApp?: NuxtApp) => Promise<void>
+    // Passed since Nuxt 4.5, optional because older supported versions do not pass them
+    prefetched?: boolean
+    shouldPrefetch?: (mode: 'visibility' | 'interaction') => boolean
+    rel: string | null
+    target: '_blank' | '_parent' | '_self' | '_top' | (string & {}) | null
+    isExternal: boolean
+  }
   : UnwrapRef<UseLinkReturn>
 
 export type NuxtLinkLocaleSlots<CustomProp extends boolean = false> = {
