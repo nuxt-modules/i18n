@@ -120,7 +120,9 @@ export function localizeSingleRoute(
   ctx: RouteContext,
 ): LocalizableRoute[] {
   // resolve custom route (config/page) options
-  const routeOptions = ctx.optionsResolver(route, options.locales)
+  const resolved = ctx.optionsResolver(route, options.locales)
+  // only the locales in scope apply, which for a child is the locale of its parent
+  const routeOptions = resolved && { ...resolved, locales: resolved.locales.filter(l => options.locales.includes(l)) }
   ctx.onLocalize?.(route, routeOptions, options)
   if (!routeOptions) {
     return [route]
@@ -140,11 +142,7 @@ export function localizeSingleRoute(
   }
 
   const resultRoutes: LocalizableRoute[] = []
-  // a child is localized only for the locale of the parent tree it is mounted in;
-  // `routeOptions.locales` may carry the full list when the resolver reads it
-  // from route meta (`getRouteFromResource`), which would bypass the narrowing
-  // applied by `localizeChildren`
-  for (const locale of routeOptions.locales.filter(l => options.locales.includes(l))) {
+  for (const locale of routeOptions.locales) {
     // use custom path if found
     const unprefixed = routeOptions.paths?.[locale] ?? route.path
 
