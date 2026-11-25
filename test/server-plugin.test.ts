@@ -18,9 +18,8 @@ vi.mock('../src/runtime/shared/vue-i18n', () => ({ setupVueI18nOptions }))
 
 vi.stubGlobal('__DEFAULT_COOKIE_KEY__', 'i18n_redirected')
 
-async function bootPlugin() {
+async function bootPlugin(hook = vi.fn()) {
   const { default: plugin } = await import('../src/runtime/server/plugin')
-  const hook = vi.fn()
   // nitro does not await plugins, so neither does this
   plugin({ hooks: { hook } } as never)
   return hook
@@ -52,4 +51,31 @@ test('clears the cache without waiting for the locale detector options', async (
   await bootPlugin()
 
   await vi.waitFor(() => expect(removeItem).toHaveBeenCalledWith('nitro:handlers:i18n:en.json'))
+})
+
+test('a failing cache storage does not fail the plugin', async () => {
+  getKeys.mockRejectedValue(new Error('storage unavailable'))
+
+  const hook = await bootPlugin()
+  await new Promise(resolve => setTimeout(resolve))
+
+  expect(hook).toHaveBeenCalled()
+})
+
+test('a vue-i18n config fetching from this server does not wait on its own request', async () => {
+  detector.localeDetector = () => 'en'
+  const hook = vi.fn()
+  const loaded = vi.fn()
+  setupVueI18nOptions.mockImplementation(async () => {
+    await new Promise(resolve => setTimeout(resolve))
+    // an internal `$fetch` runs the request hooks of the server it is called from
+    const handlers = hook.mock.calls.filter(([name]) => name === 'request').map(([, handler]) => handler)
+    await Promise.all(handlers.map(handler => handler({ path: '/api/messages', context: {} })))
+    loaded()
+    return { locale: 'en', fallbackLocale: false, messages: {} }
+  })
+
+  await bootPlugin(hook)
+
+  await vi.waitFor(() => expect(loaded).toHaveBeenCalled())
 })
