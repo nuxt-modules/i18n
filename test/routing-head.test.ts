@@ -477,28 +477,39 @@ describe('_useSetI18nParams', () => {
     expect(patched.link.find(x => x.hreflang === 'nl')!.href).toBe('https://example.com/nl/products/grote-stoel')
   })
 
+  // the route a page renders stays put once the page is left, it is what `useRoute()` gives a page
+  const pageRouteOf = (router: Router) => ({ path: router.currentRoute.value.path })
+
   test('restores dynamic params when navigating within the same route', async () => {
     const { router, ctx } = createTestContext()
     await router.push('/products/big-chair')
 
-    const setI18nParams = _useSetI18nParams(ctx)
+    const setI18nParams = _useSetI18nParams(ctx, undefined, router, pageRouteOf(router))
     setI18nParams(chairParams)
 
-    // every navigation builds a fresh merged route meta, so the composable
-    // re-applies the params it owns
+    // navigation resets route meta, the composable re-applies the params
     await router.push('/products/big-chair?page=2')
     await nextTick()
     expect(router.currentRoute.value.meta.nuxtI18nInternal).toEqual(chairParams)
   })
 
-  test('ignores a setter that resolves after the user has navigated away', async () => {
+  test.each(['/', '/products/red-mug'])('(#4129) a page being left does not pass its params on to %s', async (path) => {
     const { router, ctx } = createTestContext()
     await router.push('/products/big-chair')
 
-    // created in the page's setup, while its own route is current
-    const setI18nParams = _useSetI18nParams(ctx)
+    const setI18nParams = _useSetI18nParams(ctx, undefined, router, pageRouteOf(router))
+    setI18nParams(chairParams)
 
-    // the page's data resolves only after the user has moved on
+    await router.push(path)
+    await nextTick()
+    expect(router.currentRoute.value.meta.nuxtI18nInternal).toBeUndefined()
+  })
+
+  test('ignores params set after the page has been left', async () => {
+    const { router, ctx } = createTestContext()
+    await router.push('/products/big-chair')
+    const setI18nParams = _useSetI18nParams(ctx, undefined, router, pageRouteOf(router))
+
     await router.push('/')
     await nextTick()
     setI18nParams(chairParams)
@@ -506,18 +517,33 @@ describe('_useSetI18nParams', () => {
     expect(router.currentRoute.value.meta.nuxtI18nInternal).toBeUndefined()
   })
 
-  test('does not carry dynamic params onto a different route', async () => {
+  test('a page instance reused for another route keeps setting params', async () => {
     const { router, ctx } = createTestContext()
     await router.push('/products/big-chair')
+    // the route of a reused page follows the router
+    const pageRoute = { get path() { return router.currentRoute.value.path } }
+    const setI18nParams = _useSetI18nParams(ctx, undefined, router, pageRoute)
 
-    const setI18nParams = _useSetI18nParams(ctx)
+    await router.push('/nl/products/grote-stoel')
+    await nextTick()
     setI18nParams(chairParams)
 
-    // the page that set these params stays mounted while the next route
-    // resolves; a page that declares none must not inherit them
+    expect(router.currentRoute.value.meta.nuxtI18nInternal).toEqual(chairParams)
+  })
+
+  test('outside of a page the params follow the current route', async () => {
+    const { router, ctx } = createTestContext()
     await router.push('/')
+    const setI18nParams = _useSetI18nParams(ctx)
+
+    await router.push('/products/big-chair')
     await nextTick()
-    expect(router.currentRoute.value.meta.nuxtI18nInternal).toBeUndefined()
+    setI18nParams(chairParams)
+    expect(router.currentRoute.value.meta.nuxtI18nInternal).toEqual(chairParams)
+
+    await router.push('/products/big-chair?page=2')
+    await nextTick()
+    expect(router.currentRoute.value.meta.nuxtI18nInternal).toEqual(chairParams)
   })
 
   test('seo attributes override global canonicalQueries in strict seo mode', async () => {

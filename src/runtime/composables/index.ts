@@ -1,5 +1,5 @@
-import { useCookie, useNuxtApp, useRequestEvent } from '#imports'
-import { ref, watch } from 'vue'
+import { useCookie, useNuxtApp, useRequestEvent, useRoute } from '#imports'
+import { getCurrentInstance, ref, watch } from 'vue'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../composable-context'
 import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
@@ -67,7 +67,9 @@ export type SetI18nParamsFunction = (params: I18nRouteMeta) => void
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions, nuxtApp: NuxtApp = useNuxtApp()): SetI18nParamsFunction {
   const common = useComposableContext(nuxtApp)
-  return _useSetI18nParams(common, seo)
+  // inside a page `useRoute()` is the route that page renders, it stays put while the page is being left
+  const route = getCurrentInstance()?.appContext.app.$nuxt === nuxtApp ? useRoute() : undefined
+  return _useSetI18nParams(common, seo, undefined, route === nuxtApp._route ? undefined : route)
 }
 
 /**

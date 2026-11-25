@@ -5,6 +5,7 @@ import { type HeadContext, localeHead as _localeHead } from '#i18n-kit/head'
 import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '#internal-i18n-types'
 import type { ComposableContext } from '../composable-context'
 import type { I18nRouteMeta } from '../types'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { localeRoute, switchLocalePath } from './routing'
 
 function patchHead(head: ComposableContext['head'] | undefined, input: I18nHeadMetaInfo): void {
@@ -117,16 +118,15 @@ export function _useSetI18nParams(
   ctx: ComposableContext,
   seo?: SeoAttributesOptions,
   router = ctx.router,
+  /** The route of the page the params belong to, absent outside of a page */
+  pageRoute?: Pick<RouteLocationNormalizedLoaded, 'path'>,
 ): (params: I18nRouteMeta) => void {
   const head = ctx.strictSeo ? ctx.head : useHead({})
   const evt = ctx.strictSeo && import.meta.server && useRequestEvent()
 
   const _i18nParams = ref({})
-  // The route these params belong to, captured where the composable is created —
-  // that is, in the owning page's `setup()`. Checked by both the setter and the
-  // navigation watcher below, so a page can neither write to a route it no
-  // longer occupies nor re-apply its params to whichever route comes next.
-  const _i18nParamsRoute = router.currentRoute.value.name
+  // a page stays mounted while the next one resolves, its params are not for the route being entered (#4129)
+  const ownsCurrentRoute = () => pageRoute == null || pageRoute.path === router.currentRoute.value.path
   const i18nParams = computed({
     get() {
       return router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__]
@@ -143,11 +143,7 @@ export function _useSetI18nParams(
   const unsub = watch(
     () => router.currentRoute.value.fullPath,
     () => {
-      // A page is kept mounted while the next one resolves, so without this
-      // check the page being left stamps its params onto the page being entered.
-      if (!ownsCurrentRoute()) {
-        return
-      }
+      if (!ownsCurrentRoute()) { return }
       router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = _i18nParams.value
       ctx.strictSeo && updateState()
     },
@@ -155,10 +151,6 @@ export function _useSetI18nParams(
 
   if (getCurrentScope()) {
     onScopeDispose(unsub)
-  }
-
-  function ownsCurrentRoute() {
-    return router.currentRoute.value.name === _i18nParamsRoute
   }
 
   function updateState() {
@@ -173,11 +165,8 @@ export function _useSetI18nParams(
   })
 
   return function (params: I18nRouteMeta) {
-    // A page whose data resolves only after the user has navigated away must not
-    // write its params onto the route they landed on.
-    if (!ownsCurrentRoute()) {
-      return
-    }
+    // data resolving after the user has navigated away
+    if (!ownsCurrentRoute()) { return }
 
     i18nParams.value = { ...params }
     ctx.strictSeo && updateState()
