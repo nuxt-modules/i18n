@@ -22,7 +22,7 @@ import type { CacheOptions, I18nServerHooks } from './types'
 
 export type ServerEvent = H3Event
 
-export function definePlugin(setup: (hooks: I18nServerHooks<ServerEvent>) => void | Promise<void>) {
+export function definePlugin(setup: (hooks: I18nServerHooks<ServerEvent>) => void) {
   return defineNitroPlugin(nitro => setup({
     onRequest: fn => nitro.hooks.hook('request', fn),
     onAfterResponse: fn => nitro.hooks.hook('afterResponse', fn),

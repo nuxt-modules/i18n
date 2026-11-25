@@ -53,3 +53,27 @@ test('clears the cache without waiting for the locale detector options', async (
 
   await vi.waitFor(() => expect(removeItem).toHaveBeenCalledWith('nitro:handlers:i18n:en.json'))
 })
+
+test('a request arriving before the locale detector options resolve waits for them', async () => {
+  detector.localeDetector = () => 'en'
+  const { promise, resolve } = Promise.withResolvers<unknown>()
+  setupVueI18nOptions.mockReturnValue(promise)
+
+  const hook = await bootPlugin()
+  const event = { path: '/en', context: {} as Record<string, unknown> }
+  const handlers = hook.mock.calls.filter(([name]) => name === 'request').map(([, handler]) => handler)
+  const request = Promise.all(handlers.map(handler => handler(event)))
+  resolve({ locale: 'en', fallbackLocale: false, messages: {} })
+  await request
+
+  expect(event.context.i18n).toBeDefined()
+})
+
+test('a failing cache storage does not fail the plugin', async () => {
+  getKeys.mockRejectedValue(new Error('storage unavailable'))
+
+  const hook = await bootPlugin()
+  await new Promise(resolve => setTimeout(resolve))
+
+  expect(hook).toHaveBeenCalled()
+})

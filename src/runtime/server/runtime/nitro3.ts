@@ -18,7 +18,7 @@ import type { CacheOptions, I18nServerHooks } from './types'
 
 export type ServerEvent = RequestEvent
 
-export function definePlugin(setup: (hooks: I18nServerHooks<ServerEvent>) => void | Promise<void>) {
+export function definePlugin(setup: (hooks: I18nServerHooks<ServerEvent>) => void) {
   return _definePlugin((nitro) => {
     const serverHooks = useServerHooks()
     return setup({
