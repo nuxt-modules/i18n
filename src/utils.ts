@@ -1,7 +1,8 @@
 import { defu } from 'defu'
 import { readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { useLogger } from '@nuxt/kit'
+import { pathToFileURL } from 'node:url'
+import { directoryToURL, resolveModule, useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
 import { EXECUTABLE_EXT_RE } from './constants'
@@ -511,6 +512,22 @@ export function getLayerI18n(configLayer: NuxtConfigLayer) {
   }
 
   return layerInlineOptions
+}
+
+/**
+ * Where to resolve `vue-i18n` from (the app, then the module) and the packages it pins to exact
+ * versions, each from the package depending on it - the approach nuxt takes for `vue`
+ */
+export function resolveVueI18nPackages(rootDir: string, moduleURL: URL): Record<string, URL | URL[]> {
+  const packageURL = (name: string, url: URL | URL[]) => pathToFileURL(resolveModule(`${name}/package.json`, { url }))
+  const from = [directoryToURL(rootDir), moduleURL]
+  const vueI18n = packageURL('vue-i18n', from)
+  return {
+    'vue-i18n': from,
+    '@intlify/shared': vueI18n,
+    '@intlify/core-base': vueI18n,
+    '@intlify/message-compiler': packageURL('@intlify/core-base', vueI18n),
+  }
 }
 
 export function toArray<T>(value: T | T[]): T[] {
