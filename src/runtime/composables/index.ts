@@ -18,6 +18,7 @@ import type { NuxtApp } from '#app'
 
 export * from 'vue-i18n'
 export * from './shared'
+export type { NuxtLinkLocaleProps, NuxtLinkLocaleSlotProps, NuxtLinkLocaleSlots } from '../components/NuxtLinkLocale'
 
 declare module '#app' {
   interface NuxtApp {
