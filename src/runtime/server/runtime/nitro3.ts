@@ -64,4 +64,6 @@ export const getRenderPath = (event: ServerEvent) => event.url.pathname + event.
 export const setCookie = (event: ServerEvent, name: string, value: string, options: CookieSerializeOptions) =>
   _setCookie(event, name, value, options)
 
+export const setResponseHeader = (event: ServerEvent, name: string, value: string) => event.res.headers.set(name, value)
+
 export const defineI18nMiddleware = (options: CoreOptions) => _defineI18nMiddleware(options)
