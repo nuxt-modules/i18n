@@ -21,6 +21,11 @@ export interface I18nNuxtContext {
   distDir: string
   runtimeDir: string
   i18nLayers: LayerWithI18n[]
+  /**
+   * Whether pages are rendered on the server. Read at setup - Nuxt later enables `nuxt.options.ssr`
+   * to render the component islands of a client-only app, which still renders no page (#4189)
+   */
+  ssr: boolean
 }
 
 /**
@@ -87,7 +92,7 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     i18nLayers.push({ config: l, i18n, i18nDir, i18nDetector })
   }
 
-  return { options, rawOptions, resolver, distDir, runtimeDir, i18nLayers }
+  return { options, rawOptions, resolver, distDir, runtimeDir, i18nLayers, ssr: nuxt.options.ssr }
 }
 
 export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<ResolvedI18nContext> {

@@ -5,6 +5,7 @@ import { type HeadContext, localeHead as _localeHead } from '#i18n-kit/head'
 import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '#internal-i18n-types'
 import type { ComposableContext } from '../composable-context'
 import type { I18nRouteMeta } from '../types'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { localeRoute, switchLocalePath } from './routing'
 
 function patchHead(head: ComposableContext['head'] | undefined, input: I18nHeadMetaInfo): void {
@@ -43,7 +44,8 @@ function createHeadContext(
   // alternate links resolve through the same routing as navigation, shaped for the canonical domain
   const alternateCtx = { ...ctx, afterSwitchLocalePath: ctx.getAlternatePath }
 
-  if (!baseUrl && !ctx.routingOptions.domains) {
+  // links are only generated with `seo` enabled, a missing `baseUrl` affects nothing otherwise
+  if (config.seo && !baseUrl && !ctx.routingOptions.domains) {
     if (ctx.strictSeo) {
       throw new Error('I18n `baseUrl` is required to generate valid SEO tag links.')
     }
@@ -116,11 +118,15 @@ export function _useSetI18nParams(
   ctx: ComposableContext,
   seo?: SeoAttributesOptions,
   router = ctx.router,
+  /** The route of the page the params belong to, absent outside of a page */
+  pageRoute?: Pick<RouteLocationNormalizedLoaded, 'path'>,
 ): (params: I18nRouteMeta) => void {
   const head = ctx.strictSeo ? ctx.head : useHead({})
   const evt = ctx.strictSeo && import.meta.server && useRequestEvent()
 
   const _i18nParams = ref({})
+  // a page stays mounted while the next one resolves, its params are not for the route being entered (#4129)
+  const ownsCurrentRoute = () => pageRoute == null || pageRoute.path === router.currentRoute.value.path
   const i18nParams = computed({
     get() {
       return router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__]
@@ -137,6 +143,7 @@ export function _useSetI18nParams(
   const unsub = watch(
     () => router.currentRoute.value.fullPath,
     () => {
+      if (!ownsCurrentRoute()) { return }
       router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = _i18nParams.value
       ctx.strictSeo && updateState()
     },
@@ -158,6 +165,9 @@ export function _useSetI18nParams(
   })
 
   return function (params: I18nRouteMeta) {
+    // data resolving after the user has navigated away
+    if (!ownsCurrentRoute()) { return }
+
     i18nParams.value = { ...params }
     ctx.strictSeo && updateState()
     if (!ctx.strictSeo) {
