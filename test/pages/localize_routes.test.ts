@@ -813,6 +813,23 @@ describe('localizeRoutes', function () {
       expect(explicit).toEqual(fallback)
     })
 
+    it('adds a single default route for a top-level route restricted to several locales', function () {
+      const localizedRoutes = localizeRoutes([{ path: '/about', name: 'about' }], createTestConfig({
+        locales: ['en', 'nl', 'de'],
+        strategy: 'prefix_and_default',
+        defaultLocale: 'en',
+        optionsResolver: createMockOptionsResolver({
+          about: { locales: ['en', 'nl'], paths: {} }
+        })
+      }))
+
+      expect(localizedRoutes.map(x => [x.name, x.path])).toEqual([
+        ['about___en___default', '/about'],
+        ['about___en', '/en/about'],
+        ['about___nl', '/nl/about']
+      ])
+    })
+
     describe.each(['prefix', 'prefix_except_default', 'prefix_and_default'] as const)(
       'strategy: "%s"',
       (strategy) => {
