@@ -7,7 +7,7 @@ import {
   joinPath,
   localizeSingleRoute,
 } from './kit/gen'
-import type { NormalizedLocaleObject, Strategies } from './types'
+import type { LocaleObject, NormalizedLocaleObject, Strategies } from './types'
 
 export type RouteResources = {
   /** plain paths mounted as-is for at least one locale */
@@ -129,8 +129,14 @@ const usesDefaultVariants = (strategy: Strategies | undefined) =>
  */
 function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies): string[] {
   if (config.differentDomains || config.multiDomainLocales) {
-    // `setupMultiDomainLocales` keeps the current host's variant at runtime
-    return usesDefaultVariants(strategy) ? getDomainDefaultLocales(config.locales) : []
+    if (!usesDefaultVariants(strategy)) { return [] }
+    // `resolveDomainRoutes` keeps the current host's variant at runtime. A `domainDefault` configured
+    // without a domain is the default of the one set at runtime, serving it at both paths takes a
+    // tree here - `prefix_except_default` unprefixes its prefixed routes instead (#4190)
+    const countsFlag = strategy === 'prefix_and_default'
+    return config.locales
+      .filter(locale => locale.defaultForDomains.length || (countsFlag && (locale as LocaleObject).domainDefault))
+      .map(locale => locale.code)
   }
   return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
 }

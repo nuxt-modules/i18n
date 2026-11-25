@@ -1,8 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
-import { resolveDeliveryLocales } from '../src/context'
-import { resolveLocales } from '../src/utils'
+import { createContext, resolveDeliveryLocales } from '../src/context'
+import { getDefineConfig } from '../src/bundler'
+import { resolveLocales, resolveVueI18nConfigInfo } from '../src/utils'
 import { generateLoaderOptions } from '../src/gen'
 import type { DeliveryConfig } from '../src/runtime/shared/delivery'
 import type { ResolvedI18nContext } from '../src/context'
@@ -78,17 +79,25 @@ const SOURCES: Record<string, string> = {
   [LOCALES.appContext]: `export default defineI18nLocale(() => ({ a: useNuxtApp().$greeting }))`
 }
 
-function buildContext(staticDeploy = false) {
+type Build = { dev: boolean, ssr: boolean, staticDeploy: boolean, islands?: boolean }
+
+function buildContext(build: Build = { dev: false, ssr: true, staticDeploy: false }) {
   const vfs = Object.fromEntries(Object.keys(SOURCES).map(code => [`/i18n/${code}.ts`, SOURCES[code]!]))
   const locales = Object.keys(SOURCES).map(code => ({ code, file: `${code}.ts` })) as LocaleObject[]
   const localeInfo = resolveLocales('/i18n', locales, vfs)
 
+  const nuxt = { options: { dev: build.dev, ssr: build.ssr, pages: true, app: {}, nitro: {}, _layers: [] } }
+  const base = createContext({ experimental: {}, bundle: {}, lazy: true } as never, nuxt as never)
+  // Nuxt enables `ssr` after module setup to render the islands of a client-only app
+  if (build.islands) { nuxt.options.ssr = true }
+
   const ctx = {
-    options: { experimental: {}, bundle: {}, lazy: true },
+    ...base,
     ...resolveDeliveryLocales(localeInfo),
-    staticDeploy,
+    staticDeploy: build.staticDeploy,
     localeCodes: Object.keys(SOURCES),
     localeInfo,
+    localeFileMetas: localeInfo.flatMap(x => x.meta),
     normalizedLocales: locales,
     vueI18nConfigPaths: [],
     runtimeDir: '/runtime',
@@ -96,19 +105,18 @@ function buildContext(staticDeploy = false) {
   } as unknown as ResolvedI18nContext
   ctx.loaderOptions = generateLoaderOptions(ctx)
 
-  return ctx
+  return { ctx, nuxt: nuxt as never }
 }
 
-/** The loaders `src/template.ts` leaves reachable in each graph, per locale */
-function emittedLoaders(build: { dev: boolean, ssr: boolean, staticDeploy: boolean }, server: boolean) {
-  const ctx = buildContext(build.staticDeploy)
-  const nuxt = { options: { dev: build.dev, ssr: build.ssr, nitro: {} } }
-  const generated = generateTemplateNuxtI18nOptions(ctx, server, nuxt as never)
-  const loaders = /export const localeLoaders = ([\s\S]*?)\nexport const/.exec(generated)?.[1] ?? ''
+/** The loaders `src/template.ts` leaves reachable in the app graphs and the delivery config the runtime gets */
+function setupBuild(build: Build) {
+  const { ctx, nuxt } = buildContext(build)
+  const generated = generateTemplateNuxtI18nOptions(ctx, false, nuxt)
+  const entries = /export const localeLoaders = ([\s\S]*?)\nexport const/.exec(generated)?.[1] ?? ''
 
-  return Object.fromEntries(
+  const loaders = Object.fromEntries(
     Object.keys(SOURCES).map((code) => {
-      const entry = new RegExp(`\\n {2}${code}: \\[([\\s\\S]*?)\\n {2}\\]`).exec(loaders)?.[1] ?? ''
+      const entry = new RegExp(`\\n {2}${code}: \\[([\\s\\S]*?)\\n {2}\\]`).exec(entries)?.[1] ?? ''
       return [code, {
         // a stubbed loader resolves to `{}` instead of reading the locale file
         present: entry.includes('=> import('),
@@ -116,6 +124,18 @@ function emittedLoaders(build: { dev: boolean, ssr: boolean, staticDeploy: boole
       }]
     })
   )
+
+  // read from the defines, as `createNuxtI18nContext` does
+  const defines = getDefineConfig(ctx, false, nuxt)
+  const config = (prerender: boolean): DeliveryConfig => ({
+    ssr: defines.__IS_SSR__ === 'true',
+    ssg: defines.__IS_SSG__ === 'true',
+    prerender,
+    dynamic: JSON.parse(defines.__I18N_DYNAMIC_LOCALES__) as string[],
+    undeliverable: JSON.parse(defines.__I18N_UNDELIVERABLE_LOCALES__) as string[]
+  })
+
+  return { loaders, config }
 }
 
 describe('(#4093) the build and the runtime agree on where messages come from', () => {
@@ -123,17 +143,17 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
     { name: 'production ssr', dev: false, ssr: true, staticDeploy: false },
     { name: 'static host', dev: false, ssr: true, staticDeploy: true },
     { name: 'spa', dev: false, ssr: false, staticDeploy: false },
+    { name: 'spa with component islands', dev: false, ssr: false, staticDeploy: true, islands: true },
     { name: 'dev', dev: true, ssr: true, staticDeploy: false }
   ]
 
   test.each(BUILDS)('$name: every locale the runtime loads has its loaders emitted', (build) => {
-    const client = emittedLoaders(build, false)
-    const config = delivery({ ssr: build.ssr, ssg: build.staticDeploy })
+    const { loaders, config } = setupBuild(build)
 
     for (const locale of Object.values(LOCALES)) {
       // the client never prerenders, and dev always takes the loaders
-      const clientUsesLoaders = build.dev || createRuntimeLoaderPredicate({ ...config, prerender: false })(locale)
-      const reachableOnClient = client[locale]!.present && !client[locale]!.clientStubbed
+      const clientUsesLoaders = build.dev || createRuntimeLoaderPredicate(config(false))(locale)
+      const reachableOnClient = loaders[locale]!.present && !loaders[locale]!.clientStubbed
 
       // a stubbed loader resolves to `{}`, so needing one that was not emitted loses the messages
       expect({ locale, reachable: reachableOnClient || !clientUsesLoaders }).toEqual({ locale, reachable: true })
@@ -141,22 +161,49 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
   })
 
   test.each(BUILDS)('$name: the ssr graph keeps the loaders prerendering needs', (build) => {
-    const app = emittedLoaders(build, false)
-    const config = delivery({ ssr: build.ssr, ssg: build.staticDeploy, prerender: true })
+    const { loaders, config } = setupBuild(build)
 
     for (const locale of Object.values(LOCALES)) {
-      const serverUsesLoaders = build.dev || createRuntimeLoaderPredicate(config)(locale)
-      expect({ locale, reachable: app[locale]!.present || !serverUsesLoaders }).toEqual({ locale, reachable: true })
+      const serverUsesLoaders = build.dev || createRuntimeLoaderPredicate(config(true))(locale)
+      expect({ locale, reachable: loaders[locale]!.present || !serverUsesLoaders }).toEqual({ locale, reachable: true })
+    }
+  })
+
+  test('(#4189) a client-only app with component islands loads every locale through its loaders', () => {
+    const { loaders, config } = setupBuild({ dev: false, ssr: false, staticDeploy: true, islands: true })
+    const usesLoaders = createRuntimeLoaderPredicate(config(false))
+
+    for (const locale of Object.values(LOCALES)) {
+      // no page is rendered on the server, so nothing prerenders the endpoint for a static host
+      const loaded = usesLoaders(locale) && loaders[locale]!.present && !loaders[locale]!.clientStubbed
+      expect({ locale, loaded }).toEqual({ locale, loaded: true })
     }
   })
 
   test('(#3940) the nitro graph neither imports nor runs a locale file that needs the Nuxt app', () => {
-    const { localeLoaders, importStatements } = buildContext().loaderOptions
+    const { localeLoaders, importStatements } = buildContext().ctx.loaderOptions
     const loaders = localeLoaders[LOCALES.appContext]!
 
     expect(loaders.map(x => x.loadServer)).toEqual(['() => Promise.resolve({})'])
     // the file is left out of the bundle entirely, its app-only imports would come with it
     expect(importStatements.join('\n')).not.toContain(loaders[0]!.virtualId)
     expect(importStatements.join('\n')).toContain(localeLoaders[LOCALES.dynamic]![0]!.virtualId)
+  })
+
+  test('(#4150) the nitro graph neither imports nor runs a vue-i18n config that needs the Nuxt app', () => {
+    const configs = {
+      '/i18n/plain.config.ts': `export default defineI18nConfig(() => ({ locale: 'en' }))`,
+      '/i18n/app.config.ts': `export default defineI18nConfig(() => ({ locale: useRequestURL().host }))`
+    }
+    const { ctx } = buildContext()
+    ctx.vueI18nConfigPaths = Object.keys(configs).map(path => resolveVueI18nConfigInfo(path, configs))
+    // the configs are walked back to front, so the app-context one comes out first
+    const { vueI18nConfigs, importStatements } = generateLoaderOptions(ctx)
+    const [appContext, plain] = vueI18nConfigs
+
+    expect(appContext!.importerServer).toBe('() => Promise.resolve({})')
+    // the config is left out of the bundle entirely, its app-only imports would come with it
+    expect(importStatements.join('\n')).not.toContain(appContext!.virtualId)
+    expect(importStatements.join('\n')).toContain(plain!.virtualId)
   })
 })

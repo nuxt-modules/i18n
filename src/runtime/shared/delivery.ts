@@ -1,6 +1,7 @@
 import type { Locale } from 'vue-i18n'
 
 export interface DeliveryConfig {
+  /** Pages are rendered on the server */
   ssr: boolean
   /** Deployed without a server, leaving only what was prerendered */
   ssg: boolean

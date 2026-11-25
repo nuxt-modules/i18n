@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
-import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
+import { resolveDomainRoutes } from '../src/runtime/routing/domain'
 import { _useLocaleHead, _useSetI18nParams, localeHead, missesClusterFallback } from '../src/runtime/routing/head'
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
@@ -58,10 +58,6 @@ function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) 
   const { strictSeo = false, domains = false, defaultLocale: configuredDefault = 'en' } = opts
   let locale = initialLocale
   const cluster = typeof domains === 'object' ? (domains.locales ?? clusterLocales) : undefined
-  const router = createRouter({
-    history: createMemoryHistory(),
-    routes: cluster ? clusterRoutesFor(cluster) : routes,
-  })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
   const domainLocales = getNormalizedLocales(
     locales.map(l => ({ ...l, domain: `${l.code}.example.com`, defaultForDomains: [`${l.code}.example.com`] })),
@@ -72,10 +68,11 @@ function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) 
     : domains ? `${initialLocale}.example.com` : 'example.com'
   // resolved the way the runtime plugin does, rather than supplied
   const hostDefault = resolveDefaultLocale(host, configuredDefault, testLocales)
-  if (domains) {
-    // rebuild the route table for the current host, mirrors the runtime plugin
-    setupMultiDomainLocales(hostDefault, 'prefix_except_default', router)
-  }
+  const baseRoutes = cluster ? clusterRoutesFor(cluster) : routes
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: domains ? resolveDomainRoutes(baseRoutes, hostDefault, 'prefix_except_default') : baseRoutes,
+  })
   const ctx = {
     ...createRoutingContext({
       router,
@@ -164,6 +161,29 @@ describe('localeHead', () => {
     await router.push('/products/big-chair?foo=bar')
     const noMatch = localeHead(ctx, { seo: { canonicalQueries: ['page'] } })
     expect(noMatch.link.find(x => x.rel === 'canonical')!.href).toBe('https://example.com/products/big-chair')
+  })
+
+  test('(#4182) a missing `baseUrl` is only reported when seo links are generated', async () => {
+    const { router, ctx } = createTestContext('en')
+    ctx.getBaseUrl = () => ''
+    await router.push('/')
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    expect(localeHead(ctx, { seo: false }).link).toEqual([])
+    expect(warn).not.toHaveBeenCalled()
+
+    localeHead(ctx, { seo: true })
+    expect(warn).toHaveBeenCalledWith('I18n `baseUrl` is required to generate valid SEO tag links.')
+    warn.mockRestore()
+  })
+
+  test('(#4182) strict seo does not require `baseUrl` when seo links are disabled', async () => {
+    const { router, ctx } = createTestContext('en', { strictSeo: true })
+    ctx.getBaseUrl = () => ''
+    await router.push('/')
+
+    expect(() => localeHead(ctx, { seo: false })).not.toThrow()
+    expect(() => localeHead(ctx, { seo: true })).toThrow('I18n `baseUrl` is required to generate valid SEO tag links.')
   })
 })
 

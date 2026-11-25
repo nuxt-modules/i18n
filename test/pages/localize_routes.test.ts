@@ -3,8 +3,9 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
 import { localizeRoutes, shouldLocalizeRoutes } from '../../src/routing'
-import { setupMultiDomainLocales } from '../../src/runtime/routing/domain'
+import { resolveDomainRoutes, setupMultiDomainLocales } from '../../src/runtime/routing/domain'
 import type { NuxtPage } from '@nuxt/schema'
+import type { Router } from 'vue-router'
 import type { LocaleObject } from '../../src/types'
 import { LocalizableRoute } from '../../src/kit/gen'
 
@@ -223,9 +224,9 @@ describe('localizeRoutes', function () {
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      setupMultiDomainLocales('en', 'prefix_except_default', router)
 
-      expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
+      const domainRouter = createRouter({ routes: resolveDomainRoutes(localizedRoutes as any, 'en', 'prefix_except_default'), history: createMemoryHistory() })
+      expect(domainRouter.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
     })
   })
 
@@ -258,9 +259,8 @@ describe('localizeRoutes', function () {
       expect(paths['about___nl']).toBe('/nl/about')
       expect(paths['about___nl___default']).toBe('/about')
 
-      // the runtime surgery unprefixes the domain's default locale
-      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
-      setupMultiDomainLocales('fr', 'prefix_except_default', router)
+      // the host route table unprefixes the domain's default locale
+      const router = createRouter({ routes: resolveDomainRoutes(localizedRoutes as any, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___fr']).toBe('/about')
       expect(domainPaths['about___nl']).toBe('/nl/about')
@@ -287,8 +287,7 @@ describe('localizeRoutes', function () {
         ])
       })
 
-      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
-      setupMultiDomainLocales('fr', 'prefix_except_default', router)
+      const router = createRouter({ routes: resolveDomainRoutes(localizedRoutes as any, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
 
       expect(router.resolve('/').name).toBe('home___fr')
       expect(router.resolve('/en').name).toBe('home___en')
@@ -297,6 +296,139 @@ describe('localizeRoutes', function () {
       expect(profile.name).toBe('user-profile___fr')
       expect(profile.matched.map(x => x.name)).toEqual(['user___fr', 'user-profile___fr'])
       expect(router.resolve('/en/user/1/profile').name).toBe('user-profile___en')
+    })
+
+    describe('host route table', function () {
+      const localizedRoutes = localizeRoutes([
+        { path: '/', name: 'home' },
+        { path: '/user/:id', name: 'user', children: [{ path: 'profile', name: 'user-profile' }] }
+      ] as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        differentDomains: true,
+        locales: getNormalizedLocales([
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+        ])
+      }) as any[]
+
+      it('returns the same table for the same routes and locale', function () {
+        const table = resolveDomainRoutes(localizedRoutes, 'fr', 'prefix_except_default')
+        expect(resolveDomainRoutes(localizedRoutes, 'fr', 'prefix_except_default')).toBe(table)
+        expect(resolveDomainRoutes(localizedRoutes, 'en', 'prefix_except_default')).not.toBe(table)
+      })
+
+      it('does not mutate a router created from the host table', function () {
+        const router = createRouter({ routes: resolveDomainRoutes(localizedRoutes, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
+        const addRoute = vi.spyOn(router, 'addRoute')
+        const removeRoute = vi.spyOn(router, 'removeRoute')
+        const clearRoutes = vi.spyOn(router, 'clearRoutes')
+
+        setupMultiDomainLocales('fr', 'prefix_except_default', router)
+
+        expect(addRoute).not.toHaveBeenCalled()
+        expect(removeRoute).not.toHaveBeenCalled()
+        expect(clearRoutes).not.toHaveBeenCalled()
+        expect(router.resolve('/user/1/profile').matched.map(x => x.name)).toEqual(['user___fr', 'user-profile___fr'])
+      })
+
+      it('keeps nested routes under their parent with trailing slashes', function () {
+        const localized = localizeRoutes([
+          { path: '/user/:id', name: 'user', children: [{ path: 'profile', name: 'user-profile' }] }
+        ] as LocalizableRoute[], {
+          ...nuxtOptions,
+          defaultLocale: 'en',
+          strategy: 'prefix_except_default',
+          trailingSlash: true,
+          differentDomains: true,
+          locales: getNormalizedLocales([
+            { code: 'en', domain: 'en.example.com' },
+            { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+          ])
+        }) as any[]
+
+        const router = createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
+        expect(router.resolve('/user/1/profile/').matched.map(x => x.name)).toEqual(['user___fr', 'user-profile___fr'])
+      })
+
+      it('unprefixes the aliases of the domain default', function () {
+        const localized = localizeRoutes([{ path: '/about', name: 'about', alias: ['/a'] }] as LocalizableRoute[], {
+          ...nuxtOptions,
+          defaultLocale: 'en',
+          strategy: 'prefix_except_default',
+          differentDomains: true,
+          locales: getNormalizedLocales([
+            { code: 'en', domain: 'en.example.com' },
+            { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+          ])
+        }) as any[]
+
+        const rebuilt = createRouter({ routes: localized, history: createMemoryHistory() })
+        setupMultiDomainLocales('fr', 'prefix_except_default', rebuilt)
+
+        for (const router of [createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'prefix_except_default'), history: createMemoryHistory() }), rebuilt]) {
+          expect(router.resolve('/about').name).toBe('about___fr')
+          expect(router.resolve('/a').name).toBe('about___fr')
+          expect(router.resolve('/en/a').name).toBe('about___en')
+          expect(router.resolve('/fr/a').matched).toEqual([])
+        }
+      })
+
+      it('rebuilds a router created from other routes', function () {
+        const router = createRouter({ routes: localizedRoutes, history: createMemoryHistory() })
+        setupMultiDomainLocales('fr', 'prefix_except_default', router)
+
+        const table = createRouter({ routes: resolveDomainRoutes(localizedRoutes, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
+        for (const path of ['/', '/fr', '/en', '/user/1/profile', '/fr/user/1/profile', '/en/user/1/profile']) {
+          expect(router.resolve(path).matched.map(x => x.name)).toEqual(table.resolve(path).matched.map(x => x.name))
+        }
+      })
+
+      it('keeps the routes an app added, replaced or removed', function () {
+        const router = createRouter({ routes: localizedRoutes, history: createMemoryHistory() })
+        router.addRoute({ path: '/health', name: 'health', component: {} })
+        router.addRoute({ path: '/fr', name: 'home___fr', component: {}, meta: { replaced: true } })
+        router.removeRoute('user___fr')
+        setupMultiDomainLocales('fr', 'prefix_except_default', router)
+
+        expect(router.resolve('/health').name).toBe('health')
+        expect(router.resolve('/').name).toBe('home___fr')
+        expect(router.resolve('/').meta.replaced).toBe(true)
+        expect(router.hasRoute('user___fr')).toBe(false)
+        expect(router.hasRoute('user-profile___fr')).toBe(false)
+      })
+
+      it('leaves the built-in router of an app without pages alone', function () {
+        const router = { options: {}, getRoutes: () => [] } as unknown as Router
+        expect(() => setupMultiDomainLocales('fr', 'prefix_except_default', router)).not.toThrow()
+      })
+
+      // a page with an index child, the parent route has no name
+      it('unprefixes a parent without a name', function () {
+        const localized = localizeRoutes([
+          { path: '/group', children: [{ path: '', name: 'group' }, { path: 'item', name: 'group-item' }] }
+        ] as LocalizableRoute[], {
+          ...nuxtOptions,
+          defaultLocale: 'en',
+          strategy: 'prefix_except_default',
+          differentDomains: true,
+          locales: getNormalizedLocales([
+            { code: 'en', domain: 'en.example.com' },
+            { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+          ])
+        }) as any[]
+
+        const router = createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
+        const matched = (path: string) => router.resolve(path).matched.map(x => x.path)
+
+        expect(router.resolve('/group').name).toBe('group___fr')
+        expect(router.resolve('/group/item').name).toBe('group-item___fr')
+        expect(matched('/group/item')).toEqual(['/group', '/group/item'])
+        expect(router.resolve('/en/group/item').name).toBe('group-item___en')
+        expect(matched('/fr/group')).toEqual([])
+        expect(matched('/fr/group/item')).toEqual([])
+      })
     })
 
     it('keeps the configured trailing slash when unprefixing', function () {
@@ -314,8 +446,7 @@ describe('localizeRoutes', function () {
         ])
       })
 
-      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
-      setupMultiDomainLocales('fr', 'prefix_except_default', router)
+      const router = createRouter({ routes: resolveDomainRoutes(localizedRoutes as any, 'fr', 'prefix_except_default'), history: createMemoryHistory() })
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['home___fr']).toBe('/')
       expect(domainPaths['home___en']).toBe('/en/')
@@ -428,9 +559,24 @@ describe('localizeRoutes', function () {
     })
 
     const names = localizedRoutes.map(x => x.name)
-    // `fr` has a domain to be the default for, `en` has none and the runtime resolves no default for it
+    // `en` names no domain here, the host table unprefixes its routes on the domain set at runtime
     expect(names).toContain('about___fr___default')
     expect(names).not.toContain('about___en___default')
+  })
+
+  it('(#4190) generates an unprefixed variant for `domainDefault` without a domain to serve both paths', function () {
+    const localizedRoutes = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
+      ...nuxtOptions,
+      defaultLocale: '',
+      strategy: 'prefix_and_default',
+      differentDomains: true,
+      locales: getNormalizedLocales([{ code: 'en', domainDefault: true }, { code: 'fr' }])
+    })
+
+    const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
+    expect(paths['about___en___default']).toBe('/about')
+    expect(paths['about___en']).toBe('/en/about')
+    expect(paths['about___fr___default']).toBeUndefined()
   })
 
   describe('strategy: "prefix_and_default" + differentDomains', function () {
@@ -454,8 +600,7 @@ describe('localizeRoutes', function () {
       expect(paths['about___fr']).toBe('/fr/about')
       expect(paths['about___fr___default']).toBe('/about')
 
-      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
-      setupMultiDomainLocales('fr', 'prefix_and_default', router)
+      const router = createRouter({ routes: resolveDomainRoutes(localizedRoutes as any, 'fr', 'prefix_and_default'), history: createMemoryHistory() })
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       // the host default keeps both variants, `prefix_and_default` serves it either way
       expect(domainPaths['about___fr___default']).toBe('/about')
@@ -479,9 +624,8 @@ describe('localizeRoutes', function () {
         ])
       })
 
-      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
       // an unmatched host falls back to the configured `defaultLocale`, which has no variant to keep
-      setupMultiDomainLocales('en', 'prefix_and_default', router)
+      const router = createRouter({ routes: resolveDomainRoutes(localizedRoutes as any, 'en', 'prefix_and_default'), history: createMemoryHistory() })
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___en']).toBe('/about')
       expect(domainPaths['about___fr___default']).toBeUndefined()

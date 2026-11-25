@@ -356,6 +356,17 @@ describe('withRuntimeDomain', () => {
     expect(getDefaultLocaleForDomain('en.staging.example.com', [patched])).toBe('en')
   })
 
+  test('(#4190) a `domainDefault` without a domain is the default of the domain set at runtime', () => {
+    const configured = getNormalizedLocales([{ code: 'en', domainDefault: true }, { code: 'de', domainDefault: true }, { code: 'fr' }])
+    const domainLocales = { en: { domain: 'example.com' }, de: { domain: 'example.de' }, fr: { domain: 'example.de' } }
+    const patched = configured.map(locale => withRuntimeDomain(locale, domainLocales))
+
+    expect(resolveDefaultLocale('example.de', 'en', patched)).toBe('de')
+    expect(resolveDefaultLocale('example.com', 'en', patched)).toBe('en')
+    // `fr` shares the domain without being its default
+    expect(patched[2]).toMatchObject({ domains: ['example.de'], defaultForDomains: [] })
+  })
+
   test('returns the locale as-is without an override', () => {
     expect(withRuntimeDomain(locales[0], {})).toBe(locales[0])
     expect(withRuntimeDomain('en', { en: { domain: 'en.staging.example.com' } })).toBe('en')

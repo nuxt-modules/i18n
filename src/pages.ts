@@ -1,4 +1,4 @@
-import { addTemplate, updateTemplates } from '@nuxt/kit'
+import { addTemplate, resolvePath, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -38,7 +38,7 @@ type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   children?: NarrowedNuxtPage[]
 }
 
-export async function setupPages({ localeCodes, options, normalizedLocales }: ResolvedI18nContext, nuxt: Nuxt) {
+export async function setupPages({ localeCodes, options, normalizedLocales, runtimeDir }: ResolvedI18nContext, nuxt: Nuxt) {
   let routeResources: RouteResources = {
     localizedPaths: [],
     pathToI18nConfig: {},
@@ -58,6 +58,13 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
     },
   })
   if (!localeCodes.length) { return }
+
+  if ((options.differentDomains || options.multiDomainLocales) && (options.strategy === 'prefix_except_default' || options.strategy === 'prefix_and_default')) {
+    const domainRouterOptions = await resolvePath(resolve(runtimeDir, 'router.options'))
+    nuxt.hook('pages:routerOptions', ({ files }) => {
+      files.unshift({ path: domainRouterOptions })
+    })
+  }
 
   // Filled during pages:extend, drained at prerender time. nitro:init fires before
   // pages:extend, so we can't seed nitro.options.prerender.routes directly.
