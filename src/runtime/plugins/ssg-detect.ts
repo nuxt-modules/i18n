@@ -4,9 +4,7 @@ import { detectLocale } from '../utils'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:ssg-detect',
-  dependsOn: !__I18N_PRELOAD__
-    ? ['i18n:plugin', 'i18n:plugin:route-locale-detect']
-    : ['i18n:plugin', 'i18n:plugin:route-locale-detect', 'i18n:plugin:preload'],
+  dependsOn: ['i18n:plugin', 'i18n:plugin:route-locale-detect', 'i18n:plugin:preload'],
   enforce: 'post',
   setup(nuxt) {
     if (!__IS_SSG__ || !__I18N_ROUTING__) { return }
