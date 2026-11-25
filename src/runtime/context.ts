@@ -211,15 +211,13 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const cdnPrefix = (locale: string) =>
     import.meta.client && __I18N_CDN__ && isPrerenderable(locale) ? (nuxt.$config.app.cdnURL || '') : ''
 
-  const getServerContext = () => (import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined)
-
   const loadMessagesFromLoaders = async (locale: string) => {
     // merging `{}` for a `fallbackLocale` that is not a configured locale would create it
     if (locale in localeLoaders === false) { return }
 
     const loaded = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
     // vue-i18n rewrites flat keys in place on the tree it is handed, which shares subtrees with the
-    // message cache (mirrors `server/context.ts`)
+    // message cache
     const msg = flatJson ? cloneDeep(loaded) : loaded
     // dev always loads from loaders - warn when production would deliver this locale as JSON instead
     if (import.meta.dev && !buildUsesRuntimeLoaders(locale)) {
@@ -238,11 +236,12 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
     // during SSR the messages endpoint runs in this same process - `$fetch` would serialize the
     // whole message tree to JSON and parse it back on every request
-    const serverCtx = getServerContext()
+    const serverCtx = import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined
     if (serverCtx?.loadMessages && installMessages) {
       const messages = await serverCtx.loadMessages(locale)
       for (const k of deliverable(messages)) {
-        installMessages(k, messages[k]!)
+        // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
+        installMessages(k, flatJson ? cloneDeep(messages[k]!) : messages[k]!)
       }
       return
     }
@@ -319,10 +318,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         const fallbacks = getLocaleConfig(locale)?.fallbacks ?? []
         const chain = fallbacks.includes(locale) ? fallbacks : [...fallbacks, locale]
         // the endpoint merges a locale with its fallbacks, so one request covers a chain of them -
-        // except for fallbacks an app-context config declares, which only reach the server context
-        // of the request being rendered (#4150)
-        const merged = !__I18N_APP_CONTEXT_CONFIG__ || !!getServerContext()
-        if (merged && !chain.some(x => ctx.usesRuntimeLoaders(x))) {
+        // except for fallbacks an app-context config declares, which nitro never gets to read (#4150)
+        if (!__I18N_APP_CONTEXT_CONFIG__ && !chain.some(x => ctx.usesRuntimeLoaders(x))) {
           return await loadMessagesFromServer(locale)
         }
         // a mixed chain has to take each locale from whichever source holds it, and one failing

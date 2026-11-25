@@ -34,18 +34,12 @@ export default defineNuxtPlugin({
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
-    const serverI18n = import.meta.server ? event!.context.nuxtI18n : undefined
     if (__I18N_APP_CONTEXT_CONFIG__) {
-      // nitro resolved its options without the stubbed config, so the fallbacks and `flatJson` it
-      // declares only exist on the options the app just resolved - which can differ between the
-      // server and the browser, a prerendered page has no request to read (#4150)
+      // the fallbacks such a config declares only exist on the options the app just resolved, which
+      // can differ between the server and the browser - a prerendered page has no request to read
       localeConfigs.value = createLocaleConfigs(optionsI18n.fallbackLocale)
-      if (serverI18n) {
-        serverI18n.vueI18nOptions = optionsI18n
-        serverI18n.localeConfigs = localeConfigs.value
-      }
     } else if (import.meta.server) {
-      localeConfigs.value = serverI18n?.localeConfigs || {}
+      localeConfigs.value = event!.context.nuxtI18n?.localeConfigs || {}
     } else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
