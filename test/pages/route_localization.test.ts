@@ -567,6 +567,19 @@ describe('createRouteResourcesCollector', () => {
     expect(resources.disabledPaths).toEqual([])
   })
 
+  it('reports a child disabled when its locales are not among those of its parent', () => {
+    const resources = collectResources(
+      [{ path: '/shop', name: 'shop', file: '/pages/shop.vue', children: [{ path: 'item', name: 'shop-item', file: '/pages/shop/item.vue' }] }],
+      createTestConfig({
+        optionsResolver: createMockOptionsResolver({
+          'shop': { locales: ['fr'], paths: {} },
+          'shop-item': { locales: ['en'], paths: {} },
+        }),
+      }),
+    )
+    expect(resources.disabledPaths).toEqual(['/shop/item'])
+  })
+
   it('maps custom paths and inverts them, identity locales stay implicit', () => {
     const resources = collectResources(
       [{ path: '/about', name: 'about', file: '/pages/about.vue' }],

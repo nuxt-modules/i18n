@@ -120,7 +120,9 @@ export function localizeSingleRoute(
   ctx: RouteContext,
 ): LocalizableRoute[] {
   // resolve custom route (config/page) options
-  const routeOptions = ctx.optionsResolver(route, options.locales)
+  const resolved = ctx.optionsResolver(route, options.locales)
+  // only the locales in scope apply, which for a child is the locale of its parent
+  const routeOptions = resolved && { ...resolved, locales: resolved.locales.filter(l => options.locales.includes(l)) }
   ctx.onLocalize?.(route, routeOptions, options)
   if (!routeOptions) {
     return [route]
