@@ -123,7 +123,7 @@ export const isPrerenderable = createPrerenderablePredicate({
  * composer methods directly, and the facade delegates to it at call time.
  * @internal exported for testing
  */
-export function createMessageInstaller(i18n: MessageStore) {
+export function createMessageInstaller(i18n: MessageStore, flatJson = false) {
   const byRef = new Map<string, object>()
   const merge = i18n.mergeLocaleMessage.bind(i18n) as (locale: string, message: object) => void
   const set = i18n.setLocaleMessage.bind(i18n) as (locale: string, message: object) => void
@@ -142,6 +142,8 @@ export function createMessageInstaller(i18n: MessageStore) {
   }) as typeof i18n.setLocaleMessage
 
   return (locale: string, message: object) => {
+    // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
+    if (flatJson) { message = cloneDeep(message) }
     // an endpoint response carries the locale's fallbacks, so a shared fallback arrives once per
     // locale that falls back to it - reinstalling it would deep copy the tree both ways
     if (byRef.get(locale) === message) { return }
@@ -159,7 +161,7 @@ export function createMessageInstaller(i18n: MessageStore) {
 
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string, flatJson = false): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
-  const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
+  const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n), flatJson) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
   const detectConfig = useI18nDetection(runtimeI18n)
   const serverLocaleConfigs = useLocaleConfigs()
@@ -240,8 +242,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     if (serverCtx?.loadMessages && installMessages) {
       const messages = await serverCtx.loadMessages(locale)
       for (const k of deliverable(messages)) {
-        // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
-        installMessages(k, flatJson ? cloneDeep(messages[k]!) : messages[k]!)
+        installMessages(k, messages[k]!)
       }
       return
     }
