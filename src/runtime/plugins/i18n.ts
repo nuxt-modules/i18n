@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useRequestEvent, useRequestURL } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
@@ -13,34 +13,40 @@ import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocale
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
-import { withRuntimeDomain } from '../shared/domain'
+import { getRouter } from '../composable-context'
+import { getDomainLocales, withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
+import type { I18nServerContext } from '../server/context'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: __PARALLEL_PLUGIN__,
-  async setup(_nuxt) {
-    Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
-
-    // @ts-expect-error untyped internal id parameter
-    const nuxt = useNuxtApp(_nuxt._id)
+  async setup(nuxt) {
+    Object.defineProperty(nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
     const runtimeI18n = useRuntimeI18n(nuxt)
-    const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
+    const event = useRequestEvent(nuxt)
+    // options resolved without the app are missing what an app-context config contributes (#4150)
+    const preloadedOptions = __I18N_APP_CONTEXT_CONFIG__ ? undefined : event?.context?.nuxtI18n?.vueI18nOptions
+    const host = useRequestURL({ xForwardedHost: true }).host
+    const _defaultLocale = resolveDefaultLocale(host, runtimeI18n.defaultLocale, getDomainLocales(runtimeI18n.domainLocales))
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
-    if (import.meta.server) {
-      localeConfigs.value = useRequestEvent()!.context.nuxtI18n?.localeConfigs || {}
+    if (__I18N_APP_CONTEXT_CONFIG__) {
+      // the fallbacks such a config declares only exist on the options the app just resolved, which
+      // can differ between the server and the browser - a prerendered page has no request to read
+      localeConfigs.value = createLocaleConfigs(optionsI18n.fallbackLocale)
+    } else if (import.meta.server) {
+      localeConfigs.value = event!.context.nuxtI18n?.localeConfigs || {}
     } else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
     }
 
     if (__I18N_DOMAINS__) {
-      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
+      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__, getRouter(nuxt))
     }
 
     prerenderRoutes(
@@ -51,13 +57,13 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
-    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(nuxt), nuxt)
+    const detectors = useDetectors(event, useI18nDetection(runtimeI18n), runtimeI18n, host)
 
     const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, !!optionsI18n.flatJson)
     nuxt._nuxtI18n = ctx
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server) {
-      wrapTranslationFunctions(ctx)
+      wrapTranslationFunctions(ctx, event?.context.nuxtI18n)
     }
 
     // extend i18n instance
@@ -161,7 +167,7 @@ export default defineNuxtPlugin({
 /**
  * Wrap translation functions to track translation keys used during SSR
  */
-function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestEvent()?.context?.nuxtI18n) {
+function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n: I18nServerContext | undefined) {
   if (!serverI18n) { return }
 
   const i18n = ctx.vueI18n.global

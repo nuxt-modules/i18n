@@ -6,6 +6,8 @@ export default defineConfig({
     clearMocks: true,
     restoreMocks: true,
     testTimeout: 300000,
+    // the default of 10s is too short for hooks building an app or tearing down a server on a slow runner
+    hookTimeout: 120000,
     retry: process.env.CI ? 1 : 0,
     server: {
       deps: {

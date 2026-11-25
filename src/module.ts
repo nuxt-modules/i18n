@@ -27,6 +27,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
+      server: 'nitro3',
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore property removed in Nuxt 4
       bridge: false,
@@ -111,8 +112,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // the aliased node build has no declaration file, drop the generated paths entries
     // so TS resolves types from the package `types` export (`dist/core.d.ts`) instead
-    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig }) => {
-      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig]) {
+    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig }) => {
+      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig, serverTsConfig]) {
         delete cfg?.compilerOptions?.paths?.['@intlify/core']
       }
     })
@@ -295,11 +296,12 @@ declare module '#app' {
 }
 
 declare module '@nuxt/schema' {
+  // typed through the interface so other modules can add their own options to it (#4138)
   interface NuxtConfig {
-    ['i18n']?: Partial<UserNuxtI18nOptions>
+    ['i18n']?: Partial<ModuleOptions>
   }
   interface NuxtOptions {
-    ['i18n']: UserNuxtI18nOptions
+    ['i18n']: ModuleOptions
   }
   interface NuxtHooks extends ModuleHooks {}
   interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}

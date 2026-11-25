@@ -169,6 +169,19 @@ describe('createMessageInstaller', () => {
     expect(cached).toEqual({ greeting: 'hello', nested: { deep: 'value' }, list: ['a', 'b'] })
     expect(i18n.global.getLocaleMessage('en')).toMatchObject({ viaComposer: 'x', viaFacade: 'y' })
   })
+
+  // vue-i18n rewrites flat keys in place on the tree it is handed
+  test('`flatJson` installs a copy, leaving the cached tree its flat keys', () => {
+    const options = { legacy: false, locale: 'en', flatJson: true } as const
+    const i18n = createI18n(options)
+    const install = createMessageInstaller(getComposer(i18n), options.flatJson)
+    const cached = Object.freeze({ 'flat.key': 'Flat value' })
+
+    install('en', cached)
+
+    expect(i18n.global.t('flat.key')).toBe('Flat value')
+    expect(cached).toEqual({ 'flat.key': 'Flat value' })
+  })
 })
 
 describe('fillMissing', () => {

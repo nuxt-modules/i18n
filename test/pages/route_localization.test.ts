@@ -423,6 +423,56 @@ describe('localizeRoutes with custom paths', () => {
     expect(frAccount.children![0].path).toBe('profile')
   })
 
+  it.each([false, true])('(#4179) keeps nested custom paths intact (trailingSlash: %s)', (trailingSlash) => {
+    const custom = (path: string) => ({ locales: ['de'], paths: { de: path } })
+    const config = createTestConfig({
+      locales: ['de'],
+      strategy: 'prefix',
+      defaultLocale: 'de',
+      trailingSlash,
+      optionsResolver: createMockOptionsResolver({
+        'account': custom('/konto'),
+        'account-orders': custom('/konto/bestellungen'),
+        'account-orders-id': custom('/konto/bestellungen/:id()'),
+        // not nested under their parent, they only start or end with the same characters
+        'account-statement': custom('/kontoauszug'),
+        'account-orders-special': custom('/konto/sonderbestellungen'),
+        // ends with the segment of its parent, under another path
+        'account-orders-archive': custom('/archiv/bestellungen'),
+      }),
+    })
+    const routes: LocalizableRoute[] = [
+      {
+        path: '/account',
+        name: 'account',
+        children: [
+          {
+            path: 'orders',
+            name: 'account-orders',
+            children: [
+              { path: ':id()', name: 'account-orders-id' },
+              { path: 'special', name: 'account-orders-special' },
+              { path: 'archive', name: 'account-orders-archive' },
+            ],
+          },
+          { path: 'statement', name: 'account-statement' },
+        ],
+      },
+    ]
+    const slash = trailingSlash ? '/' : ''
+
+    const account = findRoute(localizeRoutes(routes, config), 'account___de')!
+    expect(account.path).toBe('/de/konto' + slash)
+
+    const orders = findRoute(account.children!, 'account-orders___de')!
+    expect(orders.path).toBe('bestellungen' + slash)
+    expect(orders.children![0].path).toBe(':id()' + slash)
+    expect(orders.children![1].path).toBe('/de/konto/sonderbestellungen' + slash)
+    expect(orders.children![2].path).toBe('/de/archiv/bestellungen' + slash)
+
+    expect(findRoute(account.children!, 'account-statement___de')!.path).toBe('/de/kontoauszug' + slash)
+  })
+
   it('handles dynamic route parameters', () => {
     const resolver = createMockOptionsResolver({
       'blog-slug': { locales: ['en', 'fr'], paths: { fr: '/article/:slug' } },
@@ -515,6 +565,19 @@ describe('createRouteResourcesCollector', () => {
     expect(resources.pathToI18nConfig).toEqual({})
     expect(resources.i18nPathToPath).toEqual({})
     expect(resources.disabledPaths).toEqual([])
+  })
+
+  it('reports a child disabled when its locales are not among those of its parent', () => {
+    const resources = collectResources(
+      [{ path: '/shop', name: 'shop', file: '/pages/shop.vue', children: [{ path: 'item', name: 'shop-item', file: '/pages/shop/item.vue' }] }],
+      createTestConfig({
+        optionsResolver: createMockOptionsResolver({
+          'shop': { locales: ['fr'], paths: {} },
+          'shop-item': { locales: ['en'], paths: {} },
+        }),
+      }),
+    )
+    expect(resources.disabledPaths).toEqual(['/shop/item'])
   })
 
   it('maps custom paths and inverts them, identity locales stay implicit', () => {
@@ -780,6 +843,44 @@ describe('compact routes', () => {
     })
   })
 
+  describe('children with absolute paths or aliases', () => {
+    const parent: LocalizableRoute = {
+      path: '/parent',
+      name: 'parent',
+      children: [
+        { path: 'child', name: 'parent-child', alias: ['/foo/child', 'relative'] },
+        { path: '/absolute', name: 'parent-absolute' },
+      ],
+    }
+
+    it('prefixes absolute child paths and aliases with the locale pattern', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', compactRoutes: true })
+      const [compacted] = localizeRoutes([parent], config)
+
+      expect(compacted?.path).toBe('/:locale(en|fr|ja)/parent')
+      const [child, absolute] = compacted?.children ?? []
+      expect(child?.path).toBe('child')
+      expect(child?.alias).toEqual(['/:locale(en|fr|ja)/foo/child', 'relative'])
+      expect(absolute?.path).toBe('/:locale(en|fr|ja)/absolute')
+    })
+
+    it('keeps the default locale tree unprefixed with prefix_except_default', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix_except_default', defaultLocale: 'en', compactRoutes: true })
+      const result = localizeRoutes([parent], config)
+
+      const defaultParent = findRoute(result, 'parent___en')
+      expect(defaultParent?.path).toBe('/parent')
+      const [defaultChild, defaultAbsolute] = defaultParent?.children ?? []
+      expect(defaultChild?.alias).toEqual(['/foo/child', 'relative'])
+      expect(defaultAbsolute?.path).toBe('/absolute')
+
+      const compacted = result.find(r => r.path === '/:locale(fr|ja)/parent')
+      const [child, absolute] = compacted?.children ?? []
+      expect(child?.alias).toEqual(['/:locale(fr|ja)/foo/child', 'relative'])
+      expect(absolute?.path).toBe('/:locale(fr|ja)/absolute')
+    })
+  })
+
   describe('ineligible routes — must stay per-locale', () => {
     it('does NOT compact a route with custom per-locale paths', () => {
       const resolver = createMockOptionsResolver({
@@ -945,6 +1046,22 @@ describe('compact routes', () => {
         ]),
       ])
       expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/relative', '/fr/parent/relative'])
+    })
+
+    it('expands locale-prefixed absolute children on their own path', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/parent', 'parent', [
+          { path: '/:locale(en|fr)/absolute', name: 'absolute', children: [{ path: 'nested', name: 'absolute-nested' }] },
+        ]),
+      ])
+      expect(out).toEqual([
+        '/en/parent',
+        '/fr/parent',
+        '/en/absolute',
+        '/fr/absolute',
+        '/en/absolute/nested',
+        '/fr/absolute/nested',
+      ])
     })
   })
 

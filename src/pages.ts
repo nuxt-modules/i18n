@@ -1,4 +1,4 @@
-import { addTemplate, updateTemplates } from '@nuxt/kit'
+import { addTemplate, resolveAlias, resolvePath, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -23,9 +23,19 @@ import { type CallExpression, type ExpressionStatement, type ObjectExpression, p
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
   pages: Map<string, { path: string, name?: string }> = new Map()
+  alias: Record<string, string>
 
-  constructor(config: NuxtI18nOptions['pages']) {
+  constructor(config: NuxtI18nOptions['pages'], alias: Record<string, string> = {}) {
     this.config = config || {}
+    this.alias = alias
+  }
+
+  /**
+   * Resolve aliases in a page file path (e.g. `~/extra-pages/profile.vue` added in `pages:extend`,
+   * as in the Nuxt docs) without changing `page.file` itself.
+   */
+  resolveFile(file: string): string {
+    return resolveAlias(file, this.alias)
   }
 
   addPage(page: NuxtPage, path: string, name?: string) {
@@ -38,7 +48,7 @@ type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   children?: NarrowedNuxtPage[]
 }
 
-export async function setupPages({ localeCodes, options, normalizedLocales }: ResolvedI18nContext, nuxt: Nuxt) {
+export async function setupPages({ localeCodes, options, normalizedLocales, runtimeDir }: ResolvedI18nContext, nuxt: Nuxt) {
   let routeResources: RouteResources = {
     localizedPaths: [],
     pathToI18nConfig: {},
@@ -58,6 +68,13 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
     },
   })
   if (!localeCodes.length) { return }
+
+  if ((options.differentDomains || options.multiDomainLocales) && (options.strategy === 'prefix_except_default' || options.strategy === 'prefix_and_default')) {
+    const domainRouterOptions = await resolvePath(resolve(runtimeDir, 'router.options'))
+    nuxt.hook('pages:routerOptions', ({ files }) => {
+      files.unshift({ path: domainRouterOptions })
+    })
+  }
 
   // Filled during pages:extend, drained at prerender time. nitro:init fires before
   // pages:extend, so we can't seed nitro.options.prerender.routes directly.
@@ -89,7 +106,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async (pages) => {
-      const ctx = new NuxtPageAnalyzeContext(options.pages)
+      const ctx = new NuxtPageAnalyzeContext(options.pages, nuxt.options.alias)
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
@@ -162,11 +179,24 @@ export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string
     return true
   }
 
+  // Expands a `/:locale(...)/rest` path and its static descendants
+  const expandCompact = (page: NarrowedNuxtPage) => {
+    const match = compactRouteRE.exec(page.path)
+    if (!match) { return }
+    const locales = match[1]!.split('|')
+    const rest = match[2]!
+    if (!emit(locales, rest)) { return }
+    walkChildren(page.children, locales, rest)
+  }
+
   const walkChildren = (children: NarrowedNuxtPage[] | undefined, locales: readonly string[], parentRest: string) => {
     if (!children?.length) { return }
     for (const child of children) {
-      // Absolute path: Vue Router does not compose it with the parent.
-      if (child.path.startsWith('/')) { continue }
+      // Absolute path: Vue Router does not compose it with the parent, it carries its own locale prefix
+      if (child.path.startsWith('/')) {
+        expandCompact(child)
+        continue
+      }
       // Index child shares the parent's URL — already emitted, but its grandchildren may not be.
       if (child.path === '') {
         walkChildren(child.children, locales, parentRest)
@@ -180,12 +210,7 @@ export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string
 
   for (const route of pages) {
     if (!(route.meta as Record<string, unknown> | undefined)?.__i18nCompact) { continue }
-    const match = compactRouteRE.exec(route.path)
-    if (!match) { continue }
-    const locales = match[1]!.split('|')
-    const rest = match[2]!
-    if (!emit(locales, rest)) { continue }
-    walkChildren(route.children, locales, rest)
+    expandCompact(route)
   }
 
   return out
@@ -337,7 +362,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
   for (const page of pages) {
     if (page.file == null) { continue }
 
-    const [, filePath] = page.file.split(pagesDir)
+    const [, filePath] = ctx.resolveFile(page.file).split(pagesDir)
     if (filePath == null) { continue }
 
     // if route has an index child the parent will not have a name
@@ -452,7 +477,7 @@ export function normalizeRouteMeta(
         const raw = getConfigValue(ctx, page)
         value = raw === undefined ? undefined : configValueToI18nRoute(raw, localeCodes)
       } else if (mode === 'page') {
-        value = getI18nRouteConfig(page.file, vfs)
+        value = getI18nRouteConfig(ctx.resolveFile(page.file), vfs)
       }
 
       if ((page.meta?.i18n as I18nRoute | false | undefined) === undefined) {
@@ -500,7 +525,7 @@ function getRouteOptions(
   } else if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
   } else if (mode === 'page') {
-    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(route.file!))
+    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(ctx.resolveFile(route.file!)))
   }
 
   // routing disabled
