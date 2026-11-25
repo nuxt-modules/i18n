@@ -1,7 +1,7 @@
 import { hasProtocol } from 'ufo'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 
-import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, LocaleObject, NormalizedLocaleObject } from '#internal-i18n-types'
 
 /**
  * Configured domains may include a protocol (used when generating URLs), comparisons
@@ -185,6 +185,14 @@ export function withRuntimeDomain<T extends string | NormalizedLocaleObject>(
     ...properties,
     domain,
     domains: [domain],
-    defaultForDomains: properties.defaultForDomains.length ? [domain] : [],
+    // a `domainDefault` configured without a domain is the default of the one it is given here (#4190)
+    defaultForDomains: properties.defaultForDomains.length || (properties as LocaleObject).domainDefault ? [domain] : [],
   } as T
 }
+
+/**
+ * The configured locales with the `domainLocales` runtime config applied, matching a request host
+ * against the build time locales misses every domain set at runtime (#4190)
+ */
+export const getDomainLocales = (domainLocales: I18nPublicRuntimeConfig['domainLocales']) =>
+  normalizedLocales.map(locale => withRuntimeDomain(locale, domainLocales))

@@ -9,7 +9,8 @@ type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 const loadConfigsFn = `
 async function loadCfg(config) {
   const nuxt = useNuxtApp()
-  const { default: resolver } = await config()
+  const loaded = await config()
+  const resolver = loaded?.default || loaded
   return typeof resolver === 'function' ? await nuxt.runWithContext(() => resolver()) : resolver
 }\n`
 function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders']) {
@@ -80,7 +81,7 @@ export function generateTemplateNuxtI18nOptions(
   // files stay out of that graph - `import.meta.client` folds per graph, so the client and SSR
   // halves of this shared template can differ
   const appLoad = (load: string, locale: string) => {
-    if (server || nuxt.options.dev || !nuxt.options.ssr) { return load }
+    if (server || nuxt.options.dev || !ctx.ssr) { return load }
     // the endpoint has no response for these, so both graphs load the locale themselves
     if (ctx.undeliverableLocales.includes(locale)) { return load }
     // static locales are served by the endpoint in both graphs, including while prerendering

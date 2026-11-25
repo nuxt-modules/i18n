@@ -6,6 +6,7 @@
         "build.config.ts",
         "src/module.ts",
         "src/runtime/{plugins,components,composables}/**",
+        "src/runtime/router.options.ts",
         "src/runtime/server/**",
         "src/runtime/kit/**",
         "scripts/*",
@@ -35,6 +36,19 @@
       ]
     },
     "playground": {
+      "entry": [
+        "{app,server}/**",
+        "{app,error}.vue",
+        "*.ts"
+      ],
+      "ignore": [
+        "i18n/**"
+      ],
+      "ignoreDependencies": [
+        "@nuxtjs/i18n"
+      ]
+    },
+    "playground-v5": {
       "entry": [
         "{app,server}/**",
         "{app,error}.vue",

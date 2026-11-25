@@ -42,6 +42,14 @@ type LocaleLoaderData = {
 /** A loader that resolves to no messages, for the graph a locale file is kept out of */
 export const STUB_LOADER = '() => Promise.resolve({})'
 
+/**
+ * A dynamic import resolving to the default export. Unwrapped where it is imported - a module
+ * namespace is only recognizable as one while it stays a native import, a bundler merging the
+ * server into one file (wrangler) turns it into a plain object (#4133)
+ */
+const genDefaultImport = (id: string, key: string) =>
+  `${genDynamicImport(id, { comment: `webpackChunkName: ${key}` })}.then(m => m.default)`
+
 export function generateLoaderOptions(
   ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales' | 'runtimeDir'>,
 ) {
@@ -72,7 +80,7 @@ export function generateLoaderOptions(
           key,
           virtualId,
           cache: meta.cache ?? true,
-          load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
+          load: genDefaultImport(virtualId, key),
           loadServer: meta.appContext
             ? STUB_LOADER
             : meta.assetKey
@@ -94,10 +102,13 @@ export function generateLoaderOptions(
     const key = genString(identifier)
     const virtualId = asI18nVirtual(config.hash)
 
-    importStatements.add(genImport(virtualId, identifier))
+    // a config reaching for the Nuxt app has nothing to run in nitro, the app graph loads it instead (#4150)
+    if (!config.appContext) {
+      importStatements.add(genImport(virtualId, identifier))
+    }
     vueI18nConfigs.push({
-      importer: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
-      importerServer: `() => Promise.resolve(${identifier})`,
+      importer: genDefaultImport(virtualId, key),
+      importerServer: config.appContext ? STUB_LOADER : `() => Promise.resolve(${identifier})`,
       virtualId,
     })
   }

@@ -18,6 +18,7 @@ export function useRequestEvent() {
 // unused stubs so modules with Nuxt composable imports can be loaded (e.g. `runtime/context.ts`)
 export const useCookie = undefined
 export const useNuxtApp = undefined
+export const useRequestFetch = undefined
 export const useRequestURL = undefined
 export const useRouter = undefined
 export const useRuntimeConfig = undefined

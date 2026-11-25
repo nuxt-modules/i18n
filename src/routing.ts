@@ -7,7 +7,7 @@ import {
   joinPath,
   localizeSingleRoute,
 } from './kit/gen'
-import type { NormalizedLocaleObject, Strategies } from './types'
+import type { LocaleObject, NormalizedLocaleObject, Strategies } from './types'
 
 export type RouteResources = {
   /** plain paths mounted as-is for at least one locale */
@@ -129,8 +129,14 @@ const usesDefaultVariants = (strategy: Strategies | undefined) =>
  */
 function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies): string[] {
   if (config.differentDomains || config.multiDomainLocales) {
-    // `setupMultiDomainLocales` keeps the current host's variant at runtime
-    return usesDefaultVariants(strategy) ? getDomainDefaultLocales(config.locales) : []
+    if (!usesDefaultVariants(strategy)) { return [] }
+    // `resolveDomainRoutes` keeps the current host's variant at runtime. A `domainDefault` configured
+    // without a domain is the default of the one set at runtime, serving it at both paths takes a
+    // tree here - `prefix_except_default` unprefixes its prefixed routes instead (#4190)
+    const countsFlag = strategy === 'prefix_and_default'
+    return config.locales
+      .filter(locale => locale.defaultForDomains.length || (countsFlag && (locale as LocaleObject).domainDefault))
+      .map(locale => locale.code)
   }
   return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
 }
@@ -217,7 +223,20 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
             return ctx.handleTrailingSlash(aliasPath, !!params.parent)
           })
         }
+        compacted.children &&= prefixAbsoluteChildren(compacted.children, regexPrefix)
         return compacted
+      }
+
+      // Absolute child paths and aliases are not resolved against the parent, so they need the
+      // locale prefix too, the same way per-locale routes prefix them (`shouldPrefix`)
+      const prefixAbsoluteChildren = (children: LocalizableRoute[], regexPrefix: string): LocalizableRoute[] => {
+        const prefix = (path: string) => path.startsWith('/') ? ctx.handleTrailingSlash(regexPrefix + path, true) : path
+        return children.map((child) => {
+          const prefixed: LocalizableRoute = { ...child, path: prefix(child.path) }
+          prefixed.alias &&= (Array.isArray(prefixed.alias) ? prefixed.alias : [prefixed.alias]).map(prefix)
+          prefixed.children &&= prefixAbsoluteChildren(prefixed.children, regexPrefix)
+          return prefixed
+        })
       }
 
       if (strategy === 'prefix_except_default' && defaultLocale) {

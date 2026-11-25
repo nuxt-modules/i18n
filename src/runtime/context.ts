@@ -1,6 +1,6 @@
 import { isRef, unref } from 'vue'
 
-import { useCookie, useRequestURL, useState } from '#imports'
+import { useCookie, useRequestFetch, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
@@ -123,7 +123,7 @@ export const isPrerenderable = createPrerenderablePredicate({
  * composer methods directly, and the facade delegates to it at call time.
  * @internal exported for testing
  */
-export function createMessageInstaller(i18n: MessageStore) {
+export function createMessageInstaller(i18n: MessageStore, flatJson = false) {
   const byRef = new Map<string, object>()
   const merge = i18n.mergeLocaleMessage.bind(i18n) as (locale: string, message: object) => void
   const set = i18n.setLocaleMessage.bind(i18n) as (locale: string, message: object) => void
@@ -142,6 +142,8 @@ export function createMessageInstaller(i18n: MessageStore) {
   }) as typeof i18n.setLocaleMessage
 
   return (locale: string, message: object) => {
+    // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
+    if (flatJson) { message = cloneDeep(message) }
     // an endpoint response carries the locale's fallbacks, so a shared fallback arrives once per
     // locale that falls back to it - reinstalling it would deep copy the tree both ways
     if (byRef.get(locale) === message) { return }
@@ -159,11 +161,13 @@ export function createMessageInstaller(i18n: MessageStore) {
 
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string, flatJson = false): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
-  const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
+  const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n), flatJson) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
-  const detectConfig = useI18nDetection(nuxt)
+  const detectConfig = useI18nDetection(runtimeI18n)
   const serverLocaleConfigs = useLocaleConfigs()
   const localeCookie = useI18nCookie(detectConfig)
+  // `$fetch` is a global before Nuxt 4.5 and a `#build/fetch` export after, Nuxt 5 drops the global in the app
+  const $fetch = useRequestFetch()
   const loadMap = new Set<string>()
 
   /** Get computed config for locale */
@@ -215,7 +219,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
     const loaded = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
     // vue-i18n rewrites flat keys in place on the tree it is handed, which shares subtrees with the
-    // message cache (mirrors `server/context.ts`)
+    // message cache
     const msg = flatJson ? cloneDeep(loaded) : loaded
     // dev always loads from loaders - warn when production would deliver this locale as JSON instead
     if (import.meta.dev && !buildUsesRuntimeLoaders(locale)) {
@@ -314,19 +318,20 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       try {
         const fallbacks = getLocaleConfig(locale)?.fallbacks ?? []
         const chain = fallbacks.includes(locale) ? fallbacks : [...fallbacks, locale]
-        // the endpoint merges a locale with its fallbacks, so one request covers a chain of them
-        if (!chain.some(x => ctx.usesRuntimeLoaders(x))) {
+        // the endpoint merges a locale with its fallbacks, so one request covers a chain of them -
+        // except for fallbacks an app-context config declares, which nitro never gets to read (#4150)
+        if (!__I18N_APP_CONTEXT_CONFIG__ && !chain.some(x => ctx.usesRuntimeLoaders(x))) {
           return await loadMessagesFromServer(locale)
         }
         // a mixed chain has to take each locale from whichever source holds it, and one failing
         // fallback should not keep the rest from loading
-        for (const k of chain) {
+        await Promise.all(chain.map(async (k) => {
           try {
             await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
           } catch (e) {
             console.warn(`Failed to load messages for locale "${k}"`, e)
           }
-        }
+        }))
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       } finally {

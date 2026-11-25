@@ -63,8 +63,10 @@ export function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     }
     // `prepend` - without it kit appends after ResourcePlugin, which then claims the virtual ids
     addVitePlugin(() => jsonParsePlugin!.vite(), { client: false, prepend: true })
-    addVitePlugin(() => VueI18nPlugin.vite(vueI18nPluginOptions), { server: false })
-    addVitePlugin(() => VueI18nPlugin.vite(serverPluginOptions), { client: false })
+    // `prepend` - kit's environment wrapper drops the inner `enforce: 'pre'` for `post`, landing
+    // the resource transform after vite's builtin json-to-esm (#4116)
+    addVitePlugin(() => VueI18nPlugin.vite(vueI18nPluginOptions), { server: false, prepend: true })
+    addVitePlugin(() => VueI18nPlugin.vite(serverPluginOptions), { client: false, prepend: true })
     addWebpackPlugin(() => VueI18nPlugin.webpack(vueI18nPluginOptions))
   } else {
     addBuildPlugin({
@@ -100,7 +102,7 @@ export function getDefineConfig(
   const stripMessagesPayload = rawOptions.experimental?.stripMessagesPayload ?? !!options.experimental.preload
 
   const common = {
-    __IS_SSR__: String(nuxt.options.ssr),
+    __IS_SSR__: String(ctx.ssr),
     __IS_SSG__: String(ctx.staticDeploy),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
@@ -119,6 +121,7 @@ export function getDefineConfig(
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
     __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
     __I18N_UNDELIVERABLE_LOCALES__: JSON.stringify(undeliverableLocales),
+    __I18N_APP_CONTEXT_CONFIG__: String(ctx.vueI18nConfigPaths.some(x => x.appContext)),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 

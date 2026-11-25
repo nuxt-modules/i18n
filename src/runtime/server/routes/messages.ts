@@ -1,42 +1,29 @@
-import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
-import { createError, defineEventHandler, getRouterParam } from 'h3'
-import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
+import {
+  type ServerEvent,
+  createError,
+  defineCachedFunction,
+  defineCachedHandler,
+  defineEventHandler,
+  getRouterParam,
+} from '#i18n-server-runtime'
+import { initializeI18nContext, tryUseI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
 
-import type { H3Event } from 'h3'
-
-// prerendering may require initializing context
-const getOrInitContext = async (event: H3Event) => tryUseI18nContext(event) || await initializeI18nContext(event)
-
 /**
- * Reject a bad locale/hash pair before either cache layer computes a key or does a
- * lookup, so a colliding hash for one locale can never read another locale's cache entry.
+ * Load messages for the specified locale event parameter
  */
-async function validateLocaleRequest(event: H3Event) {
+const _messagesHandler = defineEventHandler(async (event: ServerEvent) => {
   const locale = getRouterParam(event, 'locale')
 
   if (!locale) {
     throw createError({ status: 400, message: 'Locale not specified.' })
   }
 
-  const ctx = await getOrInitContext(event)
-  if (
-    // reject a locale the build doesn't know about
-    (ctx.localeConfigs && !Object.hasOwn(ctx.localeConfigs, locale)) ||
-    // reject any hash that isn't the build's own for this locale, so an arbitrary path segment
-    // can't mint unbounded cache entries (24h, per miss)
-    getRouterParam(event, 'hash') !== __I18N_LOCALE_HASHES__[locale]
-  ) {
+  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+  if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
-}
 
-/**
- * Load messages for the specified locale event parameter
- */
-const _messagesHandler = defineEventHandler(async (event: H3Event) => {
-  const locale = getRouterParam(event, 'locale')!
-  const ctx = useI18nContext(event)
   const messages = await ctx.loadMessages(locale)
   // this response is where message functions get dropped - prerender is when SSG bakes it
   if (import.meta.dev || import.meta.prerender) {
@@ -47,13 +34,15 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   return messages
 })
 
-const getCacheKey = (event: H3Event) =>
+const getCacheKey = (event: ServerEvent) =>
   [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
 
-async function shouldBypassCache(event: H3Event) {
+async function shouldBypassCache(event: ServerEvent) {
+  // without the message cache nitro would still write an entry that expires at once, which redis rejects (#4112)
+  if (!__I18N_CACHE__) { return true }
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
-  const ctx = await getOrInitContext(event)
+  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
   return !ctx.localeConfigs?.[locale]?.cacheable
 }
 
@@ -67,7 +56,7 @@ const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
 /**
  * Load messages for the specified locale event parameter (cached)
  */
-const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
+const _messagesHandlerCached = defineCachedHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : __I18N_HTTP_CACHE_DURATION__,
   swr: false,
@@ -77,11 +66,8 @@ const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
 
 /**
  * Load messages for the specified locale event parameter
- * - validates the locale/hash before either cache layer sees the request
- * - uses `_messagesHandler` in development
- * - uses `_messagesHandlerCached` in production
+ * - uses `messagesHandler` in development
+ * - uses `cachedMessagesHandler` in production
  */
-export default defineEventHandler(async (event: H3Event) => {
-  await validateLocaleRequest(event)
-  return import.meta.dev ? _messagesHandler(event) : _messagesHandlerCached(event)
-})
+// export default _messagesHandler
+export default import.meta.dev ? _messagesHandler : _messagesHandlerCached
