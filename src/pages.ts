@@ -1,4 +1,4 @@
-import { addTemplate, resolvePath, updateTemplates } from '@nuxt/kit'
+import { addTemplate, resolveAlias, resolvePath, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -23,9 +23,19 @@ import { type CallExpression, type ExpressionStatement, type ObjectExpression, p
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
   pages: Map<string, { path: string, name?: string }> = new Map()
+  alias: Record<string, string>
 
-  constructor(config: NuxtI18nOptions['pages']) {
+  constructor(config: NuxtI18nOptions['pages'], alias: Record<string, string> = {}) {
     this.config = config || {}
+    this.alias = alias
+  }
+
+  /**
+   * Resolve aliases in a page file path (e.g. `~/extra-pages/profile.vue` added in `pages:extend`,
+   * as in the Nuxt docs) without changing `page.file` itself.
+   */
+  resolveFile(file: string): string {
+    return resolveAlias(file, this.alias)
   }
 
   addPage(page: NuxtPage, path: string, name?: string) {
@@ -96,7 +106,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async (pages) => {
-      const ctx = new NuxtPageAnalyzeContext(options.pages)
+      const ctx = new NuxtPageAnalyzeContext(options.pages, nuxt.options.alias)
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
@@ -352,7 +362,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
   for (const page of pages) {
     if (page.file == null) { continue }
 
-    const [, filePath] = page.file.split(pagesDir)
+    const [, filePath] = ctx.resolveFile(page.file).split(pagesDir)
     if (filePath == null) { continue }
 
     // if route has an index child the parent will not have a name
@@ -467,7 +477,7 @@ export function normalizeRouteMeta(
         const raw = getConfigValue(ctx, page)
         value = raw === undefined ? undefined : configValueToI18nRoute(raw, localeCodes)
       } else if (mode === 'page') {
-        value = getI18nRouteConfig(page.file, vfs)
+        value = getI18nRouteConfig(ctx.resolveFile(page.file), vfs)
       }
 
       if ((page.meta?.i18n as I18nRoute | false | undefined) === undefined) {
@@ -515,7 +525,7 @@ function getRouteOptions(
   } else if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
   } else if (mode === 'page') {
-    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(route.file!))
+    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(ctx.resolveFile(route.file!)))
   }
 
   // routing disabled
