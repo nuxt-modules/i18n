@@ -29,7 +29,7 @@ import { domainForHost, domainFromLocale, getDomainLocales, normalizeDomain } fr
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 import { createRedirectResolver } from './utils/redirect'
 
-export default definePlugin((hooks) => {
+export default definePlugin(async (hooks) => {
   const runtimeI18n = useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
   const _defaultLocale: string = runtimeI18n.defaultLocale || ''
@@ -185,16 +185,14 @@ export default definePlugin((hooks) => {
 
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
-    // not awaited either, requests wait for the options instead of running without these hooks
-    const i18nMiddleware = setupVueI18nOptions(_defaultLocale).then(options =>
-      defineI18nMiddleware({
-        ...(options as CoreOptions),
-        locale: createUserLocaleDetector(options.locale, options.fallbackLocale),
-      }),
-    )
+    const options = await setupVueI18nOptions(_defaultLocale)
+    const i18nMiddleware = defineI18nMiddleware({
+      ...(options as CoreOptions),
+      locale: createUserLocaleDetector(options.locale, options.fallbackLocale),
+    })
 
-    hooks.onRequest(async event => (await i18nMiddleware).onRequest(event))
-    hooks.onAfterResponse(async event => (await i18nMiddleware).onAfterResponse(event))
+    hooks.onRequest(i18nMiddleware.onRequest)
+    hooks.onAfterResponse(i18nMiddleware.onAfterResponse)
   }
 })
 
