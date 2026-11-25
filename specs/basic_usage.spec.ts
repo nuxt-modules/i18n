@@ -603,6 +603,20 @@ describe('basic usage', async () => {
       expect(res).toMatchObject({ message: 'Hello, nitro!' })
     })
 
+    test('(#4129) dynamic parameters are not passed on to the next page', async () => {
+      const { page } = await renderPage('/products/big-chair')
+      await expect.poll(() => page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
+
+      // the product page stays mounted while the async page resolves
+      // @ts-expect-error untyped
+      await page.evaluate(() => window.useNuxtApp?.().$router.push('/async-setup'))
+      await page.locator('#async-setup').waitFor()
+
+      // @ts-expect-error untyped
+      const params = await page.evaluate(() => window.useNuxtApp?.().$router.currentRoute.value.meta.nuxtI18nInternal)
+      expect(params).toBeUndefined()
+    })
+
     test('dynamic parameters', async () => {
       const { page } = await renderPage('/products/big-chair')
 
