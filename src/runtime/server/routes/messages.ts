@@ -38,6 +38,8 @@ const getCacheKey = (event: ServerEvent) =>
   [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
 
 async function shouldBypassCache(event: ServerEvent) {
+  // without the message cache nitro would still write an entry that expires at once, which redis rejects (#4112)
+  if (!__I18N_CACHE__) { return true }
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
   const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
