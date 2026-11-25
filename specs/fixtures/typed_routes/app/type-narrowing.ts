@@ -11,6 +11,7 @@ import { useLocalePath, useLocaleRoute } from '#imports'
 import { useRoute, useRouter } from 'vue-router'
 import type { RouteLocationNamedI18n, RouteMapI18n } from 'vue-router'
 import type { NuxtLinkLocaleProps, NuxtLinkLocaleSlotProps } from '#i18n'
+import type { defineNuxtLink } from '#app'
 
 describe('vue-router augmentation', () => {
   it('resolves generated route maps', () => {
@@ -91,15 +92,12 @@ describe('`NuxtLinkLocale` exported types (#4202)', () => {
     expectTypeOf<NuxtLinkLocaleProps['locale']>().toEqualTypeOf<'en' | 'nl' | undefined>()
   })
 
-  it('exposes the slot props', () => {
-    expectTypeOf<NuxtLinkLocaleSlotProps>().not.toBeAny()
-    expectTypeOf<NuxtLinkLocaleSlotProps<true>['isExternal']>().toEqualTypeOf<boolean>()
-    expectTypeOf<NuxtLinkLocaleSlotProps<true>['href']>().toEqualTypeOf<string | null>()
-    expectTypeOf<NuxtLinkLocaleSlotProps<true>['isActive']>().toEqualTypeOf<boolean>()
-    expectTypeOf<NuxtLinkLocaleSlotProps<true>['isExactActive']>().toEqualTypeOf<boolean>()
-    expectTypeOf<NuxtLinkLocaleSlotProps<true>['prefetched']>().toEqualTypeOf<boolean | undefined>()
-    expectTypeOf<NuxtLinkLocaleSlotProps<true>['shouldPrefetch']>().toEqualTypeOf<
-      ((mode: 'visibility' | 'interaction') => boolean) | undefined
-    >()
+  it('declares the slot props `NuxtLink` passes', () => {
+    const NuxtLink = {} as ReturnType<typeof defineNuxtLink>
+    const link = new NuxtLink({ custom: true })
+    type NuxtLinkSlotProps = Parameters<NonNullable<typeof link.$slots.default>>[0]
+
+    expectTypeOf<keyof NuxtLinkLocaleSlotProps<true>>().toEqualTypeOf<keyof NuxtLinkSlotProps>()
+    expectTypeOf<NuxtLinkSlotProps>().toExtend<NuxtLinkLocaleSlotProps<true>>()
   })
 })
