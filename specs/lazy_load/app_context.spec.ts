@@ -9,19 +9,36 @@ await setup({
   browser: true,
   nuxtConfig: {
     i18n: {
-      vueI18n: 'app-context-i18n.config'
+      vueI18n: 'app-context-i18n.config',
+      locales: [
+        {
+          code: 'ap',
+          language: 'en-AU',
+          name: 'App context',
+          files: ['lazy-locale-en.json', 'app-context-translation.ts']
+        }
+      ]
     }
   }
 })
 
-describe('(#4150) a vue-i18n config that needs the Nuxt app', () => {
-  test('leaves the server context intact instead of failing in nitro', async () => {
-    // the handler resolves the locale from the route, any `:hash` segment reaches it
-    const messages = await $fetch<Record<string, Record<string, unknown>>>('/_i18n/test/en/messages.json')
-
-    expect(messages.en).toHaveProperty('home', 'Homepage')
+describe('(#3940) a locale file that needs the Nuxt app', () => {
+  test('produces its messages during SSR instead of failing in nitro', async () => {
+    const html = await $fetch('/ap')
+    expect(html).toContain('app-context-only:runtime-config-value')
   })
 
+  test('is not among the loaders the messages endpoint runs', async () => {
+    // the handler resolves the locale from the route, any `:hash` segment reaches it
+    const messages = await $fetch<Record<string, Record<string, unknown>>>('/_i18n/test/ap/messages.json')
+
+    // the locale's other file is still served from there, the one needing the app is left out
+    expect(messages.ap).toHaveProperty('home', 'Homepage')
+    expect(messages.ap).not.toHaveProperty('runtimeConfigKey')
+  })
+})
+
+describe('(#4150) a vue-i18n config that needs the Nuxt app', () => {
   test('is applied by the app during SSR, where its composables resolve', async () => {
     const html = await $fetch('/app-context-config')
 
