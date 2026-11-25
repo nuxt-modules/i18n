@@ -27,13 +27,18 @@ export default defineNuxtPlugin({
     Object.defineProperty(nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
     const runtimeI18n = useRuntimeI18n(nuxt)
     const event = useRequestEvent(nuxt)
-    const preloadedOptions = event?.context?.nuxtI18n?.vueI18nOptions
+    // options resolved without the app are missing what an app-context config contributes (#4150)
+    const preloadedOptions = __I18N_APP_CONTEXT_CONFIG__ ? undefined : event?.context?.nuxtI18n?.vueI18nOptions
     const host = useRequestURL({ xForwardedHost: true }).host
     const _defaultLocale = resolveDefaultLocale(host, runtimeI18n.defaultLocale, getDomainLocales(runtimeI18n.domainLocales))
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
-    if (import.meta.server) {
+    if (__I18N_APP_CONTEXT_CONFIG__) {
+      // the fallbacks such a config declares only exist on the options the app just resolved, which
+      // can differ between the server and the browser - a prerendered page has no request to read
+      localeConfigs.value = createLocaleConfigs(optionsI18n.fallbackLocale)
+    } else if (import.meta.server) {
       localeConfigs.value = event!.context.nuxtI18n?.localeConfigs || {}
     } else {
       // fallback when server is disabled

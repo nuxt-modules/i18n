@@ -4,7 +4,6 @@ import { type ServerEvent, getRequestURL, useRuntimeConfig } from '#i18n-server-
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
 import { getDomainLocales } from '../shared/domain'
-import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
@@ -42,9 +41,7 @@ export function createI18nContext(): I18nServerContext {
       this.trackMap[locale].add(key)
     },
     async loadMessages(locale: string) {
-      const messages = (await getMergedMessages(locale, this.localeConfigs?.[locale]?.fallbacks ?? [])) ?? {}
-      // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
-      return this.vueI18nOptions?.flatJson ? cloneDeep(messages) : messages
+      return (await getMergedMessages(locale, this.localeConfigs?.[locale]?.fallbacks ?? [])) ?? {}
     },
   }
 }

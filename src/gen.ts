@@ -102,10 +102,13 @@ export function generateLoaderOptions(
     const key = genString(identifier)
     const virtualId = asI18nVirtual(config.hash)
 
-    importStatements.add(genImport(virtualId, identifier))
+    // a config reaching for the Nuxt app has nothing to run in nitro, the app graph loads it instead (#4150)
+    if (!config.appContext) {
+      importStatements.add(genImport(virtualId, identifier))
+    }
     vueI18nConfigs.push({
       importer: genDefaultImport(virtualId, key),
-      importerServer: `() => Promise.resolve(${identifier})`,
+      importerServer: config.appContext ? STUB_LOADER : `() => Promise.resolve(${identifier})`,
       virtualId,
     })
   }
