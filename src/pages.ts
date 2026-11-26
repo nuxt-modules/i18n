@@ -11,6 +11,7 @@ import { logger } from './utils'
 import { dirname, parse as parsePath, resolve } from 'pathe'
 import { createRoutesContext, resolveOptions } from 'vue-router/unplugin'
 import { transform } from './transform/resource'
+import { parseSync } from './oxc'
 
 import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'vue-router/unplugin'
@@ -18,7 +19,7 @@ import type { NuxtI18nOptions } from './types'
 import type { ResolvedI18nContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
-import { type CallExpression, type ExpressionStatement, type ObjectExpression, parseSync } from 'oxc-parser'
+import type { CallExpression, ExpressionStatement, ObjectExpression } from 'oxc-parser'
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
@@ -576,7 +577,7 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
     const lang = typeof script.attrs.lang === 'string' && /j|tsx/.test(script.attrs.lang) ? 'tsx' : 'ts'
     let code = script.content
 
-    parseAndWalk(script.content, absolutePath.replace(/\.\w+$/, '.' + lang), (node) => {
+    parseAndWalk(script.content, absolutePath.replace(/\.\w+$/, '.' + lang), { parseSync, enter(node) {
       if (extract != null) { return }
 
       if (
@@ -607,7 +608,7 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
       }
 
       extract = evalAndValidateValue(code.slice(routeArgument.start, routeArgument.end).trim())
-    })
+    } })
   } catch (e: unknown) {
     console.warn(`[nuxt-i18n] Couldn't read component data at ${absolutePath}: (${(e as Error).message})`)
   }

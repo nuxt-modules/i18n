@@ -4,7 +4,7 @@ import { VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
 import { dirname, resolve } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
-import { transformSync as oxcTransform } from 'oxc-transform'
+import { transformSync } from '../oxc'
 import type { TransformOptions, TransformResult } from 'oxc-transform'
 
 import type { BundlerPluginOptions } from './utils'
@@ -12,7 +12,7 @@ import type { ResolvedI18nContext } from '../context'
 
 export function transform(id: string, input: string, options?: TransformOptions): TransformResult {
   const oxcOptions = (tryUseNuxt()?.options?.oxc?.transform?.options ?? {}) as TransformOptions
-  return oxcTransform(id, input, { ...oxcOptions, ...options })
+  return transformSync(id, input, { ...oxcOptions, ...options })
 }
 
 const DEFINE_I18N_FN_RE = /\b(defineI18nLocale|defineI18nConfig)\s*\((.+)\)/gs
