@@ -6,7 +6,7 @@ import type { HeadLocale } from './types'
 import type { AlternateLanguageLink, CanonicalLink, HtmlAttributes, PropertyMeta } from 'unhead/types'
 
 // unhead allows numeric `content`, only strings are generated (#4149)
-type OgMeta = Omit<PropertyMeta, 'content'> & { content: string }
+type OgMeta = PropertyMeta & { content: string }
 
 /**
  * I18n header meta info.
