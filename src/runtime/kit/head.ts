@@ -5,13 +5,16 @@ import type { RouteLocationNormalizedLoadedGeneric, RouteLocationResolvedGeneric
 import type { HeadLocale } from './types'
 import type { AlternateLanguageLink, CanonicalLink, HtmlAttributes, PropertyMeta } from 'unhead/types'
 
+// unhead allows numeric `content`, only strings are generated (#4149)
+type OgMeta = Omit<PropertyMeta, 'content'> & { content: string }
+
 /**
  * I18n header meta info.
  * @internal
  */
 export interface I18nHeadMetaInfo {
   htmlAttrs: Pick<HtmlAttributes, 'lang' | 'dir'>
-  meta: PropertyMeta[]
+  meta: OgMeta[]
   link: (AlternateLanguageLink | CanonicalLink)[]
 }
 
@@ -195,7 +198,7 @@ function getCanonicalQueryParams(options: HeadContext, route = options.getCurren
   return params
 }
 
-function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): PropertyMeta[] {
+function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): OgMeta[] {
   if (!href) { return [] }
   return [
     options.strictSeo
@@ -204,7 +207,7 @@ function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): Proper
   ]
 }
 
-function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): PropertyMeta[] {
+function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): OgMeta[] {
   if (!currentLanguage) { return [] }
   return [
     options.strictSeo
@@ -230,7 +233,7 @@ function getAlternateOgLocales(
   options: HeadContext,
   languages: string[],
   currentLanguage = options.getCurrentLanguage(),
-): PropertyMeta[] {
+): OgMeta[] {
   const alternateLocales = languages.filter(locale => locale && locale !== currentLanguage)
 
   return alternateLocales.map(locale =>
