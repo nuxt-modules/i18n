@@ -13,7 +13,10 @@ const BOM_RE = /^\uFEFF/
 
 function parseResource(path: string) {
   // locale files added as unwritten templates only exist in the virtual file system
-  const raw = tryUseNuxt()?.vfs?.[path] ?? readFileSync(path, 'utf8')
+  return parseResourceContent(path, tryUseNuxt()?.vfs?.[path] ?? readFileSync(path, 'utf8'))
+}
+
+export function parseResourceContent(path: string, raw: string) {
   // the vite/rollup JSON loaders strip a byte order mark before parsing, `JSON.parse` does not
   const content = raw.replace(BOM_RE, '')
   try {
