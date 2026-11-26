@@ -1,4 +1,4 @@
-import { hasProtocol, isEqual, parsePath, parseQuery } from 'ufo'
+import { decodePath, hasProtocol, isEqual, parsePath, parseQuery } from 'ufo'
 import { assign, isString } from '@intlify/shared'
 import { getLocaleFromRoute } from '#i18n-kit/routing'
 
@@ -123,6 +123,7 @@ export function isLocaleSwitch(ctx: RoutingContext, to: CompatRoute, from: Compa
   if (locale === getLocaleFromRoute(from) || to.hash !== from.hash) { return false }
 
   // empty when `from` has no variant in `locale`, which would otherwise compare equal to the root
-  const destination = switchLocalePath(ctx, locale, from)
-  return !!destination && isEqual(parsePath(destination).pathname, to.path)
+  const destination = decodePath(parsePath(switchLocalePath(ctx, locale, from)).pathname)
+  // escaped slashes stay escaped, they are part of a param and not a path separator
+  return !!destination && isEqual(destination, decodePath(to.path), { encoding: true })
 }

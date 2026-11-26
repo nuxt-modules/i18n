@@ -318,7 +318,18 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     expect(isLocaleSwitch(pp('/count/1', 'en'))).toBe(localized)
     expect(isLocaleSwitch(pp('/count/2', 'en'))).toBe(false)
 
+    // an encoded slash is part of the param, not a path separator
+    await router.push(pp('/count/a%2Fb', 'ja'))
+    expect(isLocaleSwitch(pp('/count/a%2Fb', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/a/b', 'en'))).toBe(false)
+
+    // a path written unencoded matches its encoded form
+    await router.push(pp('/count/三', 'ja'))
+    expect(isLocaleSwitch(pp('/count/三', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/%E4%B8%89', 'en'))).toBe(localized)
+
     // params localized with `useSetI18nParams`
+    await router.push(pp('/count/1', 'ja'))
     router.currentRoute.value.meta.nuxtI18nInternal = { en: { id: 'one' } }
     expect(isLocaleSwitch(pp('/count/one', 'en'))).toBe(localized)
     expect(isLocaleSwitch(pp('/count/1', 'en'))).toBe(false)
