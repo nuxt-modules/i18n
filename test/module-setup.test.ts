@@ -107,6 +107,14 @@ describe('runtime config', () => {
     expect(resolved.detectBrowserLanguage).toMatchObject({ cookieDomain: 'example.test', useCookie: false, redirectOn: 'root' })
   })
 
+  test('`detectBrowserLanguage.fallbackLocale` accepts `null`', async () => {
+    vi.stubEnv('NUXT_PUBLIC_I18N_DETECT_BROWSER_LANGUAGE', '{"fallbackLocale":null}')
+    onTestFinished(() => void vi.unstubAllEnvs())
+    const { resolved } = await setupModule('empty.config', inferred)
+
+    expect(resolved.detectBrowserLanguage).toMatchObject({ fallbackLocale: null, redirectOn: 'root' })
+  })
+
   test('`detectBrowserLanguage: false` ignores property variables until a JSON value enables it', async () => {
     vi.stubEnv('NUXT_PUBLIC_I18N_DETECT_BROWSER_LANGUAGE_USE_COOKIE', 'true')
     onTestFinished(() => void vi.unstubAllEnvs())

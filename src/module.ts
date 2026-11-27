@@ -23,9 +23,13 @@ const DETECT_BROWSER_LANGUAGE_JSON_SCHEMA = {
     { const: false },
     {
       type: 'object',
-      properties: Object.fromEntries(
-        Object.entries(DEFAULT_OPTIONS.detectBrowserLanguage).map(([key, value]) => [key, value == null ? {} : { type: typeof value }]),
-      ),
+      properties: {
+        ...Object.fromEntries(
+          Object.entries(DEFAULT_OPTIONS.detectBrowserLanguage).map(([key, value]) => [key, value == null ? {} : { type: typeof value }]),
+        ),
+        // also accepts `null`, which its default does not describe
+        fallbackLocale: { type: ['null', 'string'] },
+      },
     },
   ],
 }
