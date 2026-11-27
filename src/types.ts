@@ -630,7 +630,7 @@ export interface I18nHeadMetaInfo {
   /** HTML attributes for the HTML element */
   htmlAttrs: Pick<HtmlAttributes, 'lang' | 'dir'>
   /** Meta tags */
-  meta: PropertyMeta[]
+  meta: (PropertyMeta & { content: string })[]
   /** Link tags */
   link: (AlternateLanguageLink | CanonicalLink)[]
 }
