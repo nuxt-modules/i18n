@@ -1,5 +1,6 @@
 import { useNuxtI18nContext, useResolvedLocale } from '../context'
 import { detectLocale, loadAndSetLocale, navigate } from '../utils'
+import { isLocaleSwitch } from '../routing/routing'
 import { resolveLocaleReach } from '../shared/domain'
 import { getLocaleFromRouteName } from '#i18n-kit/routing'
 import { addRouteMiddleware, createError, defineNuxtPlugin, defineNuxtRouteMiddleware, navigateTo, useRequestURL } from '#imports'
@@ -52,12 +53,19 @@ export default defineNuxtPlugin({
     // no pages or no prefixes - do not register route middleware
     if (!__I18N_ROUTING__ || (import.meta.server && __I18N_SERVER_REDIRECT__)) { return }
 
+    const preserveScroll = ctx.config.experimental.preserveScrollOnLocaleSwitch
+
     addRouteMiddleware(
       'locale-changing',
-      defineNuxtRouteMiddleware(async (to) => {
+      defineNuxtRouteMiddleware(async (to, from) => {
         const locale = await nuxt.runWithContext(() => loadAndSetLocale(nuxt, detectLocale(nuxt, to)))
 
         ctx.initial = false
+
+        // a page's own `scrollToTop` wins
+        if (preserveScroll && to.meta.scrollToTop == null && isLocaleSwitch(ctx.composableCtx, to, from)) {
+          to.meta.scrollToTop = false
+        }
 
         return nuxt.runWithContext(() => navigate(nuxt, to, locale))
       }),

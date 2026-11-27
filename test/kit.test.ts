@@ -4,7 +4,8 @@ import { createMemoryHistory, createRouter, type RouteLocationRaw, type Router }
 import {
   localePath as _localePath,
   switchLocalePath as _switchLocalePath,
-  localeRoute as _localeRoute
+  localeRoute as _localeRoute,
+  isLocaleSwitch as _isLocaleSwitch
 } from '../src/runtime/routing/routing'
 import { ref, unref } from 'vue'
 import { buildNuxt, loadNuxt } from '@nuxt/kit'
@@ -299,6 +300,48 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     await router.push(pp('/%E7%B4%84', 'ja'))
     expect(switchLocalePath('en')).toEqual(pp('/%E7%B4%84', 'en'))
     expect(switchLocalePath('ja')).toEqual(pp('/%E7%B4%84', 'ja'))
+  })
+
+  test('isLocaleSwitch', async () => {
+    const isLocaleSwitch = (path: string) => _isLocaleSwitch(ctx, router.resolve(path), router.currentRoute.value)
+    // unprefixed routes have no other locale to navigate to
+    const localized = strategy !== 'no_prefix'
+
+    await router.push(pp('/about', 'ja') + '?foo=1#bar')
+    expect(isLocaleSwitch(pp('/about', 'en') + '?foo=1#bar')).toBe(localized)
+    // another page, the same locale, or a new hash to scroll to
+    expect(isLocaleSwitch(pp('/', 'en'))).toBe(false)
+    expect(isLocaleSwitch(pp('/', 'ja'))).toBe(false)
+    expect(isLocaleSwitch(pp('/about', 'en') + '?foo=1#other')).toBe(false)
+
+    await router.push(pp('/count/1', 'ja'))
+    expect(isLocaleSwitch(pp('/count/1', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/2', 'en'))).toBe(false)
+
+    // an encoded slash is part of the param, not a path separator
+    await router.push(pp('/count/a%2Fb', 'ja'))
+    expect(isLocaleSwitch(pp('/count/a%2Fb', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/a/b', 'en'))).toBe(false)
+    await router.push(pp('/count/a%252Fb', 'ja'))
+    expect(isLocaleSwitch(pp('/count/a%252Fb', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/a%2Fb', 'en'))).toBe(false)
+
+    // a path written unencoded matches its encoded form
+    await router.push(pp('/count/三', 'ja'))
+    expect(isLocaleSwitch(pp('/count/三', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/%E4%B8%89', 'en'))).toBe(localized)
+
+    // params localized with `useSetI18nParams`
+    await router.push(pp('/count/1', 'ja'))
+    router.currentRoute.value.meta.nuxtI18nInternal = { en: { id: 'one' } }
+    expect(isLocaleSwitch(pp('/count/one', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/1', 'en'))).toBe(false)
+
+    // a route without localized variants switches to an empty path, which is not the root
+    const removeRoute = router.addRoute({ path: '/ja/unlocalized', component: {} })
+    await router.push('/ja/unlocalized')
+    expect(isLocaleSwitch(pp('/', 'en'))).toBe(false)
+    removeRoute()
   })
 })
 

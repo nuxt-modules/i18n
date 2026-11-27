@@ -29,6 +29,7 @@ export const DEFAULT_OPTIONS = {
     nitroContextDetection: true,
     httpCacheDuration: 10,
     compactRoutes: false,
+    preserveScrollOnLocaleSwitch: false,
     prerenderMessages: false,
     optimizeMessageBundling: true,
   },
