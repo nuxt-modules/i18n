@@ -1,0 +1,149 @@
+name: Size comment
+
+permissions: {}
+
+on:
+  # Runs with a write token in the context of the base repository so it can comment on pull requests
+  # from forks. It must never check out or execute anything from the pull request: the only input is
+  # the report of the `Size` workflow, which is treated as untrusted data.
+  workflow_run:
+    workflows: [Size]
+    types: [completed]
+
+jobs:
+  comment:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      pull-requests: write
+
+    steps:
+      - name: Download report
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: size-report
+          path: size-report
+
+      - name: Post or update comment
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { closeSync, constants, fstatSync, openSync, readFileSync } = require('node:fs')
+
+            const run = context.payload.workflow_run
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${run.head_repository.owner.login}:${run.head_branch}`,
+              per_page: 10,
+            })
+            const pr = prs.find(pr => pr.head.sha === run.head_sha)
+            if (!pr) {
+              console.log(`no open pull request found for ${run.head_sha}, skipping`)
+              return
+            }
+
+            // The report is written by pull request code. It is opened without following links, and no
+            // text from it is rendered as-is: only numbers and names that match the shapes below.
+            let report
+            const fd = openSync('size-report/report.json', constants.O_RDONLY | constants.O_NOFOLLOW)
+            try {
+              const stat = fstatSync(fd)
+              if (!stat.isFile() || stat.size > 100_000) {
+                throw new Error('unexpected report file')
+              }
+              report = JSON.parse(readFileSync(fd, 'utf8'))
+            } finally {
+              closeSync(fd)
+            }
+
+            const matches = (pattern, value) => typeof value === 'string' && pattern.test(value)
+            const isSize = value => Number.isSafeInteger(value) && value >= 0
+            const valid = report !== null && typeof report === 'object'
+              && matches(/^[0-9a-f]{40}$/, report.base)
+              && Array.isArray(report.rows) && report.rows.length > 0 && report.rows.length <= 100
+              && report.rows.every(row => row !== null && typeof row === 'object'
+                && matches(/^[a-z][a-z0-9-]{0,23}$/, row.scenario)
+                && matches(/^[a-z][a-z ()]{0,39}$/i, row.metric)
+                && ['client', 'count', 'package', 'server'].includes(row.kind)
+                && isSize(row.value)
+                && (row.base == null || isSize(row.base))
+                && typeof row.flagged === 'boolean')
+            if (!valid) {
+              core.setFailed('the size report does not have the expected shape')
+              return
+            }
+
+            // mirrors the formatting in scripts/size.ts
+            const size = (value, kind) => {
+              if (kind === 'count') { return String(value) }
+              if (value < 1000) { return `${value} B` }
+              return value < 1_000_000 ? `${(value / 1000).toFixed(value < 100_000 ? 2 : 1)} kB` : `${(value / 1_000_000).toFixed(2)} MB`
+            }
+            const change = (row) => {
+              if (row.base == null) { return 'new' }
+              const delta = row.value - row.base
+              if (delta === 0) { return '0' }
+              const sign = delta > 0 ? '+' : '-'
+              const percent = row.base && row.kind !== 'count' ? ` (${sign}${Math.abs((delta / row.base) * 100).toFixed(2)}%)` : ''
+              return `${sign}${size(Math.abs(delta), row.kind)}${percent}`
+            }
+            const table = rows => [
+              '| Scenario | Measurement | Base | Head | Change |',
+              '| --- | --- | ---: | ---: | ---: |',
+              ...rows.map(row => `| ${row.scenario} | ${row.metric} | ${row.base == null ? '-' : size(row.base, row.kind)} | ${size(row.value, row.kind)} | ${change(row)} |`),
+            ]
+
+            const marker = '<!-- nuxt-i18n-size-report -->'
+            const flagged = report.rows.filter(row => row.flagged)
+            const body = [
+              marker,
+              '### Size report',
+              '',
+              `Comparing \`${report.base.slice(0, 8)}\` (base) with \`${run.head_sha.slice(0, 8)}\` (head).`,
+              '',
+              ...(flagged.length
+                ? [`**${flagged.length} of ${report.rows.length} measurements moved beyond their threshold:**`, '', ...table(flagged)]
+                : ['No measurement moved beyond its threshold.']),
+              '',
+              '<details>',
+              '<summary>All measurements</summary>',
+              '',
+              ...table(report.rows),
+              '',
+              '</details>',
+              '',
+              `_The scenarios are described in the [job summary](${run.html_url}). Run locally with \`pnpm size --base main\`._`,
+            ].join('\n')
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+            })
+            const existing = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.includes(marker))
+            // an existing comment is kept up to date so it does not keep reporting a change that is gone
+            if (!existing && !flagged.length) {
+              console.log('no measurement moved beyond its threshold, skipping comment')
+              return
+            }
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body,
+              })
+            }
