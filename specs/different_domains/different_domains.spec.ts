@@ -14,6 +14,9 @@ await setup({
           domainLocales: {
             kr: {
               domain: 'kr.staging.nuxt-app.localhost'
+            },
+            es: {
+              domain: 'es.nuxt-app.localhost'
             }
           }
         }
@@ -39,6 +42,12 @@ await setup({
           language: 'ko-KR',
           name: '한국어',
           domain: 'kr.nuxt-app.localhost'
+        },
+        // its domain is only set through runtime config
+        {
+          code: 'es',
+          language: 'es',
+          name: 'Español'
         }
       ],
       strategy: 'no_prefix',
@@ -125,6 +134,22 @@ describe('browser language detection relocates to the domain serving the locale'
   })
 })
 
+test.each([
+  ['fr.nuxt-app.localhost', '/localized-in-english', 404],
+  // the domain set through runtime config is the one serving `kr`
+  ['kr.staging.nuxt-app.localhost', '/localized-in-french', 404],
+  // `kr` configures no path of its own and shares the one of the default locale
+  ['kr.staging.nuxt-app.localhost', '/localized-in-english', 200],
+  // a locale without a domain at build time is not the default locale of the one set at runtime
+  ['es.nuxt-app.localhost', '/about', 200],
+  // a host matching no configured domain serves every path
+  ['staging.nuxt-app.localhost', '/localized-in-french', 200],
+])('(#3226) %s%s responds with %i', async (host, path, status) => {
+  const res = await undiciRequest(path, { headers: { Host: host } })
+
+  expect(res.statusCode).toBe(status)
+})
+
 test('detection locale with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {
@@ -198,7 +223,7 @@ test('(#2931, #3988) detection, `localeProperties` and `locales` use runtimeConf
   expect(await dom.locator('#welcome-text').textContent()).toEqual('환영하다')
   expect(await dom.locator('#locale-properties-domain').textContent()).toEqual('kr.staging.nuxt-app.localhost')
   expect(await dom.locator('#locales-domains').textContent()).toEqual(
-    'en:en.nuxt-app.localhost,fr:fr.nuxt-app.localhost,kr:kr.staging.nuxt-app.localhost,no:no.nuxt-app.localhost,nl:layer-nl.example.com,ja:layer-ja.example.com'
+    'en:en.nuxt-app.localhost,fr:fr.nuxt-app.localhost,kr:kr.staging.nuxt-app.localhost,es:es.nuxt-app.localhost,no:no.nuxt-app.localhost,nl:layer-nl.example.com,ja:layer-ja.example.com'
   )
 })
 

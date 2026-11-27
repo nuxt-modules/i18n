@@ -18,7 +18,14 @@ await setup({
         { code: 'fr', language: 'fr-FR', domain: '127.0.0.1:7794' }
       ],
       strategy: 'no_prefix',
-      detectBrowserLanguage: { useCookie: false }
+      detectBrowserLanguage: { useCookie: false },
+      customRoutes: 'config',
+      pages: {
+        'localized-route': {
+          en: '/localized-in-english',
+          fr: '/localized-in-french'
+        }
+      }
     }
   }
 })
@@ -54,6 +61,24 @@ test('a plain `NuxtLink` switcher cannot mark the arrival as internal (known lim
   ])
   await page.waitForURL(url('/', 7794))
   await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+
+  await page.close()
+})
+
+test('(#3226) client-side navigation to a route path of another domain is not found', async () => {
+  const page = await createPage(undefined, { locale: 'en' })
+  const navigate = (path: string) => page.evaluate(path => void window.useNuxtApp().$router.push(path), path)
+  const errorStatus = () => page.evaluate(() => window.useNuxtApp().payload.error?.statusCode)
+
+  await page.goto(url('/', 7793))
+  await page.waitForFunction(() => window.useNuxtApp?.().isHydrating === false)
+
+  await navigate('/localized-in-english')
+  await page.waitForURL(url('/localized-in-english', 7793))
+  expect(await errorStatus()).toBeUndefined()
+
+  await navigate('/localized-in-french')
+  await expect.poll(errorStatus).toBe(404)
 
   await page.close()
 })

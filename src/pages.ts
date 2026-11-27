@@ -69,7 +69,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
   })
   if (!localeCodes.length) { return }
 
-  if ((options.differentDomains || options.multiDomainLocales) && (options.strategy === 'prefix_except_default' || options.strategy === 'prefix_and_default')) {
+  if ((options.differentDomains || options.multiDomainLocales) && options.strategy !== 'prefix') {
     const domainRouterOptions = await resolvePath(resolve(runtimeDir, 'router.options'))
     nuxt.hook('pages:routerOptions', ({ files }) => {
       files.unshift({ path: domainRouterOptions })

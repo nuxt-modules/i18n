@@ -1,6 +1,8 @@
 import { useNuxtI18nContext, useResolvedLocale } from '../context'
 import { detectLocale, loadAndSetLocale, navigate } from '../utils'
-import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware, navigateTo } from '#imports'
+import { resolveLocaleReach } from '../shared/domain'
+import { getLocaleFromRouteName } from '#i18n-kit/routing'
+import { addRouteMiddleware, createError, defineNuxtPlugin, defineNuxtRouteMiddleware, navigateTo, useRequestURL } from '#imports'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:route-locale-detect',
@@ -26,6 +28,26 @@ export default defineNuxtPlugin({
         (ctx.initial && resolvedLocale.value) || detectLocale(nuxt, nuxt.$router.currentRoute.value),
       ),
     )
+
+    // without a prefix every domain matches the route paths of all locales (#3226)
+    if (__I18N_DOMAINS__ && __I18N_STRATEGY__ === 'no_prefix') {
+      addRouteMiddleware(
+        'i18n-host-routes',
+        defineNuxtRouteMiddleware((to) => {
+          const host = useRequestURL({ xForwardedHost: true }).host
+          const locale = getLocaleFromRouteName(String(to.name))
+          // the routes of the host's default locale are ordered first and match the paths it shares
+          if (locale === ctx.getDefaultLocale() || resolveLocaleReach(ctx.getLocales(), host, locale) !== 'other-domain') { return }
+          return createError({
+            statusCode: 404,
+            statusMessage: `Page not found: ${to.fullPath}`,
+            data: { path: to.fullPath },
+            fatal: true,
+          })
+        }),
+        { global: true },
+      )
+    }
 
     // no pages or no prefixes - do not register route middleware
     if (!__I18N_ROUTING__ || (import.meta.server && __I18N_SERVER_REDIRECT__)) { return }
