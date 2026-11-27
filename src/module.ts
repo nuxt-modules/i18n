@@ -1,4 +1,4 @@
-import { addComponent, addImports, addImportsSources, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, defineNuxtModule, resolveModule, useNitro } from '@nuxt/kit'
+import { addComponent, addImports, addImportsSources, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, defineNuxtModule, resolveModule, updateRuntimeConfig, useNitro } from '@nuxt/kit'
 import { defu } from 'defu'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
@@ -16,6 +16,36 @@ import { generateI18nTypes, simplifyLocaleOptions } from './gen'
 import { resolveVueI18nPackages } from './utils'
 
 const moduleURL = new URL(import.meta.url)
+
+// `false`, or the options typed by their defaults as Nuxt infers them
+const DETECT_BROWSER_LANGUAGE_JSON_SCHEMA = {
+  anyOf: [
+    { const: false },
+    {
+      type: 'object',
+      properties: {
+        ...Object.fromEntries(
+          Object.entries(DEFAULT_OPTIONS.detectBrowserLanguage).map(([key, value]) => [key, value == null ? {} : { type: typeof value }]),
+        ),
+        // also accepts `null`, which its default does not describe
+        fallbackLocale: { type: ['null', 'string'] },
+      },
+    },
+  ],
+}
+
+// Standard Schema, Nuxt only reads its JSON Schema so nothing is validated here
+const DETECT_BROWSER_LANGUAGE_SCHEMA = {
+  '~standard': {
+    version: 1,
+    vendor: 'nuxt-i18n',
+    validate: (value: unknown) => ({ value }),
+    jsonSchema: {
+      input: () => DETECT_BROWSER_LANGUAGE_JSON_SCHEMA,
+      output: () => DETECT_BROWSER_LANGUAGE_JSON_SCHEMA,
+    },
+  },
+}
 
 export * from './types'
 
@@ -202,6 +232,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
           }),
         ) as I18nPublicRuntimeConfig['domainLocales'],
       })
+
+      // the type inferred from the default rejects `false` on Nuxt 5, the seeded value stays the default
+      await updateRuntimeConfig({ public: { i18n: { detectBrowserLanguage: DETECT_BROWSER_LANGUAGE_SCHEMA } } })
 
       nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(resolved, nuxt)
 
