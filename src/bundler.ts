@@ -91,7 +91,7 @@ export function getDefineConfig(
   server = false,
   nuxt = useNuxt(),
 ) {
-  const { options, rawOptions, dynamicLocales, undeliverableLocales, localeFileMetas, localeHashes } = ctx
+  const { options, rawOptions, dynamicLocales, undeliverableLocales, filelessLocales, localeFileMetas, localeHashes } = ctx
   // every cache site is guarded per loader (`cache`) or per locale (`isLocaleCacheable`), so this
   // only decides whether the mechanism exists at all
   const cacheLifetime = options.experimental.cacheLifetime
@@ -121,6 +121,7 @@ export function getDefineConfig(
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
     __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
     __I18N_UNDELIVERABLE_LOCALES__: JSON.stringify(undeliverableLocales),
+    __I18N_FILELESS_LOCALES__: JSON.stringify(filelessLocales),
     __I18N_APP_CONTEXT_CONFIG__: String(ctx.vueI18nConfigPaths.some(x => x.appContext)),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),

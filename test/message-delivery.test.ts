@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
+import { createEndpointPredicate, createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
 import { createContext, resolveDeliveryLocales } from '../src/context'
 import { getDefineConfig } from '../src/bundler'
@@ -17,6 +17,7 @@ const delivery = (overrides: Partial<DeliveryConfig> = {}): DeliveryConfig => ({
   prerender: false,
   dynamic: [LOCALES.dynamic, LOCALES.both, LOCALES.appContext],
   undeliverable: [LOCALES.unserializable, LOCALES.both, LOCALES.appContext],
+  fileless: [],
   ...overrides
 })
 
@@ -132,7 +133,8 @@ function setupBuild(build: Build) {
     ssg: defines.__IS_SSG__ === 'true',
     prerender,
     dynamic: JSON.parse(defines.__I18N_DYNAMIC_LOCALES__) as string[],
-    undeliverable: JSON.parse(defines.__I18N_UNDELIVERABLE_LOCALES__) as string[]
+    undeliverable: JSON.parse(defines.__I18N_UNDELIVERABLE_LOCALES__) as string[],
+    fileless: JSON.parse(defines.__I18N_FILELESS_LOCALES__) as string[]
   })
 
   return { loaders, config }
@@ -210,18 +212,24 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
 
 describe('a locale configured without files', () => {
   const info = resolveLocales('/i18n', [{ code: 'en', file: 'en.ts' }, { code: 'nofiles' }] as LocaleObject[], { '/i18n/en.ts': SOURCES[LOCALES.plain]! })
-  const { dynamicLocales, undeliverableLocales } = resolveDeliveryLocales(info)
+  const { dynamicLocales, undeliverableLocales, filelessLocales } = resolveDeliveryLocales(info)
+  const config = delivery({ dynamic: dynamicLocales, undeliverable: undeliverableLocales, fileless: filelessLocales })
 
   test('has no messages response to fetch or prerender', () => {
-    const prerenderable = createPrerenderablePredicate({ dynamic: dynamicLocales, undeliverable: undeliverableLocales })
-    expect(undeliverableLocales).toEqual(['nofiles'])
+    expect(filelessLocales).toEqual(['nofiles'])
+    const prerenderable = createPrerenderablePredicate(config)
     expect(prerenderable('nofiles')).toBe(false)
     expect(prerenderable('en')).toBe(true)
+
+    const fromEndpoint = createEndpointPredicate(createRuntimeLoaderPredicate(config), config.fileless)
+    expect(fromEndpoint('nofiles')).toBe(false)
+    expect(fromEndpoint('en')).toBe(true)
   })
 
-  test('runs its (empty) loaders instead of reading the messages endpoint', () => {
-    const usesLoaders = createRuntimeLoaderPredicate(delivery({ dynamic: dynamicLocales, undeliverable: undeliverableLocales }))
-    expect(usesLoaders('nofiles')).toBe(true)
-    expect(usesLoaders('en')).toBe(false)
+  test('keeps its preloaded payload messages', () => {
+    // the preload plugin empties the payload of undeliverable locales on the server and skips
+    // locales behind runtime loaders on the client - the server may hold messages the client lacks
+    expect(undeliverableLocales).toEqual([])
+    expect(createRuntimeLoaderPredicate(config)('nofiles')).toBe(false)
   })
 })

@@ -14,6 +14,11 @@ export interface DeliveryConfig {
    * the server cannot run their loaders at all (#3940)
    */
   undeliverable: string[]
+  /**
+   * Locales configured without files: the endpoint would only answer `{}`, so nothing is fetched or
+   * prerendered for them. Not undeliverable - their payload copy still carries what the server holds
+   */
+  fileless: string[]
 }
 
 /**
@@ -21,10 +26,11 @@ export interface DeliveryConfig {
  * the handler that still resolves it per request, and an undeliverable one has no response to bake.
  * Being the only responses that exist as files, these are also the only ones a CDN can hold. Not the
  * same as "the endpoint can serve it" - a live handler serves a dynamic locale fine, by running its
- * loader in-process.
+ * loader in-process. A fileless locale's response would be `{}`.
  */
-export function createPrerenderablePredicate(config: Pick<DeliveryConfig, 'dynamic' | 'undeliverable'>) {
-  return (locale: Locale) => !config.dynamic.includes(locale) && !config.undeliverable.includes(locale)
+export function createPrerenderablePredicate(config: Pick<DeliveryConfig, 'dynamic' | 'undeliverable' | 'fileless'>) {
+  return (locale: Locale) =>
+    !config.dynamic.includes(locale) && !config.undeliverable.includes(locale) && !config.fileless.includes(locale)
 }
 
 /**
@@ -38,4 +44,12 @@ export function createRuntimeLoaderPredicate(config: DeliveryConfig) {
     !config.ssr
     || config.undeliverable.includes(locale)
     || (config.dynamic.includes(locale) && (config.prerender || config.ssg))
+}
+
+/**
+ * Whether loading a locale requests the messages endpoint: not when its loaders produce the messages,
+ * and not when it has no files, whose response would hold nothing but the fallbacks loaded on their own.
+ */
+export function createEndpointPredicate(usesRuntimeLoaders: (locale: Locale) => boolean, fileless: string[]) {
+  return (locale: Locale) => !usesRuntimeLoaders(locale) && !fileless.includes(locale)
 }
