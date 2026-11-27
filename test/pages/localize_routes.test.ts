@@ -717,6 +717,44 @@ describe('localizeRoutes', function () {
       // localization is skipped for multiple locales on the same domain
       expect(localizedRoutes).toEqual(routes)
     })
+
+    it('(#3226) resolves a path locales share to the route of the host', function () {
+      const localized = localizeRoutes([
+        { path: '/about', name: 'about' },
+        { path: '/contact', name: 'contact' },
+        { path: '/bar', name: 'bar' },
+        { path: '/foo', name: 'foo', children: [{ path: 'child', name: 'foo-child' }] }
+      ] as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'no_prefix',
+        differentDomains: true,
+        locales: getNormalizedLocales([
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'fr', domain: 'fr.example.com' }
+        ]),
+        optionsResolver: createMockOptionsResolver({
+          about: { locales: ['en', 'fr'], paths: { fr: '/a-propos' } },
+          contact: { locales: ['en', 'fr'], paths: { en: '/Contact' } },
+          bar: { locales: ['en', 'fr'], paths: { en: '/shared' } },
+          foo: { locales: ['en', 'fr'], paths: { fr: '/shared' } }
+        })
+      }) as any[]
+
+      const rebuilt = createRouter({ routes: localized, history: createMemoryHistory() })
+      setupMultiDomainLocales('fr', 'no_prefix', rebuilt)
+
+      for (const router of [createRouter({ routes: resolveDomainRoutes(localized, 'fr', 'no_prefix'), history: createMemoryHistory() }), rebuilt]) {
+        // paths are matched without case
+        expect(router.resolve('/contact').name).toBe('contact___fr')
+        // another page of another locale at the same path
+        expect(router.resolve('/shared').name).toBe('foo___fr')
+        expect(router.resolve('/shared/child').matched.map(x => x.name)).toEqual(['foo___fr', 'foo-child___fr'])
+        // the routes of other locales stay to resolve links to their domain
+        expect(router.resolve('/about').name).toBe('about___en')
+        expect(router.resolve({ name: 'bar___en' }).path).toBe('/shared')
+      }
+    })
   })
 
   describe('Route options resolver: routing disable', () => {

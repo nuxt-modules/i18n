@@ -26,6 +26,10 @@ function hasDefaultVariant(routes: readonly RouteRecordRaw[], locale: string): b
 
 function createHostRules(routes: readonly RouteRecordRaw[], defaultLocale: string, strategy: Strategies) {
   const isHostLocale = (name: unknown) => getLocaleFromRouteName(String(name)) === defaultLocale
+  // without a prefix locales can share a path, the host's own routes go first to be the ones matching it (#3226)
+  if (strategy === 'no_prefix') {
+    return { prunes: () => false, moves: (name: unknown) => !isHostLocale(name), moveRoute: (route: RouteRecordRaw) => route }
+  }
   // `prefix_and_default` serves its default locale both unprefixed and prefixed, so the host's
   // own variant is kept. The build only emits variants for locales that are a domain default
   // somewhere, so when the host default has none the prefixed route is unprefixed instead
@@ -36,9 +40,9 @@ function createHostRules(routes: readonly RouteRecordRaw[], defaultLocale: strin
   return {
     /** A `___default` variant this host does not serve */
     prunes: (name: unknown) => isDefaultVariant(name) && !(keepsDefaultVariant && isHostLocale(name)),
-    /** A prefixed route of the host's own locale, served unprefixed here */
-    unprefixes: (name: unknown) => !keepsDefaultVariant && !isDefaultVariant(name) && isHostLocale(name),
-    unprefixRoute(route: RouteRecordRaw): RouteRecordRaw {
+    /** A route added after the others - a prefixed route of the host's own locale, served unprefixed here */
+    moves: (name: unknown) => !keepsDefaultVariant && !isDefaultVariant(name) && isHostLocale(name),
+    moveRoute(route: RouteRecordRaw): RouteRecordRaw {
       const record = { ...route, path: unprefix(route.path) } as RouteRecordRaw
       if (route.alias != null) {
         record.alias = Array.isArray(route.alias) ? route.alias.map(unprefix) : unprefix(route.alias)
@@ -50,26 +54,26 @@ function createHostRules(routes: readonly RouteRecordRaw[], defaultLocale: strin
 
 function createDomainRoutes(routes: readonly RouteRecordRaw[], defaultLocale: string, strategy: Strategies): RouteRecordRaw[] {
   const rules = createHostRules(routes, defaultLocale, strategy)
-  const prefixed: RouteRecordRaw[] = []
-  const unprefixed: RouteRecordRaw[] = []
+  const kept: RouteRecordRaw[] = []
+  const moved: RouteRecordRaw[] = []
   for (const route of routes) {
     const name = routeName(route)
     if (rules.prunes(name)) { continue }
-    if (rules.unprefixes(name)) { unprefixed.push(rules.unprefixRoute(route)) } else { prefixed.push(route) }
+    if (rules.moves(name)) { moved.push(rules.moveRoute(route)) } else { kept.push(route) }
   }
-  return [...prefixed, ...unprefixed]
+  return [...kept, ...moved]
 }
 
 /**
  * Returns the route table for a host whose unprefixed locale is `defaultLocale`, built from the
  * `___default` variants generated for every domain default. Used by both `differentDomains` and
- * `multiDomainLocales` under the `*_default` strategies.
+ * `multiDomainLocales` under the `*_default` strategies, `no_prefix` only orders the routes.
  *
  * Tables are cached per source array and locale, so every host with the same unprefixed locale
  * receives the same array.
  */
 export function resolveDomainRoutes(routes: readonly RouteRecordRaw[], defaultLocale: string, strategy: Strategies): readonly RouteRecordRaw[] {
-  if (strategy !== 'prefix_except_default' && strategy !== 'prefix_and_default') { return routes }
+  if (strategy === 'prefix') { return routes }
 
   let tables = domainRouteTables.get(routes)
   if (!tables) {
@@ -93,7 +97,7 @@ export function resolveDomainRoutes(routes: readonly RouteRecordRaw[], defaultLo
  * `defaultLocale` is left untouched.
  */
 export function setupMultiDomainLocales(defaultLocale: string, strategy: Strategies, router: Router) {
-  if (strategy !== 'prefix_except_default' && strategy !== 'prefix_and_default') { return }
+  if (strategy === 'prefix') { return }
   // an app without pages runs Nuxt's built-in router, which has no route table
   const routes = router.options.routes as readonly RouteRecordRaw[] | undefined
   if (!routes || domainRouteTableLocales.get(routes) === defaultLocale) { return }
@@ -114,14 +118,14 @@ export function setupMultiDomainLocales(defaultLocale: string, strategy: Strateg
   // only top-level routes are added again, their children follow them
   for (const route of routes) {
     const name = routeName(route)
-    if (!rules.unprefixes(name)) { continue }
+    if (!rules.moves(name)) { continue }
     if (!route.name) {
       // a parent without a name has no record to look up
-      if (router.hasRoute(name)) { router.addRoute(rules.unprefixRoute(route)) }
+      if (router.hasRoute(name)) { router.addRoute(rules.moveRoute(route)) }
       continue
     }
     // a route the app has removed has no record and stays removed
     const record = records.get(route.name)
-    if (record) { router.addRoute(rules.unprefixRoute({ ...record, alias: aliases.get(record) ?? [] } as RouteRecordRaw)) }
+    if (record) { router.addRoute(rules.moveRoute({ ...record, alias: aliases.get(record) ?? [] } as RouteRecordRaw)) }
   }
 }
