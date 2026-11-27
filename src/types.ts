@@ -214,6 +214,12 @@ export interface ExperimentalFeatures {
    */
   compactRoutes?: boolean
   /**
+   * Keeps the scroll position when navigating to the current page in another locale.
+   * Pages that set `scrollToTop` in their page meta keep their own behavior.
+   * @default false
+   */
+  preserveScrollOnLocaleSwitch?: boolean
+  /**
    * Prerender hashed `messages.json` files into `.output/public/` at build time so lazy-loaded
    * messages are served as static assets (from `app.cdnURL` when set) instead of the Nitro route.
    * Messages from a `vue-i18n` config are merged at runtime and are not included in these files.

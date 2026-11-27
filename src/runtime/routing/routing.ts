@@ -1,5 +1,6 @@
 import { hasProtocol, parsePath, parseQuery } from 'ufo'
 import { assign, isString } from '@intlify/shared'
+import { getLocaleFromRoute } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationNamedRaw, RouteLocationPathRaw, RouteLocationRaw } from 'vue-router'
@@ -111,4 +112,18 @@ export function switchLocalePath(
   const path = localePath(ctx, routeCopy, locale)
   // custom locale path for domains
   return ctx.afterSwitchLocalePath(path, locale)
+}
+
+/**
+ * Whether `to` is the page of `from` in another locale, the route a language switcher links to.
+ */
+export function isLocaleSwitch(ctx: RoutingContext, to: CompatRoute, from: CompatRoute): boolean {
+  const locale = getLocaleFromRoute(to)
+  // a new hash is a scroll target of its own
+  if (!to.name || locale === getLocaleFromRoute(from) || to.hash !== from.hash) { return false }
+
+  // resolved by name like the destination, `to.path` is encoded the way it was navigated to
+  const path = ctx.router.resolve({ name: to.name, params: to.params }).path
+  // the destination is empty when `from` has no variant in `locale`
+  return path === parsePath(switchLocalePath(ctx, locale, from)).pathname
 }
