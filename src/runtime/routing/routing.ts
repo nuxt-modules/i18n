@@ -1,4 +1,4 @@
-import { decodePath, hasProtocol, isEqual, parsePath, parseQuery } from 'ufo'
+import { hasProtocol, parsePath, parseQuery } from 'ufo'
 import { assign, isString } from '@intlify/shared'
 import { getLocaleFromRoute } from '#i18n-kit/routing'
 
@@ -120,10 +120,10 @@ export function switchLocalePath(
 export function isLocaleSwitch(ctx: RoutingContext, to: CompatRoute, from: CompatRoute): boolean {
   const locale = getLocaleFromRoute(to)
   // a new hash is a scroll target of its own
-  if (locale === getLocaleFromRoute(from) || to.hash !== from.hash) { return false }
+  if (!to.name || locale === getLocaleFromRoute(from) || to.hash !== from.hash) { return false }
 
-  // empty when `from` has no variant in `locale`, which would otherwise compare equal to the root
-  const destination = decodePath(parsePath(switchLocalePath(ctx, locale, from)).pathname)
-  // escaped slashes stay escaped, they are part of a param and not a path separator
-  return !!destination && isEqual(destination, decodePath(to.path), { encoding: true })
+  // resolved by name like the destination, `to.path` is encoded the way it was navigated to
+  const path = ctx.router.resolve({ name: to.name, params: to.params }).path
+  // the destination is empty when `from` has no variant in `locale`
+  return path === parsePath(switchLocalePath(ctx, locale, from)).pathname
 }

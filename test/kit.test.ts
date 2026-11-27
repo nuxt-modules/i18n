@@ -322,6 +322,9 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     await router.push(pp('/count/a%2Fb', 'ja'))
     expect(isLocaleSwitch(pp('/count/a%2Fb', 'en'))).toBe(localized)
     expect(isLocaleSwitch(pp('/count/a/b', 'en'))).toBe(false)
+    await router.push(pp('/count/a%252Fb', 'ja'))
+    expect(isLocaleSwitch(pp('/count/a%252Fb', 'en'))).toBe(localized)
+    expect(isLocaleSwitch(pp('/count/a%2Fb', 'en'))).toBe(false)
 
     // a path written unencoded matches its encoded form
     await router.push(pp('/count/三', 'ja'))
