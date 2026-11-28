@@ -6,7 +6,7 @@ import { directoryToURL, resolveModule, useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
 import { EXECUTABLE_EXT_RE } from './constants'
-import { parseSync } from 'oxc-parser'
+import { parseSync } from './oxc'
 import { walk } from 'oxc-walker'
 
 import type {

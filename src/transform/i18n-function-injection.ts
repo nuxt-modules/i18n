@@ -9,6 +9,7 @@ import MagicString from 'magic-string'
 import { ScopeTracker, parseAndWalk, walk } from 'oxc-walker'
 import { createUnplugin } from 'unplugin'
 import { isVue } from './utils'
+import { parseSync } from '../oxc'
 import type { BundlerPluginOptions } from './utils'
 
 const TRANSLATION_FUNCTIONS = ['$t', '$rt', '$d', '$n', '$tm', '$te']
@@ -73,7 +74,7 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
 export function collectMissingI18nFunctions(script: string, id: string) {
   // pre-pass to collect all declarations
   const scopeTracker = new ScopeTracker({ preserveExitedScopes: true })
-  const ast = parseAndWalk(script, id, { scopeTracker })
+  const ast = parseAndWalk(script, id, { parseSync, scopeTracker })
 
   const missing = new Set<string>()
   walk(ast.program, {
