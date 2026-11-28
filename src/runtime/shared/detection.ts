@@ -89,9 +89,14 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
    * (e.g. cookie locale content rendered on a default-locale path). The redirect action
    * itself is gated separately (see the redirect switch in `createRedirectResolver`).
    */
-  function skipDetect(path: string, pathLocale: string | undefined): boolean {
+  function skipDetect(path: string, pathLocale: string | undefined, hasPage: boolean): boolean {
     // no routes - force detection
     if (!routing) {
+      return false
+    }
+
+    // no page and no prefix - there is no URL locale to disagree with (e.g. a missing asset rendering the error page)
+    if (!hasPage && !isSupported(pathLocale)) {
       return false
     }
 
@@ -114,12 +119,14 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
   return function detectLocale(detectors: ReturnType<typeof useDetectors>, route: string | CompatRoute, initial: boolean): string {
     // route objects carry a query-free `path`, server paths may include a query string
     const path = isString(route) ? parsePath(route).pathname : route.path
+    // the server only detects for existing routes, a route object knows its own matches
+    const hasPage = isString(route) || route.matched.length > 0
 
     const pass = (locale: string | null | undefined) => locale
     const onHost = domains ? detectors.onHost : pass
 
     function* detect() {
-      const detecting = initial && detection.enabled && !skipDetect(path, detectors.route(path))
+      const detecting = initial && detection.enabled && !skipDetect(path, detectors.route(path), hasPage)
       if (detecting) {
         // only an external arrival may follow a source off-host (an internal one already chose
         // its destination), and only sources reading the same on every domain - per-host cookies
