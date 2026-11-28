@@ -1,5 +1,6 @@
-import { useCookie, useNuxtApp, useRequestEvent, useRoute } from '#imports'
+import { tryUseNuxtApp, useCookie, useNuxtApp, useRequestEvent, useRoute } from '#imports'
 import { getCurrentInstance, ref, watch } from 'vue'
+import { useI18n as _useI18n } from 'vue-i18n'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../composable-context'
 import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
@@ -247,6 +248,27 @@ export function useCookieLocale(nuxtApp: NuxtApp = useNuxtApp()): Ref<string> {
 
   return locale
 }
+
+/**
+ * Vue I18n's `useI18n`, explaining where it can be called during development
+ */
+export const useI18n = ((options?: Parameters<typeof _useI18n>[0]) => {
+  if (import.meta.dev && !getCurrentInstance()) {
+    // internal, Nuxt sets this to the path of the running middleware during development
+    const middleware = tryUseNuxtApp()?._processingMiddleware
+    const where = typeof middleware === 'string'
+      ? `while running route middleware \`${middleware}\``
+      : '(e.g. in a store, route middleware or plugin)'
+    const error = new Error(
+      `[nuxt-i18n] \`useI18n()\` was called outside of a component \`setup\` function ${where}, `
+      + 'use `useNuxtApp().$i18n` instead. Learn more: https://i18n.nuxtjs.org/docs/getting-started/usage#usage-outside-of-components',
+    )
+    // start the trace at the caller
+    Error.captureStackTrace?.(error, useI18n)
+    throw error
+  }
+  return _useI18n(options)
+}) as typeof _useI18n
 
 const warnRuntimeUsage = (method: string) =>
   console.warn(
