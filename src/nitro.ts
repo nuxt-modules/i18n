@@ -10,20 +10,20 @@ import {
   resolvePath,
   resolveServerVariant,
 } from '@nuxt/kit'
-import yamlPlugin from '@rollup/plugin-yaml'
-import json5Plugin from '@miyaneee/rollup-plugin-json5'
+import { createFilter, dataToEsm } from '@rollup/pluginutils'
 import { getDefineConfig } from './bundler'
-import { readStaticResource } from './resources'
+import { parseResourceContent, readStaticResource } from './resources'
 import { join, relative } from 'pathe'
 import { logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { FileMeta } from './types'
 import type { ResolvedI18nContext } from './context'
 import { generateTemplateNuxtI18nOptions } from './template'
 
 const moduleURL = new URL(import.meta.url)
+// json is left to the bundler's own loader
+const DATA_RESOURCE_RE = /\.(?:json5|ya?ml)$/
 
 export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   const serverApi = resolveServerVariant({ nitro2: 'nitro2', nitro3: 'nitro3' } as const)
@@ -129,14 +129,16 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
     nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
 
-    const localePathsByType = getResourcePathsGrouped(ctx.localeFileMetas)
-    // install server resource transform plugin for yaml / json5 format
-    if (localePathsByType.yaml.length > 0) {
-      nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: localePathsByType.yaml }))
-    }
-
-    if (localePathsByType.json5.length > 0) {
-      nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
+    const dataResourcePaths = ctx.localeFileMetas.map(meta => meta.path).filter(path => DATA_RESOURCE_RE.test(path))
+    if (dataResourcePaths.length > 0) {
+      const filter = createFilter(dataResourcePaths)
+      nitroConfig.rollupConfig!.plugins.push({
+        name: 'nuxtjs:i18n-data-resource',
+        transform(code: string, id: string) {
+          if (!filter(id)) { return }
+          return { code: dataToEsm(parseResourceContent(id, code)), map: { mappings: '' } }
+        },
+      })
     }
     // the prerender pass builds its own nitro from this config, so this is the only place reaching
     // it - but it runs before the preset is applied, so `staticDeploy` is stale here. Server code
@@ -156,11 +158,4 @@ async function resolveLocaleDetectorPath(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   }
 
   return { path: resolved, exists }
-}
-
-function getResourcePathsGrouped(fileMetas: FileMeta[]) {
-  return {
-    yaml: fileMetas.filter(meta => /\.ya?ml$/.test(meta.path)).map(x => x.path),
-    json5: fileMetas.filter(meta => /\.json5?$/.test(meta.path)).map(x => x.path),
-  }
 }
