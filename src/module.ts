@@ -1,4 +1,4 @@
-import { addComponent, addImports, addImportsSources, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, defineNuxtModule, resolveModule, updateRuntimeConfig, useNitro } from '@nuxt/kit'
+import { addComponent, addImportsSources, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, defineNuxtModule, resolveModule, updateRuntimeConfig, useNitro } from '@nuxt/kit'
 import { defu } from 'defu'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
@@ -77,14 +77,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filePath: ctx.resolver.resolve(ctx.runtimeDir, 'components/SwitchLocalePathLink'),
     })
 
-    addImports({
-      name: 'useI18n',
-      from: 'vue-i18n',
-    })
-
     addImportsSources({
       from: ctx.resolver.resolve(ctx.runtimeDir, 'composables/index'),
       imports: [
+        'useI18n',
         'useRouteBaseName',
         'useLocalePath',
         'useLocaleRoute',
