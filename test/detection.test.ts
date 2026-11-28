@@ -1,10 +1,29 @@
 import { describe, expect, test } from 'vitest'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { createLocaleDetector } from '../src/runtime/shared/detection'
-import { getLocaleFromRoutePath } from '../src/runtime/kit/routing'
+import { getLocaleFromRoute } from '../src/runtime/kit/routing'
+import { localizeRoutes } from '../src/routing'
+import { getNormalizedLocales } from './pages/utils'
 
 import type { LocaleDetectorConfig } from '../src/runtime/shared/detection'
+import type { LocalizableRoute } from '../src/kit/gen'
+import type { CompatRoute } from '../src/runtime/types'
 
 const LOCALES = ['en', 'fr']
+
+/** Route objects as the app passes them, resolved against the localized route table */
+function createRouteResolver() {
+  const routes = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
+    strategy: 'prefix_except_default',
+    defaultLocale: 'en',
+    locales: getNormalizedLocales(LOCALES.map(code => ({ code, language: code }))),
+    routesNameSeparator: '___',
+    defaultLocaleRouteNameSuffix: 'default',
+    trailingSlash: false,
+  })
+  const router = createRouter({ routes: routes as never, history: createMemoryHistory() })
+  return (path: string) => router.resolve(path) as CompatRoute
+}
 
 const detectors = (overrides: Partial<ReturnType<typeof createDetectors>> = {}) => ({
   ...createDetectors(),
@@ -15,7 +34,7 @@ const createDetectors = () => ({
   header: (): string | undefined => undefined,
   navigator: (): string | undefined => undefined,
   host: (): string | undefined => undefined,
-  route: (path: string | object) => getLocaleFromRoutePath(String(path)),
+  route: (route: string | CompatRoute) => getLocaleFromRoute(route),
   onHost: (locale: string | null | undefined) => locale,
   fromOwnDomain: () => false,
   cookieSpans: () => false,
@@ -68,6 +87,15 @@ describe('createLocaleDetector', () => {
     expect(detect(detectors({ cookie: () => 'fr' }), '/', true)).toBe('fr')
     expect(detect(detectors({ cookie: () => 'fr' }), '/about', true)).toBe('')
     expect(detect(detectors({ cookie: () => 'fr' }), '/en/about', true)).toBe('en')
+  })
+
+  test("`redirectOn: 'root'` detects on a path without a page or prefix", () => {
+    const detect = createDetector({ detection: detection({ redirectOn: 'root' }) })
+    const resolve = createRouteResolver()
+    // e.g. a missing asset rendering the error page, the default locale would replace the stored one
+    expect(detect(detectors({ cookie: () => 'fr' }), resolve('/missing.png'), true)).toBe('fr')
+    expect(detect(detectors({ cookie: () => 'en' }), resolve('/fr/missing.png'), true)).toBe('fr')
+    expect(detect(detectors({ cookie: () => 'fr' }), resolve('/about'), true)).toBe('en')
   })
 
   test("`redirectOn: 'no prefix'` skips detection on prefixed paths", () => {
