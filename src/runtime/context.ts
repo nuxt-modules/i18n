@@ -3,7 +3,7 @@ import { isRef, unref } from 'vue'
 import { useCookie, useRequestFetch, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
-import { createEndpointPredicate, createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
+import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
 import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from './shared/domain'
@@ -112,7 +112,6 @@ type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'me
 export const isPrerenderable = createPrerenderablePredicate({
   dynamic: __I18N_DYNAMIC_LOCALES__,
   undeliverable: __I18N_UNDELIVERABLE_LOCALES__,
-  fileless: __I18N_FILELESS_LOCALES__,
 })
 
 /**
@@ -207,7 +206,6 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     prerender: !!import.meta.prerender,
     dynamic: __I18N_DYNAMIC_LOCALES__,
     undeliverable: __I18N_UNDELIVERABLE_LOCALES__,
-    fileless: __I18N_FILELESS_LOCALES__,
   })
 
   // only prerendered responses reach the CDN - a dynamic locale in a hybrid build still fetches the
@@ -320,17 +318,16 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       try {
         const fallbacks = getLocaleConfig(locale)?.fallbacks ?? []
         const chain = fallbacks.includes(locale) ? fallbacks : [...fallbacks, locale]
-        const fromEndpoint = createEndpointPredicate(ctx.usesRuntimeLoaders, __I18N_FILELESS_LOCALES__)
         // the endpoint merges a locale with its fallbacks, so one request covers a chain of them -
         // except for fallbacks an app-context config declares, which nitro never gets to read (#4150)
-        if (!__I18N_APP_CONTEXT_CONFIG__ && chain.every(fromEndpoint)) {
+        if (!__I18N_APP_CONTEXT_CONFIG__ && !chain.some(x => ctx.usesRuntimeLoaders(x))) {
           return await loadMessagesFromServer(locale)
         }
         // a mixed chain has to take each locale from whichever source holds it, and one failing
         // fallback should not keep the rest from loading
         await Promise.all(chain.map(async (k) => {
           try {
-            await (fromEndpoint(k) ? loadMessagesFromServer(k) : loadMessagesFromLoaders(k))
+            await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
           } catch (e) {
             console.warn(`Failed to load messages for locale "${k}"`, e)
           }

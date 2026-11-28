@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createEndpointPredicate, createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
+import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
 import { createContext, resolveDeliveryLocales } from '../src/context'
 import { getDefineConfig } from '../src/bundler'
@@ -10,6 +10,7 @@ import type { ResolvedI18nContext } from '../src/context'
 import type { LocaleObject } from '../src/types'
 
 const LOCALES = { plain: 'en', dynamic: 'dy', unserializable: 'un', both: 'bo', appContext: 'ap' }
+const FILELESS = 'nf'
 
 const delivery = (overrides: Partial<DeliveryConfig> = {}): DeliveryConfig => ({
   ssr: true,
@@ -17,7 +18,6 @@ const delivery = (overrides: Partial<DeliveryConfig> = {}): DeliveryConfig => ({
   prerender: false,
   dynamic: [LOCALES.dynamic, LOCALES.both, LOCALES.appContext],
   undeliverable: [LOCALES.unserializable, LOCALES.both, LOCALES.appContext],
-  fileless: [],
   ...overrides
 })
 
@@ -84,7 +84,7 @@ type Build = { dev: boolean, ssr: boolean, staticDeploy: boolean, islands?: bool
 
 function buildContext(build: Build = { dev: false, ssr: true, staticDeploy: false }) {
   const vfs = Object.fromEntries(Object.keys(SOURCES).map(code => [`/i18n/${code}.ts`, SOURCES[code]!]))
-  const locales = Object.keys(SOURCES).map(code => ({ code, file: `${code}.ts` })) as LocaleObject[]
+  const locales = [...Object.keys(SOURCES).map(code => ({ code, file: `${code}.ts` })), { code: FILELESS }] as LocaleObject[]
   const localeInfo = resolveLocales('/i18n', locales, vfs)
 
   const nuxt = { options: { dev: build.dev, ssr: build.ssr, pages: true, app: {}, nitro: {}, _layers: [] } }
@@ -96,7 +96,7 @@ function buildContext(build: Build = { dev: false, ssr: true, staticDeploy: fals
     ...base,
     ...resolveDeliveryLocales(localeInfo),
     staticDeploy: build.staticDeploy,
-    localeCodes: Object.keys(SOURCES),
+    localeCodes: locales.map(x => x.code),
     localeInfo,
     localeFileMetas: localeInfo.flatMap(x => x.meta),
     normalizedLocales: locales,
@@ -133,11 +133,10 @@ function setupBuild(build: Build) {
     ssg: defines.__IS_SSG__ === 'true',
     prerender,
     dynamic: JSON.parse(defines.__I18N_DYNAMIC_LOCALES__) as string[],
-    undeliverable: JSON.parse(defines.__I18N_UNDELIVERABLE_LOCALES__) as string[],
-    fileless: JSON.parse(defines.__I18N_FILELESS_LOCALES__) as string[]
+    undeliverable: JSON.parse(defines.__I18N_UNDELIVERABLE_LOCALES__) as string[]
   })
 
-  return { loaders, config }
+  return { ctx, loaders, config }
 }
 
 describe('(#4093) the build and the runtime agree on where messages come from', () => {
@@ -182,6 +181,15 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
     }
   })
 
+  test('(#4211) a locale without files is neither fetched nor prerendered', () => {
+    const { ctx, config } = setupBuild({ dev: false, ssr: true, staticDeploy: false })
+
+    // sent to its loaders, of which it has none
+    expect(ctx.loaderOptions.localeLoaders[FILELESS]).toEqual([])
+    expect(createRuntimeLoaderPredicate(config(false))(FILELESS)).toBe(true)
+    expect(createPrerenderablePredicate(config(false))(FILELESS)).toBe(false)
+  })
+
   test('(#3940) the nitro graph neither imports nor runs a locale file that needs the Nuxt app', () => {
     const { localeLoaders, importStatements } = buildContext().ctx.loaderOptions
     const loaders = localeLoaders[LOCALES.appContext]!
@@ -207,29 +215,5 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
     // the config is left out of the bundle entirely, its app-only imports would come with it
     expect(importStatements.join('\n')).not.toContain(appContext!.virtualId)
     expect(importStatements.join('\n')).toContain(plain!.virtualId)
-  })
-})
-
-describe('a locale configured without files', () => {
-  const info = resolveLocales('/i18n', [{ code: 'en', file: 'en.ts' }, { code: 'nofiles' }] as LocaleObject[], { '/i18n/en.ts': SOURCES[LOCALES.plain]! })
-  const { dynamicLocales, undeliverableLocales, filelessLocales } = resolveDeliveryLocales(info)
-  const config = delivery({ dynamic: dynamicLocales, undeliverable: undeliverableLocales, fileless: filelessLocales })
-
-  test('has no messages response to fetch or prerender', () => {
-    expect(filelessLocales).toEqual(['nofiles'])
-    const prerenderable = createPrerenderablePredicate(config)
-    expect(prerenderable('nofiles')).toBe(false)
-    expect(prerenderable('en')).toBe(true)
-
-    const fromEndpoint = createEndpointPredicate(createRuntimeLoaderPredicate(config), config.fileless)
-    expect(fromEndpoint('nofiles')).toBe(false)
-    expect(fromEndpoint('en')).toBe(true)
-  })
-
-  test('keeps its preloaded payload messages', () => {
-    // the preload plugin empties the payload of undeliverable locales on the server and skips
-    // locales behind runtime loaders on the client - the server may hold messages the client lacks
-    expect(undeliverableLocales).toEqual([])
-    expect(createRuntimeLoaderPredicate(config)('nofiles')).toBe(false)
   })
 })

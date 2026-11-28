@@ -47,8 +47,6 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
   dynamicLocales: string[]
   /** Locales the messages endpoint has no response for - see `DeliveryConfig.undeliverable` */
   undeliverableLocales: string[]
-  /** Locales configured without files - see `DeliveryConfig.fileless` */
-  filelessLocales: string[]
   /**
    * Whether the build is deployed without a server. Only accurate once `nitro:init` has run:
    * `nuxi generate` sets `nuxt.options.nitro.static`, a static preset (`github-pages`, ...) does not.
@@ -63,8 +61,8 @@ const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache =
 export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
   return {
     dynamicLocales: localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code),
-    undeliverableLocales: localeInfo.filter(x => x.meta.some(m => !m.serializable || m.appContext)).map(x => x.code),
-    filelessLocales: localeInfo.filter(x => x.meta.length === 0).map(x => x.code),
+    // one list, because nothing downstream cares which of the reasons applies
+    undeliverableLocales: localeInfo.filter(x => !x.meta.length || x.meta.some(m => !m.serializable || m.appContext)).map(x => x.code),
   }
 }
 
@@ -73,7 +71,6 @@ export const prerenderableLocales = (ctx: ResolvedI18nContext) =>
   ctx.localeCodes.filter(createPrerenderablePredicate({
     dynamic: ctx.dynamicLocales,
     undeliverable: ctx.undeliverableLocales,
-    fileless: ctx.filelessLocales,
   }))
 
 type LayerWithI18n = { config: NuxtConfigLayer, i18n: Partial<NuxtI18nOptions>, i18nDir: string, i18nDetector?: string }
@@ -128,7 +125,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     }
   }
 
-  const { dynamicLocales, undeliverableLocales, filelessLocales } = resolveDeliveryLocales(localeInfo)
+  const { dynamicLocales, undeliverableLocales } = resolveDeliveryLocales(localeInfo)
 
   const resolved = assign(ctx as ResolvedI18nContext, {
     normalizedLocales,
@@ -146,7 +143,6 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     localeHashes: computeLocaleHashes(localeInfo, vueI18nConfigPaths),
     dynamicLocales,
     undeliverableLocales,
-    filelessLocales,
     staticDeploy: !!nuxt.options.nitro.static,
   })
   // registered before the `nitro:init` hooks that read it - hooks run in registration order
