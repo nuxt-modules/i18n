@@ -10,8 +10,8 @@ export interface DeliveryConfig {
   /** Locales whose messages can only be produced by running their loaders */
   dynamic: string[]
   /**
-   * Locales the endpoint has no response for: JSON would drop their message functions (#3880), or
-   * the server cannot run their loaders at all (#3940)
+   * Locales the endpoint has no response for: JSON would drop their message functions (#3880), the
+   * server cannot run their loaders at all (#3940), or they have no files to load (#4211)
    */
   undeliverable: string[]
 }

@@ -61,8 +61,8 @@ const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache =
 export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
   return {
     dynamicLocales: localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code),
-    // one list, because nothing downstream cares which of the two reasons applies
-    undeliverableLocales: localeInfo.filter(x => x.meta.some(m => !m.serializable || m.appContext)).map(x => x.code),
+    // one list, because nothing downstream cares which of the reasons applies
+    undeliverableLocales: localeInfo.filter(x => !x.meta.length || x.meta.some(m => !m.serializable || m.appContext)).map(x => x.code),
   }
 }
 

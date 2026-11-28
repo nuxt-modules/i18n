@@ -10,6 +10,7 @@ import type { ResolvedI18nContext } from '../src/context'
 import type { LocaleObject } from '../src/types'
 
 const LOCALES = { plain: 'en', dynamic: 'dy', unserializable: 'un', both: 'bo', appContext: 'ap' }
+const FILELESS = 'nf'
 
 const delivery = (overrides: Partial<DeliveryConfig> = {}): DeliveryConfig => ({
   ssr: true,
@@ -83,7 +84,7 @@ type Build = { dev: boolean, ssr: boolean, staticDeploy: boolean, islands?: bool
 
 function buildContext(build: Build = { dev: false, ssr: true, staticDeploy: false }) {
   const vfs = Object.fromEntries(Object.keys(SOURCES).map(code => [`/i18n/${code}.ts`, SOURCES[code]!]))
-  const locales = Object.keys(SOURCES).map(code => ({ code, file: `${code}.ts` })) as LocaleObject[]
+  const locales = [...Object.keys(SOURCES).map(code => ({ code, file: `${code}.ts` })), { code: FILELESS }] as LocaleObject[]
   const localeInfo = resolveLocales('/i18n', locales, vfs)
 
   const nuxt = { options: { dev: build.dev, ssr: build.ssr, pages: true, app: {}, nitro: {}, _layers: [] } }
@@ -95,7 +96,7 @@ function buildContext(build: Build = { dev: false, ssr: true, staticDeploy: fals
     ...base,
     ...resolveDeliveryLocales(localeInfo),
     staticDeploy: build.staticDeploy,
-    localeCodes: Object.keys(SOURCES),
+    localeCodes: locales.map(x => x.code),
     localeInfo,
     localeFileMetas: localeInfo.flatMap(x => x.meta),
     normalizedLocales: locales,
@@ -135,7 +136,7 @@ function setupBuild(build: Build) {
     undeliverable: JSON.parse(defines.__I18N_UNDELIVERABLE_LOCALES__) as string[]
   })
 
-  return { loaders, config }
+  return { ctx, loaders, config }
 }
 
 describe('(#4093) the build and the runtime agree on where messages come from', () => {
@@ -178,6 +179,15 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
       const loaded = usesLoaders(locale) && loaders[locale]!.present && !loaders[locale]!.clientStubbed
       expect({ locale, loaded }).toEqual({ locale, loaded: true })
     }
+  })
+
+  test('(#4211) a locale without files is neither fetched nor prerendered', () => {
+    const { ctx, config } = setupBuild({ dev: false, ssr: true, staticDeploy: false })
+
+    // sent to its loaders, of which it has none
+    expect(ctx.loaderOptions.localeLoaders[FILELESS]).toEqual([])
+    expect(createRuntimeLoaderPredicate(config(false))(FILELESS)).toBe(true)
+    expect(createPrerenderablePredicate(config(false))(FILELESS)).toBe(false)
   })
 
   test('(#3940) the nitro graph neither imports nor runs a locale file that needs the Nuxt app', () => {
